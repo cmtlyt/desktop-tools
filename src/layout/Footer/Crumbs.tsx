@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { Link, UIMatch, useMatches } from 'react-router-dom';
+import { Link, useMatches } from 'react-router-dom';
 import styled from 'styled-components';
 import { FlexBox } from '@/components/base';
+import { UIMatchWithHandle } from '@/types';
 
 const GrayLink = styled(Link)`
   display: flex;
@@ -22,11 +23,13 @@ const CrumbList = styled(FlexBox)`
   font-size: 1.4rem;
 `;
 
+interface PageCrumbInfo {
+  title: string;
+  crumbLabel: string | React.ReactNode;
+}
+
 export function Crumbs() {
-  const matches = useMatches() as UIMatch<
-    unknown,
-    { title: string; crumbLabel: string | React.ReactNode }
-  >[];
+  const matches = useMatches() as UIMatchWithHandle<PageCrumbInfo>[];
 
   const crumbs = useMemo(() => {
     return matches
