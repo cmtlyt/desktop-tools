@@ -1,5 +1,13 @@
+import { AppList } from '@/components/AppList';
+import { FlexBox } from '@/components/base';
+
 export function Component() {
-  return <div>Hello World</div>;
+  return (
+    <FlexBox>
+      <span>Hello World</span>
+      <AppList />
+    </FlexBox>
+  );
 }
 
 export const handle = {

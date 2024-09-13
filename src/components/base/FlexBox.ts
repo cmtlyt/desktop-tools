@@ -31,17 +31,18 @@ interface FlexBoxProps {
   direction?: FlexDirection;
   justifyContent?: FlexJustify;
   alignItems?: FlexAlign;
-  flexWrap?: FlexWrap;
+  wrap?: FlexWrap;
   justifyItems?: FlexJustify;
   alignContent?: FlexAlign;
   children?: React.ReactNode;
 }
 
 function generateFlexSheet(props: FlexBoxProps) {
-  const { direction = FlexDirection.row, children: _, ...otherProps } = props;
+  const { direction, wrap, children: _, ...otherProps } = props;
 
   return {
     flexDirection: direction,
+    flexWrap: wrap,
     ...otherProps,
   };
 }
