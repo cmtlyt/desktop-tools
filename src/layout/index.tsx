@@ -1,14 +1,17 @@
+import { FlexBox, FlexDirection } from '@/components/base';
 import { Outlet } from 'react-router-dom';
 
 export function Component() {
   return (
-    <section>
+    <FlexBox direction={FlexDirection.column} flex="1">
       <header>header</header>
-      <section>
+      <FlexBox flex="1">
         <aside>aside</aside>
-        <Outlet />
-      </section>
+        <FlexBox flex="1" direction={FlexDirection.column}>
+          <Outlet />
+        </FlexBox>
+      </FlexBox>
       <footer>footer</footer>
-    </section>
+    </FlexBox>
   );
 }
