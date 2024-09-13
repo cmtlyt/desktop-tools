@@ -1,0 +1,15 @@
+:root {
+  --color-primary: #ff9494;
+  --color-primary-2: #ffd1d1;
+  --color-primary-3: #ffe3e1;
+  --color-primary-4: #fff5e4;
+
+  --color-gray: #b4b4b8;
+  --color-gray-2: #c7c8cc;
+  --color-gray-3: #e3e1d9;
+  --color-gray-4: #f2efe5;
+}
+
+body {
+  margin: 0;
+}
