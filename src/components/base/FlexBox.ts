@@ -50,3 +50,26 @@ export const FlexBox = styled.section<FlexBoxProps>`
   display: flex;
   ${generateFlexSheet}
 `;
+
+interface ShadowFlexBoxProps extends FlexBoxProps {
+  x?: string;
+  y?: string;
+  blur?: string;
+  spread?: string;
+  color?: string;
+}
+
+function generateBoxShadow(props: ShadowFlexBoxProps) {
+  const {
+    x = '0',
+    y = '0',
+    blur = '1rem',
+    spread = '-0.4rem',
+    color = 'var(--color-primary)',
+  } = props;
+  return `box-shadow: ${x} ${y} ${blur} ${spread} ${color}`;
+}
+
+export const ShadowFlexBox = styled(FlexBox)<ShadowFlexBoxProps>`
+  ${generateBoxShadow}
+`;

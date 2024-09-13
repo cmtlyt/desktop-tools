@@ -8,10 +8,13 @@
   --color-gray-2: #c7c8cc;
   --color-gray-3: #e3e1d9;
   --color-gray-4: #f2efe5;
+
+  font-size: 10px;
 }
 
 body {
   margin: 0;
+  font-size: 16px;
 }
 
 #root {
