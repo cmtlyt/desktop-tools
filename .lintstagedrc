@@ -1,0 +1,21 @@
+{
+  "*.{js,jsx,ts,tsx}": [
+    "prettier --cache --ignore-unknown  --write",
+    "npm run lint:script",
+    "git add ."
+  ],
+  "{!(package)*.json,*.code-snippets,.!({browserslist,npm,nvm})*rc}": [
+    "prettier --cache --write--parser json",
+    "git add ."
+  ],
+  "package.json": ["prettier --cache --write"],
+  "*.{css,scss,html}": [
+    "prettier --cache --ignore-unknown --write",
+    "npm run lint:style",
+    "git add ."
+  ],
+  "*.md": [
+    "prettier --cache --ignore-unknown --write",
+    "git add ."
+  ]
+}
