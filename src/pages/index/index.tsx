@@ -1,11 +1,11 @@
-import { AppList } from '@/components/app-list';
-import { FlexBox } from '@/components/base';
+import { FlexBox, FlexDirection } from '@/components/base';
+import { IndexAppList } from './index-app-list';
 
 export function Component() {
   return (
-    <FlexBox>
+    <FlexBox $direction={FlexDirection.column}>
       <span>Hello World</span>
-      <AppList />
+      <IndexAppList />
     </FlexBox>
   );
 }
