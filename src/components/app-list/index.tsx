@@ -1,14 +1,21 @@
 import { useCallback, useMemo } from 'react';
 import { Link, useMatches, matchPath } from 'react-router-dom';
 import styled from 'styled-components';
-import { FlexBox, FlexDirection, FlexWrap } from '@/components/base';
+import { FlexAlign, FlexBox, FlexDirection, FlexJustify, FlexWrap, ShadowFlexBox } from '@/components/base';
 import { AppInfo, appList } from './constant';
 
 interface AppItemProps {
   $isActive?: boolean;
+  $styleText?: string;
 }
 
 const AppItem = styled(Link)<AppItemProps>`
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
   ${(props) => {
     const { $isActive } = props;
 
@@ -16,6 +23,24 @@ const AppItem = styled(Link)<AppItemProps>`
       return `color: var(--color-primary);`;
     }
   }}
+`;
+
+const AppItemContent = styled(ShadowFlexBox)`
+  padding: 1rem;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1.2rem;
+`;
+
+const IconWrap = styled(FlexBox)`
+  width: 2.4rem;
+  height: 2.4rem;
+  font-size: 2.4rem;
+`;
+
+const AppName = styled.span`
+  font-size: 1.2rem;
+  line-height: 1;
 `;
 
 interface AppListProps {
@@ -33,7 +58,7 @@ export function AppList(props: AppListProps) {
 
   const checkActive = useCallback(
     (path: string) => needActiveStyle && !!matchPath(lastMatch?.pathname || '', path),
-    [needActiveStyle, lastMatch]
+    [needActiveStyle, lastMatch],
   );
 
   const appListFinished = useMemo(() => {
@@ -41,10 +66,23 @@ export function AppList(props: AppListProps) {
   }, [appListHander]);
 
   return (
-    <FlexBox wrap={FlexWrap.wrap} direction={direction}>
+    <FlexBox $wrap={FlexWrap.wrap} $direction={direction}>
       {appListFinished.map((app) => (
-        <AppItem to={app.path} key={app.path} $isActive={checkActive(app.path)}>
-          {app.name}
+        <AppItem
+          to={app.path}
+          key={app.path}
+          $isActive={checkActive(app.path)}
+          style={app.style}
+          $styleText={app.styleText}
+        >
+          <AppItemContent
+            $direction={FlexDirection.column}
+            $alignItems={FlexAlign.center}
+            $justifyContent={FlexJustify.between}
+          >
+            <IconWrap>{typeof app.icon === 'string' ? <span>{app.icon}</span> : app.icon}</IconWrap>
+            <AppName>{app.name}</AppName>
+          </AppItemContent>
         </AppItem>
       ))}
     </FlexBox>

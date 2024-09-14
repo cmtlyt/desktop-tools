@@ -1,5 +1,5 @@
 import { createHashRouter } from 'react-router-dom';
-import { generateRouteConfig } from './utils';
+import { generateRouteConfig } from './util';
 
 export const routerConfig = createHashRouter([
   {

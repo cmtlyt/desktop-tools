@@ -1,9 +1,6 @@
 import { RouteObject } from 'react-router-dom';
 
-export function generateRouteConfig(
-  path: string,
-  children?: RouteObject[]
-): RouteObject {
+export function generateRouteConfig(path: string, children?: RouteObject[]): RouteObject {
   let pageDir = path.replace(/^\/+/, '').replace(/\/+$/, '');
   if (!pageDir) pageDir = 'index';
   return {

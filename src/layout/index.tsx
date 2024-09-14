@@ -6,15 +6,15 @@ import { Aside } from './aside';
 
 export function Component() {
   return (
-    <FlexBox direction={FlexDirection.column} flex="1">
-      <Header />
-      <FlexBox flex="1">
-        <Aside />
-        <FlexBox flex="1" direction={FlexDirection.column}>
+    <FlexBox $flex="1">
+      <Aside />
+      <FlexBox $flex="1" $direction={FlexDirection.column}>
+        <Header />
+        <FlexBox $flex="1" $direction={FlexDirection.column}>
           <Outlet />
         </FlexBox>
+        <Footer />
       </FlexBox>
-      <Footer />
     </FlexBox>
   );
 }

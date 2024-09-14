@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { propsHandler } from './util';
 
 export enum FlexDirection {
   row = 'row',
@@ -27,23 +28,23 @@ export enum FlexJustify {
 }
 
 interface FlexBoxProps {
-  flex?: number | string;
-  direction?: FlexDirection;
-  justifyContent?: FlexJustify;
-  alignItems?: FlexAlign;
-  wrap?: FlexWrap;
-  justifyItems?: FlexJustify;
-  alignContent?: FlexAlign;
+  $flex?: number | string;
+  $direction?: FlexDirection;
+  $justifyContent?: FlexJustify;
+  $alignItems?: FlexAlign;
+  $wrap?: FlexWrap;
+  $justifyItems?: FlexJustify;
+  $alignContent?: FlexAlign;
   children?: React.ReactNode;
 }
 
 function generateFlexSheet(props: FlexBoxProps) {
-  const { direction, wrap, children: _, ...otherProps } = props;
+  const { $direction: direction, $wrap: wrap, children: _, ...otherProps } = props;
 
   return {
     flexDirection: direction,
     flexWrap: wrap,
-    ...otherProps,
+    ...propsHandler(otherProps),
   };
 }
 
@@ -53,20 +54,20 @@ export const FlexBox = styled.section<FlexBoxProps>`
 `;
 
 interface ShadowFlexBoxProps extends FlexBoxProps {
-  x?: string;
-  y?: string;
-  blur?: string;
-  spread?: string;
-  color?: string;
+  $x?: string;
+  $y?: string;
+  $blur?: string;
+  $spread?: string;
+  $color?: string;
 }
 
 function generateBoxShadow(props: ShadowFlexBoxProps) {
   const {
-    x = '0',
-    y = '0',
-    blur = '1rem',
-    spread = '-0.4rem',
-    color = 'var(--color-primary)',
+    $x: x = '0',
+    $y: y = '0',
+    $blur: blur = '1rem',
+    $spread: spread = '-0.4rem',
+    $color: color = 'var(--color-primary)',
   } = props;
   return `box-shadow: ${x} ${y} ${blur} ${spread} ${color}`;
 }
