@@ -8,9 +8,9 @@ export function Component() {
   return (
     <FlexBox $flex="1">
       <Aside />
-      <FlexBox $flex="1" $direction={FlexDirection.column}>
+      <FlexBox $flex="1" $direction={FlexDirection.column} style={{ overflow: 'hidden' }}>
         <Header />
-        <FlexBox $flex="1" $direction={FlexDirection.column}>
+        <FlexBox $flex="1" $direction={FlexDirection.column} style={{ overflowY: 'auto' }}>
           <Outlet />
         </FlexBox>
         <Footer />

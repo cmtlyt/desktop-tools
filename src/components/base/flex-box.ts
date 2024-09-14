@@ -38,13 +38,15 @@ interface FlexBoxProps {
   children?: React.ReactNode;
 }
 
+const needProps = ['$flex', '$justifyContent', '$alignItems', '$justifyItems', '$alignContent'];
+
 function generateFlexSheet(props: FlexBoxProps) {
-  const { $direction: direction, $wrap: wrap, children: _, ...otherProps } = props;
+  const { $direction: direction, $wrap: wrap, ...otherProps } = props;
 
   return {
     flexDirection: direction,
     flexWrap: wrap,
-    ...propsHandler(otherProps),
+    ...propsHandler(otherProps, [], needProps),
   };
 }
 
@@ -73,5 +75,6 @@ function generateBoxShadow(props: ShadowFlexBoxProps) {
 }
 
 export const ShadowFlexBox = styled(FlexBox)<ShadowFlexBoxProps>`
+  background-color: white;
   ${generateBoxShadow}
 `;

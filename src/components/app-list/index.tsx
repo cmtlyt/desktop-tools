@@ -46,11 +46,13 @@ const AppName = styled.span`
 interface AppListProps {
   needActiveStyle?: boolean;
   direction?: FlexDirection;
+  shadowOption?: Parameters<typeof ShadowFlexBox>[0];
+  className?: string;
   appListHander?: (appList: AppInfo[]) => AppInfo[];
 }
 
 export function AppList(props: AppListProps) {
-  const { direction, needActiveStyle, appListHander = (list) => list } = props;
+  const { direction, needActiveStyle, shadowOption, className, appListHander = (list) => list } = props;
 
   const matchers = useMatches();
 
@@ -66,7 +68,7 @@ export function AppList(props: AppListProps) {
   }, [appListHander]);
 
   return (
-    <FlexBox $wrap={FlexWrap.wrap} $direction={direction}>
+    <FlexBox $wrap={FlexWrap.wrap} $direction={direction} className={className}>
       {appListFinished.map((app) => (
         <AppItem
           to={app.path}
@@ -79,6 +81,7 @@ export function AppList(props: AppListProps) {
             $direction={FlexDirection.column}
             $alignItems={FlexAlign.center}
             $justifyContent={FlexJustify.between}
+            {...shadowOption}
           >
             <IconWrap>{typeof app.icon === 'string' ? <span>{app.icon}</span> : app.icon}</IconWrap>
             <AppName>{app.name}</AppName>

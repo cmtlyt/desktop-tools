@@ -13,6 +13,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cmtlyt/base": "^0.8.0",
     "@types/node": "^22.5.4",
     "antd": "^5.20.6",
     "react": "^18.3.1",
