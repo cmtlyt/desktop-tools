@@ -7,7 +7,7 @@ export interface AppInfo {
 export const appList: AppInfo[] = [
   {
     name: '流水',
-    path: '/flowList',
+    path: '/flow-list',
     icon: 'icon-flow',
   },
 ];

@@ -1,4 +1,4 @@
-import { AppList } from '@/components/AppList';
+import { AppList } from '@/components/app-list';
 import { FlexBox } from '@/components/base';
 
 export function Component() {

@@ -1,5 +1,5 @@
 import { FlexBox } from '@/components/base';
-import { Crumbs } from './Crumbs';
+import { Crumbs } from './crumbs';
 
 export function Footer() {
   return (
