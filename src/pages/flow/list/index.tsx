@@ -1,17 +1,23 @@
-import { FlexBox, FlexDirection } from '@/components/base';
+import styled from 'styled-components';
 import { useLoaderData } from 'react-router-dom';
-import { Flow, FlowItem, FlowStatus } from './flow-item';
+import { FlexBox, FlexDirection } from '@/components/base';
+import { Flow, FlowStatus } from '@/types/flow';
+import { FlowItem } from './flow-item';
+
+const FlowList = styled(FlexBox)`
+  padding: 1.8rem;
+`;
 
 export function Component() {
   const loaderData = useLoaderData() as LoaderData;
   const { flows } = loaderData;
 
   return (
-    <FlexBox $direction={FlexDirection.column}>
+    <FlowList $direction={FlexDirection.column}>
       {flows.map((flow) => (
         <FlowItem key={flow.id} flow={flow} />
       ))}
-    </FlexBox>
+    </FlowList>
   );
 }
 
@@ -24,8 +30,8 @@ export async function loader() {
     flows: [
       {
         id: '1',
-        title: '流水1',
-        description: '流水1描述',
+        title:
+          '流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1',
         status: FlowStatus.PAID,
         account: '流水1账号',
         creator: '流水1创建人',
