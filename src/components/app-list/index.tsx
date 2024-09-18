@@ -66,8 +66,11 @@ export function AppList(props: AppListProps) {
   const lastMatch = useMemo(() => matchers.at(-1), [matchers]);
 
   const checkActive = useCallback(
-    (path: string) => needActiveStyle && !!matchPath(lastMatch?.pathname || '', path),
-    [needActiveStyle, lastMatch],
+    (path: string, deepMatch = false) => {
+      if (deepMatch) return needActiveStyle && matchers.some((match) => !!matchPath(match?.pathname || '', path));
+      return needActiveStyle && !!matchPath(lastMatch?.pathname || '', path);
+    },
+    [needActiveStyle, lastMatch, matchers],
   );
 
   const appListFinished = useMemo(() => {
@@ -77,7 +80,12 @@ export function AppList(props: AppListProps) {
   return (
     <FlexBox $wrap={FlexWrap.wrap} $direction={direction} className={className}>
       {appListFinished.map((app) => (
-        <AppItem to={app.path} key={app.path} $isActive={checkActive(app.path)} $style={app.wrapperStyle}>
+        <AppItem
+          to={app.path}
+          key={app.path}
+          $isActive={checkActive(app.path, app.deepMatch)}
+          $style={app.wrapperStyle}
+        >
           <AppItemContent
             $direction={FlexDirection.column}
             $alignItems={FlexAlign.center}

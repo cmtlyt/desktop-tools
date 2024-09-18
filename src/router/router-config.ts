@@ -5,6 +5,12 @@ export const routerConfig = createHashRouter([
   {
     path: '/',
     lazy: () => import('../layout'),
-    children: [generateRouteConfig('/'), generateRouteConfig('/flow-list')],
+    children: [
+      generateRouteConfig('/'),
+      generateRouteConfig('/flow', [
+        generateRouteConfig('', [], '/flow/list'),
+        generateRouteConfig('/flow/detail/:id'),
+      ]),
+    ],
   },
 ]);

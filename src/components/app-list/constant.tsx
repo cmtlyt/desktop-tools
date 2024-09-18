@@ -4,6 +4,7 @@ export interface AppInfo {
   name: string;
   path: string;
   icon: React.ReactNode;
+  deepMatch?: boolean;
   wrapperStyle?: React.CSSProperties;
   contentStyle?: React.CSSProperties;
   iconStyle?: React.CSSProperties;
@@ -13,7 +14,8 @@ export interface AppInfo {
 export const appList: AppInfo[] = [
   {
     name: '流水',
-    path: '/flow-list',
+    path: '/flow',
+    deepMatch: true,
     icon: <TbBrandStackoverflow />,
   },
 ];
