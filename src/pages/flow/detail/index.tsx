@@ -25,5 +25,7 @@ export async function loader({ params }: LoaderParams): Promise<LoaderData> {
 }
 
 export const handle = {
-  title: '详情',
+  title: '流水详情',
+  crumbLabel: '详情',
+  needBackIcon: true,
 };
