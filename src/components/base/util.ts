@@ -1,5 +1,6 @@
 import type { TExclude } from '@cmtlyt/base';
 import { RemovePrefix } from '@/types';
+import { ColorVar, ThemeColor } from './type';
 
 const ignoreProps = ['children', 'className'];
 
@@ -34,4 +35,16 @@ export function applyStyleSheet(key: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return style as any;
   };
+}
+
+export function getThemeColorVar(colorInfo: Partial<ThemeColor>): ColorVar {
+  const { font = '', bg = '', border = '' } = colorInfo;
+
+  return { '--font-color': font, '--bg-color': bg, '--border-color': border };
+}
+
+export function colorVar2Str(colorInfo: Partial<ColorVar>) {
+  return Object.entries(colorInfo)
+    .map(([key, value]) => `${key}: ${value};`)
+    .join('\n');
 }

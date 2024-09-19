@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FlexAlign, FlexBox, ShadowFlexBox, Tag, TagPresetColor, TagProps } from '@/components/base';
+import { FlexAlign, FlexBox, ShadowFlexBox, Tag, TagProps, TagTheme } from '@/components/base';
 import { DateView } from '@/components/date-view';
 import { Flow, FlowStatus } from '@/types/flow';
 
@@ -15,11 +15,11 @@ const FlowTag = styled(Tag)`
 
 const FlowStatusTag = memo(({ children }: { children: FlowStatus }) => {
   const { text, ...tagProps }: TagProps & { text: string } = {
-    [FlowStatus.PAID]: { $presetColor: TagPresetColor.SUCCESS, text: '已支付' },
-    [FlowStatus.UNPAID]: { $presetColor: TagPresetColor.PROCESSING, text: '待支付' },
-    [FlowStatus.REFUNDED]: { $presetColor: TagPresetColor.WARNING, text: '已退款' },
-    [FlowStatus.CANCELED]: { $presetColor: TagPresetColor.INFO, text: '已取消' },
-    [FlowStatus.INCOME]: { $presetColor: TagPresetColor.SUCCESS, text: '收入' },
+    [FlowStatus.PAID]: { $presetTheme: TagTheme.SUCCESS, text: '已支付' },
+    [FlowStatus.UNPAID]: { $presetTheme: TagTheme.PROCESSING, text: '待支付' },
+    [FlowStatus.REFUNDED]: { $presetTheme: TagTheme.WARNING, text: '已退款' },
+    [FlowStatus.CANCELED]: { $presetTheme: TagTheme.INFO, text: '已取消' },
+    [FlowStatus.INCOME]: { $presetTheme: TagTheme.SUCCESS, text: '收入' },
   }[children];
 
   return <FlowTag {...tagProps}>{text}</FlowTag>;

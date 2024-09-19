@@ -7,7 +7,7 @@ export function generateRouteConfig(path: string, children?: RouteObject[], page
     .replace(/^\/+/, '')
     .replace(/\/+$/, '')
     // 移除动态路由段
-    .replace(/\/:\w+/, '');
+    .replace(/\/:\w+\??/, '');
   if (!_pageDir) _pageDir = 'index';
   return {
     path,

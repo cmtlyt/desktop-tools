@@ -2,37 +2,34 @@ import styled from 'styled-components';
 import { ThemeColor } from './type';
 import { colorVar2Str, getThemeColorVar } from './util';
 
-export enum TagType {
+export enum ButtonType {
   SOLID = 'SOLID',
   OUTLINE = 'OUTLINE',
   DEFAULT = 'DEFAULT',
 }
 
-export enum TagTheme {
-  SUCCESS = 'SUCCESS',
+export enum ButtonTheme {
+  PRIMARY = 'PRIMARY',
   WARNING = 'WARNING',
   DANGER = 'DANGER',
   INFO = 'INFO',
-  PROCESSING = 'PROCESSING',
 }
 
-export interface TagProps {
-  $type?: TagType;
+export interface ButtonProps {
+  $type?: ButtonType;
   $color?: Partial<ThemeColor>;
-  $presetTheme?: TagTheme;
+  $presetTheme?: ButtonTheme;
 }
 
-function getColor(presetColor?: TagTheme): ThemeColor {
+function getColor(presetColor?: ButtonTheme): ThemeColor {
   switch (presetColor) {
-    case TagTheme.SUCCESS:
+    case ButtonTheme.PRIMARY:
       return { font: '#52c41a', bg: '#f6ffed', border: '#b7eb8f' };
-    case TagTheme.WARNING:
+    case ButtonTheme.WARNING:
       return { font: '#faad14', bg: '#fffbe6', border: '#ffe58f' };
-    case TagTheme.DANGER:
+    case ButtonTheme.DANGER:
       return { font: '#ff4d4f', bg: '#fff2f0', border: '#ffccc7' };
-    case TagTheme.PROCESSING:
-      return { font: '#1677ff', bg: '#e6f4ff', border: '#91caff' };
-    case TagTheme.INFO:
+    case ButtonTheme.INFO:
     case undefined:
       return { font: 'rgba(0, 0, 0, 0.88)', bg: '#fafafa', border: 'rgb(217, 217, 217)' };
     default:
@@ -43,15 +40,15 @@ function getColor(presetColor?: TagTheme): ThemeColor {
   }
 }
 
-export const Tag = styled.section<TagProps>`
+export const Button = styled.button<ButtonProps>`
   ${(props) => {
-    const { $type = TagType.DEFAULT, $presetTheme, $color = getColor($presetTheme) } = props;
+    const { $type = ButtonType.DEFAULT, $presetTheme, $color = getColor($presetTheme) } = props;
     const defaultColor = getColor();
     const colorInfo = getThemeColorVar({ ...defaultColor, ...$color });
 
-    if ($type === TagType.SOLID) {
+    if ($type === ButtonType.SOLID) {
       colorInfo['--border-color'] = 'transparent';
-    } else if ($type === TagType.OUTLINE) {
+    } else if ($type === ButtonType.OUTLINE) {
       colorInfo['--bg-color'] = 'transparent';
     }
 
@@ -60,7 +57,7 @@ export const Tag = styled.section<TagProps>`
 
   padding: 0.5rem 1rem;
   font-size: 1.2rem;
-  border-radius: 9999px;
+  border-radius: 1.2rem;
   line-height: 1;
   color: var(--font-color);
   background-color: var(--bg-color);

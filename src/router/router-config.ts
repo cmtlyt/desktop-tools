@@ -10,6 +10,7 @@ export const routerConfig = createHashRouter([
       generateRouteConfig('/flow', [
         generateRouteConfig('', [], '/flow/list'),
         generateRouteConfig('/flow/detail/:id'),
+        generateRouteConfig('/flow/editor/:id?'),
       ]),
     ],
   },
