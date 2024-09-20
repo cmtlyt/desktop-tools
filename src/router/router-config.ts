@@ -1,7 +1,8 @@
-import { createHashRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import { generateRouteConfig } from './util';
+import { basename } from './constant';
 
-export const routerConfig = createHashRouter([
+const routes = [
   {
     path: '/',
     lazy: () => import('../layout'),
@@ -14,4 +15,6 @@ export const routerConfig = createHashRouter([
       ]),
     ],
   },
-]);
+];
+
+export const routerConfig = createBrowserRouter(routes, { basename });
