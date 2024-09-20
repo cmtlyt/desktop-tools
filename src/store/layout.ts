@@ -1,17 +1,16 @@
+import { MessageArgsProps } from 'antd';
 import { create } from 'zustand';
 
 interface LayoutStore {
-  test: string;
+  messageInfo: MessageArgsProps | null;
 }
 
 interface LayoutStoreActions {
-  changeTest: (test: string) => void;
+  showMessage: (messageInfo: MessageArgsProps) => void;
 }
 
-export const useLayoutStore = create<LayoutStore & LayoutStoreActions>(
-  (set) => ({
-    test: 'Hello World',
+export const useLayoutStore = create<LayoutStore & LayoutStoreActions>((set) => ({
+  messageInfo: null,
 
-    changeTest: (test) => set({ test }),
-  })
-);
+  showMessage: (messageInfo) => set({ messageInfo }),
+}));

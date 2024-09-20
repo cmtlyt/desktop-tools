@@ -3,6 +3,7 @@ import { useLoaderData, useNavigate } from 'react-router-dom';
 import { useEditorStore } from './store';
 import { ButtonList } from '@/components/button-list';
 import { ButtonTheme } from '@/components/base';
+import { useLayoutStore } from '@/store';
 
 interface LoaderData {
   id: string;
@@ -21,6 +22,7 @@ export function Component() {
 
 function FlowEditorButtonArea() {
   const { id } = useEditorStore((state) => ({ id: state.id }));
+  const { showMessage } = useLayoutStore((state) => ({ showMessage: state.showMessage }));
   const navigate = useNavigate();
 
   return (
@@ -37,6 +39,13 @@ function FlowEditorButtonArea() {
           $presetTheme: ButtonTheme.PRIMARY,
           onClick() {
             console.debug('save id:', id);
+            showMessage({
+              type: 'success',
+              content: '保存成功',
+              onClose() {
+                navigate('/flow');
+              },
+            });
           },
         },
       ]}
