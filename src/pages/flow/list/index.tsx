@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import { ButtonTheme, FlexBox, FlexDirection } from '@/components/base';
 import { Flow, FlowStatus } from '@/types/flow';
 import { ButtonList } from '@/components/button-list';
@@ -13,10 +13,12 @@ export function Component() {
   const loaderData = useLoaderData() as LoaderData;
   const { flows } = loaderData;
 
+  const navigate = useNavigate();
+
   return (
     <FlowList $direction={FlexDirection.column}>
       {flows.map((flow) => (
-        <FlowItem key={flow.id} flow={flow} />
+        <FlowItem key={flow.id} flow={flow} onClick={() => navigate(`/flow/detail/${flow.id}`)} />
       ))}
     </FlowList>
   );

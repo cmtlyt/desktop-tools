@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { ButtonTheme, FlexAlign, FlexBox, ShadowFlexBox, Tag, TagProps, TagTheme } from '@/components/base';
 import { DateView } from '@/components/date-view';
@@ -9,6 +8,7 @@ import { ButtonList } from '@/components/button-list';
 
 interface FlowItemProps {
   flow: Flow;
+  onClick?: React.MouseEventHandler<HTMLElement>;
 }
 
 const FlowTag = styled(Tag)`
@@ -80,11 +80,10 @@ function HandleButtons(props: HandleButtonsProps) {
 }
 
 export function FlowItem(props: FlowItemProps) {
-  const { flow } = props;
-  const navigate = useNavigate();
+  const { flow, onClick } = props;
 
   return (
-    <FlowWrapper key={flow.id} onClick={() => navigate(`/flow/detail/${flow.id}`)}>
+    <FlowWrapper key={flow.id} onClick={onClick}>
       <HoverExpandBox rightArea={<HandleButtons flow={flow} />}>
         <FlexBox $flex="1" $alignItems={FlexAlign.center}>
           <FlowStatusTag>{flow.status}</FlowStatusTag>
