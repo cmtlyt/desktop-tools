@@ -1,4 +1,4 @@
-name: Deploy React App
+name: Deploy Pages
 
 on:
   push:
@@ -6,21 +6,29 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  pages:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
-      - name: Checkout 🛎️
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           persist-credentials: false
 
-      - name: Setup Node.js
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 21
 
-      - name: Setup PNPM
+      - name: Use PNPM
         uses: pnpm/action-setup@v4
         with:
           version: 9.4.0
@@ -36,4 +44,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          publish_branch: gh-pages
