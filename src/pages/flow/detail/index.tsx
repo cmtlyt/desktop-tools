@@ -1,7 +1,7 @@
-import { Button, FlexBox } from '@/components/base';
-import { Link, useLoaderData } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import { useDetailStore } from './store';
 import { useEffect } from 'react';
+import { ButtonList } from '@/components/button-list';
 
 interface LoaderData {
   id: string;
@@ -35,13 +35,7 @@ export async function loader({ params }: LoaderParams): Promise<LoaderData> {
 function FlowDetailButtonArea() {
   const { id } = useDetailStore((state) => ({ id: state.id }));
 
-  return (
-    <FlexBox>
-      <Link to={`/flow/editor/${id}`}>
-        <Button>编辑</Button>
-      </Link>
-    </FlexBox>
-  );
+  return <ButtonList buttons={[{ text: '编辑', to: `/flow/editor/${id}` }]} />;
 }
 
 export const handle = {

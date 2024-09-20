@@ -1,7 +1,13 @@
 import styled from 'styled-components';
+import { Link, To } from 'react-router-dom';
 import { Button, FlexBox } from '../base';
 
-type ButtonItem = Parameters<typeof Button>[0] & { text: React.ReactNode };
+interface ButtonItemOtherProps {
+  text?: React.ReactNode;
+  to?: To;
+}
+
+type ButtonItem = Parameters<typeof Button>[0] & ButtonItemOtherProps;
 
 interface ButtonListProps extends ButtonListWrapperProps {
   wrapperProps?: Parameters<typeof ButtonListWrapper>[0];
@@ -30,11 +36,18 @@ export function ButtonList(props: ButtonListProps) {
 
   return (
     <ButtonListWrapper {...wrapperProps} $gap={$gap}>
-      {buttons.map(({ text, ...button }, idx) => (
-        <Button key={idx} {...button}>
-          {text}
-        </Button>
-      ))}
+      {buttons.map(({ text, to, ...buttonProps }, idx) => {
+        const button = (
+          <Button key={idx} {...buttonProps}>
+            {text}
+          </Button>
+        );
+
+        if (to) {
+          return <Link key={idx} to={to} children={button} />;
+        }
+        return button;
+      })}
     </ButtonListWrapper>
   );
 }
