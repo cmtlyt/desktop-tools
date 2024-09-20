@@ -6,17 +6,17 @@ import { UIMatchWithHandle } from '@/types';
 
 const GrayLink = styled(Link)`
   display: flex;
-  color: var(--color-gray);
+  color: var(--color-gray-5);
   transition: color 300ms;
 
   &:hover {
-    color: var(--color-primary);
+    color: var(--color-hover);
   }
 `;
 
 const ActiveCrumb = styled.span`
   display: flex;
-  color: var(--color-primary);
+  color: var(--color-active);
 `;
 
 const CrumbList = styled(FlexBox)`

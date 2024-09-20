@@ -2,9 +2,9 @@ import { useCallback, useMemo } from 'react';
 import { Link, useMatches, matchPath } from 'react-router-dom';
 import styled from 'styled-components';
 import { FlexAlign, FlexBox, FlexDirection, FlexJustify, FlexWrap, ShadowFlexBox } from '@/components/base';
+import { ApplyStyle } from '@/types';
 import { AppInfo, appList } from './constant';
 import { applyStyleSheet } from '../base/util';
-import { ApplyStyle } from '@/types';
 
 interface AppItemProps extends ApplyStyle {
   $isActive?: boolean;
@@ -23,7 +23,7 @@ const AppItem = styled(Link)<AppItemProps>`
     const { $isActive } = props;
 
     if ($isActive) {
-      return `color: var(--color-primary);`;
+      return `color: var(--color-active);`;
     }
   }}
 `;
@@ -32,7 +32,7 @@ const AppItemContent = styled(ShadowFlexBox)<ApplyStyle>`
   padding: 1rem;
   width: 4rem;
   height: 4rem;
-  border-radius: 1.2rem;
+  border-radius: var(--radius-button);
 
   ${applyStyleSheet('$style')}
 `;

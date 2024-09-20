@@ -36,9 +36,7 @@ function getColor(presetColor?: TagTheme): ThemeColor {
     case undefined:
       return { font: 'rgba(0, 0, 0, 0.88)', bg: '#fafafa', border: 'rgb(217, 217, 217)' };
     default:
-      // @ts-expect-error never
-      // eslint-disable-next-line no-case-declarations
-      const _: never = presetColor;
+      presetColor satisfies never;
       return { font: 'rgba(0, 0, 0, 0.88)', bg: '#fafafa', border: 'rgb(217, 217, 217)' };
   }
 }
@@ -60,7 +58,7 @@ export const Tag = styled.section<TagProps>`
 
   padding: 0.5rem 1rem;
   font-size: 1.2rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
   line-height: 1;
   color: var(--font-color);
   background-color: var(--bg-color);

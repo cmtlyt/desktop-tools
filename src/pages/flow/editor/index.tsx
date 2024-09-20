@@ -1,7 +1,8 @@
-import { Button, FlexBox } from '@/components/base';
+import { useEffect } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { useEditorStore } from './store';
-import { useEffect } from 'react';
+import { ButtonList } from '@/components/button-list';
+import { ButtonTheme } from '@/components/base';
 
 interface LoaderData {
   id: string;
@@ -23,10 +24,23 @@ function FlowEditorButtonArea() {
   const navigate = useNavigate();
 
   return (
-    <FlexBox>
-      <Button onClick={() => navigate(-1)}>取消</Button>
-      <Button onClick={() => console.debug('save id:', id)}>保存</Button>
-    </FlexBox>
+    <ButtonList
+      buttons={[
+        {
+          text: '取消',
+          onClick() {
+            navigate(-1);
+          },
+        },
+        {
+          text: '保存',
+          $presetTheme: ButtonTheme.PRIMARY,
+          onClick() {
+            console.debug('save id:', id);
+          },
+        },
+      ]}
+    />
   );
 }
 

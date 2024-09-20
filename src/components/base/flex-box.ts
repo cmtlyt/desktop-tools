@@ -69,7 +69,7 @@ function generateBoxShadow(props: ShadowFlexBoxProps) {
     $y: y = '0',
     $blur: blur = '1rem',
     $spread: spread = '-0.4rem',
-    $color: color = 'var(--color-primary)',
+    $color: color = 'var(--color-shadow)',
   } = props;
   return `box-shadow: ${x} ${y} ${blur} ${spread} ${color}`;
 }

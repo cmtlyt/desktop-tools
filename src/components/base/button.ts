@@ -19,23 +19,22 @@ export interface ButtonProps {
   $type?: ButtonType;
   $color?: Partial<ThemeColor>;
   $presetTheme?: ButtonTheme;
+  $disabled?: boolean;
 }
 
 function getColor(presetColor?: ButtonTheme): ThemeColor {
   switch (presetColor) {
     case ButtonTheme.PRIMARY:
-      return { font: '#52c41a', bg: '#f6ffed', border: '#b7eb8f' };
+      return { font: '#fff', bg: '#1677ff', border: '#1677ff' };
     case ButtonTheme.WARNING:
-      return { font: '#faad14', bg: '#fffbe6', border: '#ffe58f' };
+      return { font: '#fff', bg: '#faad14', border: '#faad14' };
     case ButtonTheme.DANGER:
-      return { font: '#ff4d4f', bg: '#fff2f0', border: '#ffccc7' };
+      return { font: '#fff', bg: '#f5222d', border: '#f5222d' };
     case ButtonTheme.INFO:
     case undefined:
       return { font: 'rgba(0, 0, 0, 0.88)', bg: '#fafafa', border: 'rgb(217, 217, 217)' };
     default:
-      // @ts-expect-error never
-      // eslint-disable-next-line no-case-declarations
-      const _: never = presetColor;
+      presetColor satisfies never;
       return { font: 'rgba(0, 0, 0, 0.88)', bg: '#fafafa', border: 'rgb(217, 217, 217)' };
   }
 }
@@ -46,22 +45,30 @@ export const Button = styled.button<ButtonProps>`
     const defaultColor = getColor();
     const colorInfo = getThemeColorVar({ ...defaultColor, ...$color });
 
-    if ($type === ButtonType.SOLID) {
-      colorInfo['--border-color'] = 'transparent';
-    } else if ($type === ButtonType.OUTLINE) {
+    if ($type === ButtonType.OUTLINE) {
+      colorInfo['--font-color'] = colorInfo['--bg-color'];
       colorInfo['--bg-color'] = 'transparent';
     }
 
     return colorVar2Str(colorInfo);
   }}
 
-  padding: 0.5rem 1rem;
-  font-size: 1.2rem;
-  border-radius: 1.2rem;
+  padding: 0 2rem;
+  height: 3rem;
+  font-size: 1.4rem;
+  border: none;
+  border-radius: var(--radius-button);
   line-height: 1;
   color: var(--font-color);
   background-color: var(--bg-color);
   outline: 0.1rem solid var(--border-color);
   flex-shrink: 0;
   white-space: nowrap;
+  user-select: none;
+  touch-action: none;
+
+  ${(props) => {
+    if (!props.$disabled) return '';
+    return { opacity: 0.5, pointerEvents: 'none' };
+  }}
 `;

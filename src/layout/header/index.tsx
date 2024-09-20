@@ -19,8 +19,8 @@ const HeaderContent = styled(ShadowFlexBox)`
 const BackIcon = styled(IoCaretBack)`
   margin-right: 1rem;
   padding: 1rem;
-  background: var(--color-gray-4);
-  border-radius: 1.2rem;
+  background: var(--color-gray-3);
+  border-radius: var(--radius-button);
 `;
 
 export function Header() {
