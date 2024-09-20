@@ -45,7 +45,7 @@ export function ButtonList(props: ButtonListProps) {
         );
 
         if (to) {
-          return <Link key={idx} to={to} children={button} />;
+          return <Link key={idx} to={to} children={button} onClick={(e) => e.stopPropagation()} />;
         }
         return button;
       })}

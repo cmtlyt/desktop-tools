@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { ButtonTheme, FlexAlign, FlexBox, ShadowFlexBox, Tag, TagProps, TagTheme } from '@/components/base';
 import { DateView } from '@/components/date-view';
@@ -68,7 +69,8 @@ function HandleButtons(props: HandleButtonsProps) {
         {
           text: '删除',
           $presetTheme: ButtonTheme.DANGER,
-          onClick() {
+          onClick(e) {
+            e.stopPropagation();
             console.debug('delete id:', id);
           },
         },
@@ -79,9 +81,10 @@ function HandleButtons(props: HandleButtonsProps) {
 
 export function FlowItem(props: FlowItemProps) {
   const { flow } = props;
+  const navigate = useNavigate();
 
   return (
-    <FlowWrapper key={flow.id}>
+    <FlowWrapper key={flow.id} onClick={() => navigate(`/flow/detail/${flow.id}`)}>
       <HoverExpandBox rightArea={<HandleButtons flow={flow} />}>
         <FlexBox $flex="1" $alignItems={FlexAlign.center}>
           <FlowStatusTag>{flow.status}</FlowStatusTag>
