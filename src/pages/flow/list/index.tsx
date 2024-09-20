@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import { useLoaderData } from 'react-router-dom';
-import { FlexBox, FlexDirection } from '@/components/base';
+import { ButtonTheme, FlexBox, FlexDirection } from '@/components/base';
 import { Flow, FlowStatus } from '@/types/flow';
+import { ButtonList } from '@/components/button-list';
 import { FlowItem } from './flow-item';
 
 const FlowList = styled(FlexBox)`
@@ -49,7 +50,12 @@ export async function loader() {
   };
 }
 
+function ListButtonArea() {
+  return <ButtonList buttons={[{ text: '新建', to: '/flow/editor', $presetTheme: ButtonTheme.PRIMARY }]} />;
+}
+
 export const handle = {
   title: '流水列表',
   crumbLabel: '列表',
+  rightArea: <ListButtonArea />,
 };

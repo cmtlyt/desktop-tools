@@ -12,6 +12,7 @@ type ButtonItem = Parameters<typeof Button>[0] & ButtonItemOtherProps;
 interface ButtonListProps extends ButtonListWrapperProps {
   wrapperProps?: Parameters<typeof ButtonListWrapper>[0];
   buttons: ButtonItem[];
+  className?: string;
 }
 
 interface ButtonListWrapperProps {
@@ -32,10 +33,10 @@ const ButtonListWrapper = styled(FlexBox)<ButtonListWrapperProps>`
 `;
 
 export function ButtonList(props: ButtonListProps) {
-  const { buttons, wrapperProps, $gap = 1 } = props;
+  const { buttons, wrapperProps, $gap = 1, className } = props;
 
   return (
-    <ButtonListWrapper {...wrapperProps} $gap={$gap}>
+    <ButtonListWrapper {...wrapperProps} $gap={$gap} className={className}>
       {buttons.map(({ text, to, ...buttonProps }, idx) => {
         const button = (
           <Button key={idx} {...buttonProps}>

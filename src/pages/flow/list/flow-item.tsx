@@ -1,9 +1,10 @@
 import { memo } from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FlexAlign, FlexBox, ShadowFlexBox, Tag, TagProps, TagTheme } from '@/components/base';
+import { ButtonTheme, FlexAlign, FlexBox, ShadowFlexBox, Tag, TagProps, TagTheme } from '@/components/base';
 import { DateView } from '@/components/date-view';
 import { Flow, FlowStatus } from '@/types/flow';
+import { HoverExpandBox } from '@/components/hover-expand-box';
+import { ButtonList } from '@/components/button-list';
 
 interface FlowItemProps {
   flow: Flow;
@@ -25,11 +26,9 @@ const FlowStatusTag = memo(({ children }: { children: FlowStatus }) => {
   return <FlowTag {...tagProps}>{text}</FlowTag>;
 });
 
-const FlowInfo = styled(FlexBox)`
-  padding: 1rem 0;
-`;
-
 const FlowDate = styled(DateView)`
+  display: flex;
+  align-items: center;
   margin-left: 1rem;
 `;
 
@@ -43,24 +42,54 @@ const FlowTitle = styled.span`
 const FlowWrapper = styled(ShadowFlexBox)`
   padding: 0 2rem 0 1rem;
   margin-bottom: 1rem;
+  height: 4.8rem;
   line-height: 1;
   background: #fff;
   border-radius: 0.8rem;
 `;
 
+interface HandleButtonsProps {
+  flow: Flow;
+}
+
+const HandleButtonList = styled(ButtonList)`
+  padding-left: 1rem;
+`;
+
+function HandleButtons(props: HandleButtonsProps) {
+  const { flow } = props;
+  const { id } = flow;
+
+  return (
+    <HandleButtonList
+      wrapperProps={{ $alignItems: FlexAlign.center }}
+      buttons={[
+        { text: '编辑', $presetTheme: ButtonTheme.PRIMARY, to: `/flow/editor/${id}` },
+        {
+          text: '删除',
+          $presetTheme: ButtonTheme.DANGER,
+          onClick() {
+            console.debug('delete id:', id);
+          },
+        },
+      ]}
+    />
+  );
+}
+
 export function FlowItem(props: FlowItemProps) {
   const { flow } = props;
 
   return (
-    <Link key={flow.id} to={`/flow/detail/${flow.id}`}>
-      <FlowWrapper $alignItems={FlexAlign.center}>
-        <FlowInfo $flex="1" $alignItems={FlexAlign.center}>
+    <FlowWrapper key={flow.id}>
+      <HoverExpandBox rightArea={<HandleButtons flow={flow} />}>
+        <FlexBox $flex="1" $alignItems={FlexAlign.center}>
           <FlowStatusTag>{flow.status}</FlowStatusTag>
           <FlowTag>{flow.account}</FlowTag>
           <FlowTitle>{flow.title}</FlowTitle>
-        </FlowInfo>
+        </FlexBox>
         <FlowDate>{flow.createTime}</FlowDate>
-      </FlowWrapper>
-    </Link>
+      </HoverExpandBox>
+    </FlowWrapper>
   );
 }

@@ -17,7 +17,7 @@ export function Component() {
     setEditorId(data.id);
   }, [setEditorId, data.id]);
 
-  return <div>editor {data.id}</div>;
+  return <div>editor {data.id || '新建'}</div>;
 }
 
 function FlowEditorButtonArea() {
