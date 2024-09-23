@@ -23,6 +23,12 @@ const BackIcon = styled(IoCaretBack)`
   border-radius: var(--radius-button);
 `;
 
+const TitleText = styled.span`
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04rem;
+`;
+
 export function Header() {
   const navigate = useNavigate();
   const matches = useMatches() as UIMatchWithHandle<PageInfo>[];
@@ -37,7 +43,7 @@ export function Header() {
       <HeaderContent $justifyContent={FlexJustify.between}>
         <FlexBox $alignItems={FlexAlign.center}>
           {needBackIcon && <BackIcon onClick={() => navigate(-1)} />}
-          <span>{title}</span>
+          <TitleText>{title}</TitleText>
         </FlexBox>
         <FlexBox $alignItems={FlexAlign.center}>{rightArea}</FlexBox>
       </HeaderContent>
