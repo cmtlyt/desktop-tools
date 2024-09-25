@@ -4,6 +4,7 @@ import { useEditorStore } from './store';
 import { ButtonList } from '@/components/button-list';
 import { ButtonTheme } from '@/components/base';
 import { useLayoutStore } from '@/store';
+import { logger } from '@/utils';
 
 interface LoaderData {
   id: string;
@@ -38,7 +39,7 @@ function FlowEditorButtonArea() {
           text: '保存',
           $presetTheme: ButtonTheme.PRIMARY,
           onClick() {
-            console.debug('save id:', id);
+            logger.debug('save id:', id);
             showMessage({
               type: 'success',
               content: '保存成功',

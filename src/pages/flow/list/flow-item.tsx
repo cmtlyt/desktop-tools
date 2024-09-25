@@ -5,6 +5,7 @@ import { DateView } from '@/components/date-view';
 import { Flow, FlowStatus } from '@/types/flow';
 import { HoverExpandBox } from '@/components/hover-expand-box';
 import { ButtonList } from '@/components/button-list';
+import { logger } from '@/utils';
 
 interface FlowItemProps {
   flow: Flow;
@@ -71,7 +72,7 @@ function HandleButtons(props: HandleButtonsProps) {
           $presetTheme: ButtonTheme.DANGER,
           onClick(e) {
             e.stopPropagation();
-            console.debug('delete id:', id);
+            logger.debug('delete id:', id);
           },
         },
       ]}
