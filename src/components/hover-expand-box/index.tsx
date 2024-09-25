@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useRootFontSize } from '@/hooks';
 import { FlexBox } from '../base';
@@ -40,7 +40,7 @@ export const HoverExpandBox = forwardRef<HoverExpandBoxRef, HoverExpandBoxProps>
   const [sizeInfo, setSizeInfo] = useState<SizeInfo>({ leftAreaWidth: 0, rightAreaWidth: 0 });
   const rootFontSize = useRootFontSize();
 
-  const updateSize = () => {
+  const updateSize = useCallback(() => {
     const info = { leftAreaWidth: 0, rightAreaWidth: 0 };
     if (leftAreaRef.current) {
       info.leftAreaWidth = leftAreaRef.current.offsetWidth / rootFontSize;
@@ -49,9 +49,9 @@ export const HoverExpandBox = forwardRef<HoverExpandBoxRef, HoverExpandBoxProps>
       info.rightAreaWidth = rightAreaRef.current.offsetWidth / rootFontSize;
     }
     setSizeInfo(info);
-  };
+  }, [rootFontSize]);
 
-  useEffect(updateSize, [rootFontSize]);
+  useEffect(updateSize, [rootFontSize, updateSize]);
 
   useImperativeHandle(ref, () => ({ updateSize }));
 

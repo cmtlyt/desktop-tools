@@ -28,7 +28,7 @@ interface LoaderData {
   flows: Flow[];
 }
 
-export async function loader() {
+export async function loader(): Promise<LoaderData> {
   return {
     flows: [
       {
@@ -37,16 +37,50 @@ export async function loader() {
           '流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1',
         status: FlowStatus.PAID,
         account: '流水1账号',
+        amount: (Math.random() * 10).toFixed(2),
         creator: '流水1创建人',
         createTime: '2024/09/18',
+        updateTime: '2024/09/18',
       },
       {
         id: '2',
         title: '流水2',
         status: FlowStatus.INCOME,
         account: '流水2账号',
+        amount: (Math.random() * 10).toFixed(2),
         creator: '流水2创建人',
         createTime: '2024/09/18',
+        updateTime: '2024/09/18',
+      },
+      {
+        id: '3',
+        title: '流水3',
+        status: FlowStatus.CANCELED,
+        account: '流水3账号',
+        amount: (Math.random() * 10).toFixed(2),
+        creator: '流水3创建人',
+        createTime: '2024/09/18',
+        updateTime: '2024/09/18',
+      },
+      {
+        id: '4',
+        title: '流水4',
+        status: FlowStatus.REFUNDED,
+        account: '流水4账号',
+        amount: (Math.random() * 10).toFixed(2),
+        creator: '流水4创建人',
+        createTime: '2024/09/18',
+        updateTime: '2024/09/18',
+      },
+      {
+        id: '5',
+        title: '流水5',
+        status: FlowStatus.UNPAID,
+        account: '流水5账号',
+        amount: (Math.random() * 10).toFixed(2),
+        creator: '流水5创建人',
+        createTime: '2024/09/18',
+        updateTime: '2024/09/18',
       },
     ],
   };

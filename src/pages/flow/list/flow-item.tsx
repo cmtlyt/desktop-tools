@@ -6,6 +6,7 @@ import { Flow, FlowStatus } from '@/types/flow';
 import { HoverExpandBox } from '@/components/hover-expand-box';
 import { ButtonList } from '@/components/button-list';
 import { logger } from '@/utils';
+import { Price } from '@/components/price';
 
 interface FlowItemProps {
   flow: Flow;
@@ -80,6 +81,37 @@ function HandleButtons(props: HandleButtonsProps) {
   );
 }
 
+interface FlowPriceProps {
+  $status: FlowStatus;
+}
+
+function getStatusColor(status: FlowStatus) {
+  switch (status) {
+    case FlowStatus.PAID:
+      return 'var(--color-theme-7)';
+    case FlowStatus.UNPAID:
+      return 'var(--color-gray-6)';
+    case FlowStatus.REFUNDED:
+    case FlowStatus.INCOME:
+      return '#52c41a';
+    case FlowStatus.CANCELED:
+      return 'var(--color-gray-5)';
+    default:
+      status satisfies never;
+  }
+}
+
+const FlowPrice = styled(Price)<FlowPriceProps>`
+  margin-right: 1rem;
+  ${(props) => {
+    const { $status } = props;
+    return {
+      color: getStatusColor($status),
+      textDecoration: $status === FlowStatus.CANCELED ? 'line-through' : 'none',
+    };
+  }}
+`;
+
 export function FlowItem(props: FlowItemProps) {
   const { flow, onClick } = props;
 
@@ -89,6 +121,7 @@ export function FlowItem(props: FlowItemProps) {
         <FlexBox $flex="1" $alignItems={FlexAlign.center}>
           <FlowStatusTag>{flow.status}</FlowStatusTag>
           <FlowTag>{flow.account}</FlowTag>
+          <FlowPrice value={flow.amount} $status={flow.status} showPrefix />
           <FlowTitle>{flow.title}</FlowTitle>
         </FlexBox>
         <FlowDate>{flow.createTime}</FlowDate>

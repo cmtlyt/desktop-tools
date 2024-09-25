@@ -14,9 +14,10 @@ export enum FlowStatus {
 export interface Flow {
   id: string;
   title: string;
-  desctription: string;
+  desctription?: string;
   status: FlowStatus;
   account: string;
+  amount: string;
   creator: string;
   createTime: string;
   updateTime: string;
