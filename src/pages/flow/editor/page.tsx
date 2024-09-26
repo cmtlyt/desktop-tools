@@ -1,24 +1,31 @@
 import { useEffect } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { useEditorStore } from './store';
+import { FlowForm, PageStatus } from '../flow-form';
 import { ButtonList } from '@/components/button-list';
-import { ButtonTheme } from '@/components/base';
+import { ButtonTheme, FlexBox } from '@/components/base';
 import { useLayoutStore } from '@/store';
 import { logger } from '@/utils';
 
 interface LoaderData {
-  id: string;
+  id?: string;
 }
 
 export function Component() {
-  const data = useLoaderData() as LoaderData;
+  const { id } = useLoaderData() as LoaderData;
   const { setEditorId } = useEditorStore((state) => ({ setEditorId: state.setId }));
 
-  useEffect(() => {
-    setEditorId(data.id);
-  }, [setEditorId, data.id]);
+  const pageStatus = id ? PageStatus.EDITOR : PageStatus.CREATE;
 
-  return <div>editor {data.id || '新建'}</div>;
+  useEffect(() => {
+    setEditorId(id || '');
+  }, [setEditorId, id]);
+
+  return (
+    <FlexBox>
+      <FlowForm pageStatus={pageStatus} />
+    </FlexBox>
+  );
 }
 
 function FlowEditorButtonArea() {
@@ -66,7 +73,7 @@ interface LoaderProps {
   };
 }
 
-export async function loader({ params }: LoaderProps) {
+export async function loader({ params }: LoaderProps): Promise<LoaderData> {
   return {
     id: params.id,
   };

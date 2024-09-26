@@ -7,6 +7,7 @@ import { HoverExpandBox } from '@/components/hover-expand-box';
 import { ButtonList } from '@/components/button-list';
 import { logger } from '@/utils';
 import { Price } from '@/components/price';
+import { useFlowStore } from '../store';
 
 interface FlowItemProps {
   flow: Flow;
@@ -62,12 +63,13 @@ const HandleButtonList = styled(ButtonList)`
 function HandleButtons(props: HandleButtonsProps) {
   const { flow } = props;
   const { id } = flow;
+  const setFlow = useFlowStore((state) => state.setFlow);
 
   return (
     <HandleButtonList
       wrapperProps={{ $alignItems: FlexAlign.center }}
       buttons={[
-        { text: '编辑', $presetTheme: ButtonTheme.PRIMARY, to: `/flow/editor/${id}` },
+        { text: '编辑', $presetTheme: ButtonTheme.PRIMARY, to: `/flow/editor/${id}`, onClick: () => setFlow(flow) },
         {
           text: '删除',
           $presetTheme: ButtonTheme.DANGER,

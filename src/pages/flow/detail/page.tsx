@@ -3,22 +3,20 @@ import { useDetailStore } from './store';
 import { useEffect } from 'react';
 import { ButtonList } from '@/components/button-list';
 import { FlowForm, PageStatus } from '../flow-form';
-import { Flow, FlowStatus } from '@/types/flow';
 
 interface LoaderData {
   id: string;
-  flow: Flow;
 }
 
 export function Component() {
-  const { id, flow } = useLoaderData() as LoaderData;
+  const { id } = useLoaderData() as LoaderData;
   const { setDetailId } = useDetailStore((state) => ({ setDetailId: state.setId }));
 
   useEffect(() => {
     setDetailId(id);
   }, [id, setDetailId]);
 
-  return <FlowForm flow={flow} pageStatus={PageStatus.VIEW} />;
+  return <FlowForm pageStatus={PageStatus.VIEW} />;
 }
 
 interface LoaderParams {
@@ -32,17 +30,6 @@ interface Params {
 export async function loader({ params }: LoaderParams): Promise<LoaderData> {
   return {
     id: params.id,
-    flow: {
-      id: params.id,
-      title:
-        '流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1',
-      status: FlowStatus.PAID,
-      account: '流水1账号',
-      amount: (Math.random() * 10).toFixed(2),
-      creator: '流水1创建人',
-      createTime: '2024/09/18',
-      updateTime: '2024/09/18',
-    },
   };
 }
 
