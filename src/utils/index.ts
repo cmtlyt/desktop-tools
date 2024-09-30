@@ -26,11 +26,10 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
     needExposeKind: ['click', 'appear', 'error'],
     logCache: {},
     checkCache(kind: AllKind) {
-      const lastCall = this.logCache[kind];
+      const lastCall = this.logCache[kind] || 0;
       const curNow = getNow();
       this.logCache[kind] = curNow;
-      if (lastCall && curNow - lastCall < 10) return true;
-      return false;
+      return curNow - lastCall < 10;
     },
   },
   onLogBefore(e) {
