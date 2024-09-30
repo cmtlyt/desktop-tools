@@ -3,6 +3,8 @@ import { useDetailStore } from './store';
 import { useEffect } from 'react';
 import { ButtonList } from '@/components/button-list';
 import { FlowForm, PageStatus } from '../flow-form';
+import { AppearBox } from '@/components/appear-box';
+import { logger } from '@/utils';
 
 interface LoaderData {
   id: string;
@@ -16,7 +18,11 @@ export function Component() {
     setDetailId(id);
   }, [id, setDetailId]);
 
-  return <FlowForm pageStatus={PageStatus.VIEW} />;
+  return (
+    <AppearBox onFirstAppear={() => logger.appear('flow-detail', { id })}>
+      <FlowForm pageStatus={PageStatus.VIEW} />
+    </AppearBox>
+  );
 }
 
 interface LoaderParams {

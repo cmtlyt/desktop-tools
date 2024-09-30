@@ -1,10 +1,10 @@
 import { RouteObject } from 'react-router-dom';
-import { basename } from './constant';
+import { BASENAME } from './constant';
 
 const pages = import.meta.glob('../pages/**/page.tsx');
 
 export function getRoutePath(path: string) {
-  return `${basename}/${path}`.replace(/\/+/g, '/').replace(/\/+$/g, '');
+  return `${BASENAME}/${path}`.replace(/\/+/g, '/').replace(/\/+$/g, '');
 }
 
 export function generateRouteConfig(path: string, children?: RouteObject[], pageDir?: string): RouteObject {

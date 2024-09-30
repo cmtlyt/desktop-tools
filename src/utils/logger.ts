@@ -1,4 +1,4 @@
-type Kind = 'info' | 'warn' | 'error' | 'debug' | 'success';
+export type Kind = 'info' | 'warn' | 'error' | 'debug' | 'success';
 
 type LoggerConfigObj = Record<Kind, LoggerConfig>;
 
@@ -18,6 +18,9 @@ interface StyleConfig {
 
 interface LoggerConfig<T = ''> extends StyleConfig {
   kind: Kind | T;
+  inherit?: Kind | T;
+  noOutput?: boolean;
+  needTrace?: boolean;
 }
 
 interface ContentInfo {
@@ -29,22 +32,25 @@ interface ContentInfo {
 interface LogEvent<T> {
   kind: Kind | T;
   messages: unknown[];
+  logConf: LoggerConfig<T>;
   preventDefault: () => void;
 }
 
-interface LoggerOptions<T extends string = ''> {
+type LoggerOptions<T extends string = '', E = unknown> = {
   needTrace?: boolean;
+  noOutput?: boolean;
   logConfig?: Partial<LoggerConfigObj> & { [key in T]: LoggerConfig<T> };
-  onLogBefore?: (event: LogEvent<T>) => void;
-}
+  onLogBefore?: (this: LoggerOptions<T, E>, event: LogEvent<T>) => void;
+} & E;
 
 enum LogThrow {
   PREVENT_DEFAULT = 'cl:logger:preventDefault',
+  NO_OUTPUT = 'cl:logger:noOutput',
 }
 
 const confMap = new WeakMap<object, LoggerConfigObj>();
 
-function generateLoggerConfig(): LoggerConfigObj {
+function generateLoggerConfig(logConfig?: Partial<LoggerConfigObj>): LoggerConfigObj {
   const conf: LoggerConfigObj = {
     info: {
       kind: 'info',
@@ -87,6 +93,17 @@ function generateLoggerConfig(): LoggerConfigObj {
       borderColor: '#389e0d',
     },
   };
+  if (logConfig) {
+    Object.entries(logConfig).forEach(([key, item]) => {
+      const { inherit, ...userConf } = item;
+      if (inherit) {
+        const inheritConf = conf[inherit as Kind];
+        Object.assign(item, { ...inheritConf, ...userConf });
+      }
+      if (key in conf) Object.assign(conf[key as Kind], item);
+      else conf[key as Kind] = item;
+    });
+  }
   return conf;
 }
 
@@ -151,22 +168,36 @@ function getTrace() {
   const stack = new Error().stack;
   if (!stack) return '';
   const lines = stack.split('\n');
-  const line = lines[lines.length - 1];
-  const match = line.match(/at\s\(?(.*)\)?/);
+  const findWrapperIndex = lines.findIndex((line) => line.includes('Proxy')) + 1;
+  if (!findWrapperIndex) return '无法正确读取位置请使用实例调用, 如需解构请使用bind将this指向实例';
+  const line = lines[findWrapperIndex];
+  const match = line.match(/at\s.*?(?:\()(.*?)(?:\))/);
   if (!match) return line;
   return match[1];
 }
 
 function generateMessage(userConfig: LoggerOptions, logConf: LoggerConfig, ...messages: unknown[]): string[] {
-  const { needTrace, onLogBefore } = userConfig;
-  const { kind, tagColor, tagBg, contentColor, contentBg, borderColor, style } = logConf;
+  const { needTrace: globalNeedTrace, noOutput: globalNoOutput, onLogBefore } = userConfig;
+  const {
+    kind,
+    tagColor,
+    tagBg,
+    contentColor,
+    contentBg,
+    borderColor,
+    style,
+    noOutput = globalNoOutput,
+    needTrace = globalNeedTrace,
+  } = logConf;
 
   if (onLogBefore) {
     let preventDefault = false;
-    const event = { kind, messages, preventDefault: () => (preventDefault = true) };
-    onLogBefore?.(event);
+    const event = { kind, messages, logConf, preventDefault: () => (preventDefault = true) };
+    onLogBefore?.call(userConfig, event);
     if (preventDefault) throw LogThrow.PREVENT_DEFAULT;
   }
+
+  if (noOutput) throw LogThrow.NO_OUTPUT;
 
   const tag = `${kind.toUpperCase()}`;
   const contentInfo = getContentInfo(messages);
@@ -184,8 +215,8 @@ function generateMessage(userConfig: LoggerOptions, logConf: LoggerConfig, ...me
 
   if (needTrace) {
     const trace = getTrace();
-    const traceTagStyle = `${tagStyle}margin-top:0.2rem;border-radius:0.4rem 0 0 0.4rem;`;
-    const traceStyle = `${contentStyle}margin-top:0;border-radius:0 0.4rem 0.4rem 0;`;
+    const traceTagStyle = `${tagStyle}margin-top:0.2rem;border-radius:0.4rem 0.4rem 0 0;`;
+    const traceStyle = `${contentStyle}`;
 
     message += `%c\n%cTRACE%c${trace}`;
     styles.push(lineBreakStyle, traceTagStyle, traceStyle);
@@ -197,6 +228,7 @@ function generateMessage(userConfig: LoggerOptions, logConf: LoggerConfig, ...me
 function messageCatch(error: LogThrow) {
   switch (error) {
     case LogThrow.PREVENT_DEFAULT:
+    case LogThrow.NO_OUTPUT:
       break;
     default:
       error satisfies never;
@@ -225,13 +257,12 @@ const handler: ProxyHandler<Logger> = {
   },
 };
 
-export function createLogger<T extends string>(
-  options?: LoggerOptions<T>,
+export function createLogger<T extends string, E = unknown>(
+  options?: LoggerOptions<T, E>,
 ): Logger & Record<T, (...args: unknown[]) => void> {
   const { logConfig } = options || {};
   const userLogConf = { ...options };
-  const conf = generateLoggerConfig();
-  if (logConfig) Object.assign(conf, logConfig);
+  const conf = generateLoggerConfig(logConfig);
   confMap.set(userLogConf, conf);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new Proxy<Logger>(userLogConf as Logger, handler) as any;

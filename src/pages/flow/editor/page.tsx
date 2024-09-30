@@ -5,6 +5,7 @@ import { FlowForm, PageStatus } from '../flow-form';
 import { ButtonList } from '@/components/button-list';
 import { ButtonTheme, FlexBox } from '@/components/base';
 import { useLayoutStore } from '@/store';
+import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 
 interface LoaderData {
@@ -22,9 +23,11 @@ export function Component() {
   }, [setEditorId, id]);
 
   return (
-    <FlexBox>
-      <FlowForm pageStatus={pageStatus} />
-    </FlexBox>
+    <AppearBox onFirstAppear={() => logger.appear('flow-editor', { id, pageStatus })}>
+      <FlexBox>
+        <FlowForm pageStatus={pageStatus} />
+      </FlexBox>
+    </AppearBox>
   );
 }
 
@@ -46,7 +49,7 @@ function FlowEditorButtonArea() {
           text: '保存',
           $presetTheme: ButtonTheme.PRIMARY,
           onClick() {
-            logger.debug('save id:', id);
+            window.logger.todo('save id:', id);
             showMessage({
               type: 'success',
               content: '保存成功',

@@ -6,6 +6,8 @@ import { Flow, FlowStatus } from '@/types/flow';
 import { ButtonList } from '@/components/button-list';
 import { FlowItem } from './flow-item';
 import { useFlowStore } from '../store';
+import { AppearBox } from '@/components/appear-box';
+import { logger } from '@/utils';
 
 const FlowList = styled(FlexBox)`
   padding: 1.8rem;
@@ -23,18 +25,20 @@ export function Component() {
   }, [setFlow]);
 
   return (
-    <FlowList $direction={FlexDirection.column}>
-      {flows.map((flow) => (
-        <FlowItem
-          key={flow.id}
-          flow={flow}
-          onClick={() => {
-            setFlow(flow);
-            navigate(`/flow/detail/${flow.id}`);
-          }}
-        />
-      ))}
-    </FlowList>
+    <AppearBox onFirstAppear={() => logger.appear('flow-list')}>
+      <FlowList $direction={FlexDirection.column}>
+        {flows.map((flow) => (
+          <FlowItem
+            key={flow.id}
+            flow={flow}
+            onClick={() => {
+              setFlow(flow);
+              navigate(`/flow/detail/${flow.id}`);
+            }}
+          />
+        ))}
+      </FlowList>
+    </AppearBox>
   );
 }
 

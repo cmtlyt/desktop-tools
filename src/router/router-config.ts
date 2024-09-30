@@ -1,8 +1,8 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import { generateRouteConfig } from './util';
-import { basename } from './constant';
+import { BASENAME } from './constant';
 
-const routes = [
+export const routes: RouteObject[] = [
   {
     path: '/',
     lazy: () => import('../layout'),
@@ -17,4 +17,4 @@ const routes = [
   },
 ];
 
-export const routerConfig = createBrowserRouter(routes, { basename });
+export const routerConfig = createBrowserRouter(routes, { basename: BASENAME });

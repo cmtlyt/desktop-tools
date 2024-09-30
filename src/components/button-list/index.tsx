@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Link, To } from 'react-router-dom';
 import { Button, FlexBox } from '../base';
+import { logger } from '@/utils';
 
 interface ButtonItemOtherProps {
   text?: React.ReactNode;
@@ -38,14 +39,32 @@ export function ButtonList(props: ButtonListProps) {
   return (
     <ButtonListWrapper {...wrapperProps} $gap={$gap} className={className}>
       {buttons.map(({ text, to, ...buttonProps }, idx) => {
+        const loggerInfo = { text, buttonProps };
+
         const button = (
-          <Button key={idx} {...buttonProps}>
+          <Button
+            key={idx}
+            {...buttonProps}
+            onClickCapture={() => {
+              logger.click({ action: 'button-list-click', ...loggerInfo });
+            }}
+          >
             {text}
           </Button>
         );
 
         if (to) {
-          return <Link key={idx} to={to} children={button} onClick={(e) => e.stopPropagation()} />;
+          return (
+            <Link
+              key={idx}
+              to={to}
+              children={button}
+              onClick={(e) => {
+                e.stopPropagation();
+                logger.click({ action: 'button-list-link-click', ...loggerInfo });
+              }}
+            />
+          );
         }
         return button;
       })}

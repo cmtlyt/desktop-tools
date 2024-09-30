@@ -1,1 +1,1 @@
-export const basename = '/desktop-tools/';
+export const BASENAME = '/desktop-tools/';

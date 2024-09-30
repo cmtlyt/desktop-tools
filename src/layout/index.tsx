@@ -4,10 +4,12 @@ import { Header } from './header';
 import { Footer } from './footer';
 import { Aside } from './aside';
 import { Message } from './message';
+import { SyncPageInfo } from './sync-page-info';
 
 export function Component() {
   return (
     <>
+      <SyncPageInfo />
       <Message />
       <FlexBox $flex="1">
         <Aside />
