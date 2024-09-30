@@ -218,8 +218,8 @@ function generateMessage(userConfig: LoggerOptions, logConf: LoggerConfig, ...me
     const traceTagStyle = `${tagStyle}margin-top:0.2rem;border-radius:0.4rem 0.4rem 0 0;`;
     const traceStyle = `${contentStyle}`;
 
-    message += `%c\n%cTRACE%c${trace}`;
-    styles.push(lineBreakStyle, traceTagStyle, traceStyle);
+    message += `%c\n%cTRACE%c\n%c${trace}`;
+    styles.push(lineBreakStyle, traceTagStyle, lineBreakStyle, traceStyle);
   }
 
   return [message, ...styles];
