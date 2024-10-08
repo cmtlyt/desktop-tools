@@ -1,8 +1,8 @@
+import { useEffect, useMemo } from 'react';
+import { useMatches } from 'react-router-dom';
 import { PAGE_INFO_KEY } from '@/constant/session-key';
 import { UIMatchWithHandle } from '@/types';
 import { filterForJson } from '@/utils';
-import { useEffect, useMemo } from 'react';
-import { useMatches } from 'react-router-dom';
 
 export function SyncPageInfo() {
   const matches = useMatches() as UIMatchWithHandle<unknown>[];

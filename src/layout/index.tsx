@@ -1,10 +1,10 @@
-import { FlexBox, FlexDirection } from '@/components/base';
 import { Outlet } from 'react-router-dom';
 import { Header } from './header';
 import { Footer } from './footer';
 import { Aside } from './aside';
 import { Message } from './message';
-import { SyncPageInfo } from './sync-page-info';
+import { FlexBox, FlexDirection } from '@/components/base';
+import { SyncPageInfo } from '@/components/sync-page-info';
 
 export function Component() {
   return (
