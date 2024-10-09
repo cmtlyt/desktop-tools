@@ -1,7 +1,7 @@
-import { createLogger, Kind } from './logger';
-import { isProd } from '@/constant';
-import { getPageInfo } from './get-page-info';
 import { getNow } from '@cmtlyt/base';
+import { createLogger, Kind } from './logger';
+import { getPageInfo } from '@/components/sync-page-info';
+import { isProd } from '@/constant';
 
 type ExtendKind = 'click' | 'appear' | 'todo';
 type AllKind = Kind | ExtendKind;
