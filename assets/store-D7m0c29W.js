@@ -1,3 +1,3 @@
-import{L as n,M as f}from"./index-ChyLS-Vg.js";import{d as k,a as x,h as F,l as u}from"./index-SEmrXPO9.js";import{c as d}from"./index-CrQEDCOW.js";const w=k(x)`
+import{L as n,M as f}from"./index-D9eb_RBt.js";import{d as k,a as x,h as F,l as u}from"./index-CKGvXkHX.js";import{c as d}from"./index-_ZNhDi1j.js";const w=k(x)`
   gap: ${r=>{const{$gap:t}=r;if(typeof t=="string"){const o=parseFloat(t);return!isNaN(o)&&String(o)===t?`${t}rem`:t}return`${t}rem`}};
 `;function h(r){const{buttons:t,wrapperProps:o,$gap:p=1,className:m}=r;return n.jsx(w,{...o,$gap:p,className:m,children:t.map(({text:s,to:e,...i},a)=>{const c={text:s,buttonProps:i},l=n.jsx(F,{...i,onClickCapture:()=>{u.click({action:"button-list-click",...c})},children:s},a);return e?n.jsx(f,{to:e,children:l,onClick:g=>{g.stopPropagation(),u.click({action:"button-list-link-click",...c})}},a):l})})}const j=d(r=>({currentFlow:void 0,setFlow:t=>r({currentFlow:t})}));export{h as B,j as u};
