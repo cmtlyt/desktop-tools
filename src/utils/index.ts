@@ -9,6 +9,7 @@ type AllKind = Kind | ExtendKind;
 interface LoggerExtendOptions {
   store: {
     needExposeKind: AllKind[];
+    printToDebug: AllKind[];
     logCache: Partial<Record<AllKind, number>>;
     checkCache(kind: AllKind): boolean;
   };
@@ -24,6 +25,7 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
   },
   store: {
     needExposeKind: ['click', 'appear', 'error'],
+    printToDebug: ['click', 'appear', 'debug'],
     logCache: {},
     checkCache(kind: AllKind) {
       const lastCall = this.logCache[kind] || 0;
@@ -32,8 +34,14 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
       return curNow - lastCall < 10;
     },
   },
-  logfunc(...args) {
-    console.log(...args);
+  // 生产环境下不在控制台输出
+  printFunc: isProd ? () => {} : null,
+  getPrintFunc(kind) {
+    const { printToDebug } = this.store;
+    if (printToDebug.includes(kind)) {
+      return (...args) => console.debug(...args);
+    }
+    return (...args) => console.log(...args);
   },
   onLogBefore(e) {
     const { needExposeKind } = this.store;

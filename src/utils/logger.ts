@@ -40,7 +40,9 @@ type LoggerOptions<T extends string = '', E = unknown> = {
   needTrace?: boolean;
   noOutput?: boolean;
   logConfig?: Partial<LoggerConfigObj> & { [key in T]: LoggerConfig<T> };
-  logfunc?: (...args: unknown[]) => void;
+  /** 该配置会覆盖 getPrintFunc 配置, 推荐优先使用 getPrintFunc */
+  printFunc?: ((...args: unknown[]) => void) | null;
+  getPrintFunc?: (this: LoggerOptions<T, E>, kind: Kind | T) => ((...args: unknown[]) => void) | null;
   onLogBefore?: (this: LoggerOptions<T, E>, event: LogEvent<T>) => void;
 } & E;
 
@@ -242,7 +244,9 @@ const handler: ProxyHandler<Logger> = {
     const { userOption = {}, conf: curConf } = confMap.get(target) || {};
     if (!curConf) throw new Error('illegal call');
 
-    const { logfunc = console.log } = userOption || {};
+    const { getPrintFunc = () => console.log, printFunc } = userOption || {};
+
+    const finishedPrintFunc = printFunc || getPrintFunc.call(target as LoggerOptions, key);
 
     if (!(key in curConf)) {
       console.warn(`not found [${key}] logConfig, please add logConfig, currently using log replacement`);
@@ -252,7 +256,7 @@ const handler: ProxyHandler<Logger> = {
     return (...args: unknown[]) => {
       try {
         const message = generateMessage(target as LoggerOptions, logConf, ...args);
-        logfunc(...message);
+        finishedPrintFunc?.(...message);
       } catch (e) {
         messageCatch(e as LogThrow);
       }
