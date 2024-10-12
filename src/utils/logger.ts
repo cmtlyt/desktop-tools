@@ -40,6 +40,7 @@ type LoggerOptions<T extends string = '', E = unknown> = {
   needTrace?: boolean;
   noOutput?: boolean;
   logConfig?: Partial<LoggerConfigObj> & { [key in T]: LoggerConfig<T> };
+  logfunc?: (...args: unknown[]) => void;
   onLogBefore?: (this: LoggerOptions<T, E>, event: LogEvent<T>) => void;
 } & E;
 
@@ -48,7 +49,7 @@ enum LogThrow {
   NO_OUTPUT = 'cl:logger:noOutput',
 }
 
-const confMap = new WeakMap<object, LoggerConfigObj>();
+const confMap = new WeakMap<object, { userOption: LoggerOptions; conf: LoggerConfigObj }>();
 
 function generateLoggerConfig(logConfig?: Partial<LoggerConfigObj>): LoggerConfigObj {
   const conf: LoggerConfigObj = {
@@ -238,18 +239,20 @@ function messageCatch(error: LogThrow) {
 
 const handler: ProxyHandler<Logger> = {
   get(target, key: Kind) {
-    const conf = confMap.get(target);
-    if (!conf) throw new Error('illegal call');
+    const { userOption = {}, conf: curConf } = confMap.get(target) || {};
+    if (!curConf) throw new Error('illegal call');
 
-    if (!(key in conf)) {
+    const { logfunc = console.log } = userOption || {};
+
+    if (!(key in curConf)) {
       console.warn(`not found [${key}] logConfig, please add logConfig, currently using log replacement`);
     }
-    const logConf = conf[key] || { ...conf['info'], kind: key };
+    const logConf = curConf[key] || { ...curConf['info'], kind: key };
 
     return (...args: unknown[]) => {
       try {
         const message = generateMessage(target as LoggerOptions, logConf, ...args);
-        console.log(...message);
+        logfunc(...message);
       } catch (e) {
         messageCatch(e as LogThrow);
       }
@@ -263,7 +266,7 @@ export function createLogger<T extends string, E = unknown>(
   const { logConfig } = options || {};
   const userLogConf = { ...options };
   const conf = generateLoggerConfig(logConfig);
-  confMap.set(userLogConf, conf);
+  confMap.set(userLogConf, { userOption: userLogConf as LoggerOptions, conf });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new Proxy<Logger>(userLogConf as Logger, handler) as any;
 }

@@ -32,6 +32,9 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
       return curNow - lastCall < 10;
     },
   },
+  logfunc(...args) {
+    console.log(...args);
+  },
   onLogBefore(e) {
     const { needExposeKind } = this.store;
     const { kind } = e;
