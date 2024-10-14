@@ -120,10 +120,20 @@ function hasDoubleByteChar(char: string) {
   return /[^\x00-\xFF]/.test(char);
 }
 
+function onelineFormat(content: string) {
+  return content.replace(/\s*?\n\s*/g, ' ');
+}
+
 function formatMapData(source: Map<unknown, unknown>): string {
   const data = [...source];
-  const content = data.map(([key, value]) => `{ ${formatContent(key)} => ${formatContent(value)} }`);
+  const content = data.map(([key, value]) => onelineFormat(`{ ${formatContent(key)} => ${formatContent(value)} },`));
   return `Map(${content.length}) [\n  ${[...content].join('\n  ')}\n]`;
+}
+
+function formatSetData(source: Set<unknown>): string {
+  const data = [...source];
+  const content = data.map((item) => formatContent(item)).map((item) => `  ${onelineFormat(item)},\n`);
+  return `Set(${content.length}) {\n${content.join('')}}`;
 }
 
 const formatContent = (() => {
@@ -132,7 +142,7 @@ const formatContent = (() => {
   return (content: unknown): string => {
     if (usingString.includes(typeof content)) return String(content);
     if (Array.isArray(content)) return `[${content.join(', ')}]`;
-    if (content instanceof Set) return `Set(${content.size}) {${[...content].join(', ')}}`;
+    if (content instanceof Set) return formatSetData(content);
     if (content instanceof Map) return formatMapData(content);
     if (content instanceof Error) return content.stack || content.message;
     return JSON.stringify(content, null, 2);
