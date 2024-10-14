@@ -120,9 +120,28 @@ function hasDoubleByteChar(char: string) {
   return /[^\x00-\xFF]/.test(char);
 }
 
+function formatMapData(source: Map<unknown, unknown>): string {
+  const data = [...source];
+  const content = data.map(([key, value]) => `{ ${formatContent(key)} => ${formatContent(value)} }`);
+  return `Map(${content.length}) [\n  ${[...content].join('\n  ')}\n]`;
+}
+
+const formatContent = (() => {
+  const usingString = ['function', 'number', 'boolean', 'string', 'symbol', 'undefined'];
+
+  return (content: unknown): string => {
+    if (usingString.includes(typeof content)) return String(content);
+    if (Array.isArray(content)) return `[${content.join(', ')}]`;
+    if (content instanceof Set) return `Set(${content.size}) {${[...content].join(', ')}}`;
+    if (content instanceof Map) return formatMapData(content);
+    if (content instanceof Error) return content.stack || content.message;
+    return JSON.stringify(content);
+  };
+})();
+
 function getContentInfo(args: unknown[]): ContentInfo[] {
   return args
-    .map((item) => (typeof item === 'object' ? JSON.stringify(item, null, 2) : item))
+    .map(formatContent)
     .join(' ')
     .split('\n')
     .map((text) => {
