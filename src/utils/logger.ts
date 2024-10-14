@@ -135,7 +135,7 @@ const formatContent = (() => {
     if (content instanceof Set) return `Set(${content.size}) {${[...content].join(', ')}}`;
     if (content instanceof Map) return formatMapData(content);
     if (content instanceof Error) return content.stack || content.message;
-    return JSON.stringify(content);
+    return JSON.stringify(content, null, 2);
   };
 })();
 
