@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import { useLoaderData, useNavigate } from 'react-router-dom';
+import { FlowItem } from './flow-item';
+import { useFlowStoreSlice } from '../store';
 import { ButtonTheme, FlexBox, FlexDirection } from '@/components/base';
 import { Flow, FlowStatus } from '@/types/flow';
 import { ButtonList } from '@/components/button-list';
-import { FlowItem } from './flow-item';
-import { useFlowStore } from '../store';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 
@@ -15,7 +15,7 @@ const FlowList = styled(FlexBox)`
 
 export function Component() {
   const loaderData = useLoaderData() as LoaderData;
-  const setFlow = useFlowStore((state) => state.setFlow);
+  const { setFlow } = useFlowStoreSlice('setFlow');
   const { flows } = loaderData;
 
   const navigate = useNavigate();

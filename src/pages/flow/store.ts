@@ -1,5 +1,7 @@
-import { Flow } from '@/types/flow';
 import { create } from 'zustand';
+import { useSelector } from '@/hooks/use-selector';
+import { Many } from '@/types';
+import { Flow } from '@/types/flow';
 
 interface FlowStoreState {
   currentFlow?: Flow;
@@ -14,3 +16,9 @@ export const useFlowStore = create<FlowStoreState & FlowStoreHandlers>((set) => 
 
   setFlow: (flow) => set({ currentFlow: flow }),
 }));
+
+type StoreKeys = Many<keyof (FlowStoreState & FlowStoreHandlers)>;
+
+export const useFlowStoreSlice = (keys: StoreKeys) => {
+  return useFlowStore(useSelector(keys));
+};

@@ -46,8 +46,8 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
   onLogBefore(e) {
     const { needExposeKind } = this.store;
     const { kind } = e;
-    // 排除页面短时间内多次渲染造成的日志重复, 也有一定几率存在日志丢失的情况
-    if (this.store.checkCache(kind)) {
+    // 开发环境下, 排除 react 严格模式的重复渲染输出
+    if (!isProd && this.store.checkCache(kind)) {
       e.preventDefault();
       return;
     }
@@ -66,7 +66,7 @@ export { logger, getPageInfo };
 export * from './filter';
 
 window.logger = {
-  debug: logger.debug.bind(logger),
-  info: logger.info.bind(logger),
-  todo: logger.todo.bind(logger),
+  debug: logger.debug,
+  info: logger.info,
+  todo: logger.todo,
 };

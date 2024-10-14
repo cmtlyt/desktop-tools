@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { isUndef } from '@cmtlyt/base';
-import { useFlowStore } from './store';
-import { useLayoutStore } from '@/store';
+import { useFlowStoreSlice } from './store';
+import { useLayoutStoreSlice } from '@/store';
 import { logger } from '@/utils';
 
 export enum PageStatus {
@@ -16,8 +16,8 @@ interface FlowFormProps {
 
 export function FlowForm(props: FlowFormProps) {
   const { pageStatus } = props;
-  const { flow } = useFlowStore((state) => ({ flow: state.currentFlow }));
-  const { showMessage } = useLayoutStore((store) => ({ showMessage: store.showMessage }));
+  const { currentFlow: flow } = useFlowStoreSlice('currentFlow');
+  const { showMessage } = useLayoutStoreSlice('showMessage');
 
   useEffect(() => {
     if (isUndef(flow) && pageStatus !== PageStatus.CREATE) {

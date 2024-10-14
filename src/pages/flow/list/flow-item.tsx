@@ -1,12 +1,12 @@
 import { memo } from 'react';
 import styled from 'styled-components';
+import { useFlowStoreSlice } from '../store';
 import { ButtonTheme, FlexAlign, FlexBox, ShadowFlexBox, Tag, TagProps, TagTheme } from '@/components/base';
 import { DateView } from '@/components/date-view';
 import { Flow, FlowStatus } from '@/types/flow';
 import { HoverExpandBox } from '@/components/hover-expand-box';
 import { ButtonList } from '@/components/button-list';
 import { Price } from '@/components/price';
-import { useFlowStore } from '../store';
 
 interface FlowItemProps {
   flow: Flow;
@@ -62,7 +62,7 @@ const HandleButtonList = styled(ButtonList)`
 function HandleButtons(props: HandleButtonsProps) {
   const { flow } = props;
   const { id } = flow;
-  const setFlow = useFlowStore((state) => state.setFlow);
+  const { setFlow } = useFlowStoreSlice('setFlow');
 
   return (
     <HandleButtonList

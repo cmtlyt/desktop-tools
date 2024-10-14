@@ -11,3 +11,5 @@ export type RemovePrefix<T, P extends string> = {
 export interface ApplyStyle {
   $style?: React.CSSProperties;
 }
+
+export type Many<T> = T | readonly T[];

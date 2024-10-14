@@ -6,6 +6,7 @@ import { logger } from '@/utils';
 interface ButtonItemOtherProps {
   text?: React.ReactNode;
   to?: To;
+  action?: string;
 }
 
 type ButtonItem = Parameters<typeof Button>[0] & ButtonItemOtherProps;
@@ -38,15 +39,16 @@ export function ButtonList(props: ButtonListProps) {
 
   return (
     <ButtonListWrapper {...wrapperProps} $gap={$gap} className={className}>
-      {buttons.map(({ text, to, ...buttonProps }, idx) => {
+      {buttons.map(({ action, text, to, onClick, ...buttonProps }, idx) => {
         const loggerInfo = { text, buttonProps };
 
         const button = (
           <Button
             key={idx}
             {...buttonProps}
-            onClickCapture={() => {
-              logger.click({ action: 'button-list-click', ...loggerInfo });
+            onClick={(e) => {
+              if (!to) logger.click({ action: action || 'button-list-click', ...loggerInfo });
+              onClick?.(e);
             }}
           >
             {text}
@@ -61,7 +63,7 @@ export function ButtonList(props: ButtonListProps) {
               children={button}
               onClick={(e) => {
                 e.stopPropagation();
-                logger.click({ action: 'button-list-link-click', ...loggerInfo });
+                logger.click({ action: action || 'button-list-link-click', ...loggerInfo });
               }}
             />
           );

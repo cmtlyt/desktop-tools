@@ -240,7 +240,7 @@ function messageCatch(error: LogThrow) {
 }
 
 const handler: ProxyHandler<Logger> = {
-  get(target, key: Kind) {
+  get(target, key: Kind, receiver) {
     const { userOption = {}, conf: curConf } = confMap.get(target) || {};
     if (!curConf) throw new Error('illegal call');
 
@@ -252,15 +252,14 @@ const handler: ProxyHandler<Logger> = {
       console.warn(`not found [${key}] logConfig, please add logConfig, currently using log replacement`);
     }
     const logConf = curConf[key] || { ...curConf['info'], kind: key };
-
-    return (...args: unknown[]) => {
+    return ((...args: unknown[]) => {
       try {
         const message = generateMessage(target as LoggerOptions, logConf, ...args);
         finishedPrintFunc?.(...message);
       } catch (e) {
         messageCatch(e as LogThrow);
       }
-    };
+    }).bind(receiver);
   },
 };
 

@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router-dom';
-import { useDetailStore } from './store';
+import { useDetailStoreSlice } from './store';
 import { useEffect } from 'react';
 import { ButtonList } from '@/components/button-list';
 import { FlowForm, PageStatus } from '../flow-form';
@@ -12,7 +12,7 @@ interface LoaderData {
 
 export function Component() {
   const { id } = useLoaderData() as LoaderData;
-  const { setDetailId } = useDetailStore((state) => ({ setDetailId: state.setId }));
+  const { setId: setDetailId } = useDetailStoreSlice('setId');
 
   useEffect(() => {
     setDetailId(id);
@@ -40,7 +40,7 @@ export async function loader({ params }: LoaderParams): Promise<LoaderData> {
 }
 
 function FlowDetailButtonArea() {
-  const { id } = useDetailStore((state) => ({ id: state.id }));
+  const { id } = useDetailStoreSlice('id');
 
   return <ButtonList buttons={[{ text: '编辑', to: `/flow/editor/${id}` }]} />;
 }

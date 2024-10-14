@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { useEditorStore } from './store';
+import { useEditorStoreSlice } from './store';
 import { FlowForm, PageStatus } from '../flow-form';
 import { ButtonList } from '@/components/button-list';
 import { ButtonTheme, FlexBox } from '@/components/base';
-import { useLayoutStore } from '@/store';
+import { useLayoutStoreSlice } from '@/store';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 
@@ -14,9 +14,11 @@ interface LoaderData {
 
 export function Component() {
   const { id } = useLoaderData() as LoaderData;
-  const { setEditorId } = useEditorStore((state) => ({ setEditorId: state.setId }));
+  const { setId: setEditorId } = useEditorStoreSlice('setId');
 
   const pageStatus = id ? PageStatus.EDITOR : PageStatus.CREATE;
+
+  window.logger.todo('test');
 
   useEffect(() => {
     setEditorId(id || '');
@@ -32,8 +34,8 @@ export function Component() {
 }
 
 function FlowEditorButtonArea() {
-  const { id } = useEditorStore((state) => ({ id: state.id }));
-  const { showMessage } = useLayoutStore((state) => ({ showMessage: state.showMessage }));
+  const { id } = useEditorStoreSlice('id');
+  const { showMessage } = useLayoutStoreSlice('showMessage');
   const navigate = useNavigate();
 
   return (

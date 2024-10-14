@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { useSelector } from '@/hooks/use-selector';
+import { Many } from '@/types';
 
 interface EditorStoreState {
   id: string;
@@ -13,3 +15,9 @@ export const useEditorStore = create<EditorStoreState & EditorStoreHandlers>((se
 
   setId: (id: string) => set({ id }),
 }));
+
+type StoreKeys = Many<keyof (EditorStoreState & EditorStoreHandlers)>;
+
+export const useEditorStoreSlice = (keys: StoreKeys) => {
+  return useEditorStore(useSelector(keys));
+};

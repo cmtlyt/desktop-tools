@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { useSelector } from '@/hooks/use-selector';
+import { Many } from '@/types';
 
 interface DetailStoreState {
   id: string;
@@ -13,3 +15,9 @@ export const useDetailStore = create<DetailStoreState & DetailStoreHandlers>((se
 
   setId: (id: string) => set({ id }),
 }));
+
+type StoreKeys = Many<keyof (DetailStoreState & DetailStoreHandlers)>;
+
+export const useDetailStoreSlice = (keys: StoreKeys) => {
+  return useDetailStore(useSelector(keys));
+};
