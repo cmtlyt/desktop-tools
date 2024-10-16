@@ -141,11 +141,14 @@ const formatContent = (() => {
 
   return (content: unknown): string => {
     if (usingString.includes(typeof content)) return String(content);
-    if (Array.isArray(content)) return `[${content.join(', ')}]`;
     if (content instanceof Set) return formatSetData(content);
     if (content instanceof Map) return formatMapData(content);
     if (content instanceof Error) return content.stack || content.message;
-    return JSON.stringify(content, null, 2);
+    try {
+      return JSON.stringify(content, null, 2);
+    } catch {
+      return String(content);
+    }
   };
 })();
 

@@ -1,4 +1,3 @@
-import { getNow } from '@cmtlyt/base';
 import { createLogger, Kind } from './logger';
 import { getPageInfo } from '@/components/sync-page-info';
 import { isProd } from '@/constant';
@@ -10,8 +9,6 @@ interface LoggerExtendOptions {
   store: {
     needExposeKind: AllKind[];
     printToDebug: AllKind[];
-    logCache: Partial<Record<AllKind, number>>;
-    checkCache(kind: AllKind): boolean;
   };
 }
 
@@ -26,13 +23,6 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
   store: {
     needExposeKind: ['click', 'appear', 'error'],
     printToDebug: ['click', 'appear', 'debug'],
-    logCache: {},
-    checkCache(kind: AllKind) {
-      const lastCall = this.logCache[kind] || 0;
-      const curNow = getNow();
-      this.logCache[kind] = curNow;
-      return curNow - lastCall < 10;
-    },
   },
   // 生产环境下不在控制台输出
   printFunc: isProd ? () => {} : null,
@@ -46,11 +36,6 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
   onLogBefore(e) {
     const { needExposeKind } = this.store;
     const { kind } = e;
-    // 开发环境下, 排除 react 严格模式的重复渲染输出
-    if (!isProd && this.store.checkCache(kind)) {
-      e.preventDefault();
-      return;
-    }
     if (needExposeKind.includes(kind)) {
       const pageInfo = getPageInfo();
       e.messages.push(pageInfo);

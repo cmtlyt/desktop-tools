@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { IoCaretBack } from 'react-icons/io5';
 import { FlexAlign, FlexBox, FlexJustify, ShadowFlexBox } from '@/components/base';
 import { UIMatchWithHandle } from '@/types';
+import { AppearBox } from '@/components/appear-box';
+import { logger } from '@/utils';
 
 interface PageInfo {
   title?: string;
@@ -42,7 +44,16 @@ export function Header() {
     <header>
       <HeaderContent $justifyContent={FlexJustify.between}>
         <FlexBox $alignItems={FlexAlign.center}>
-          {needBackIcon && <BackIcon onClick={() => navigate(-1)} />}
+          {needBackIcon && (
+            <AppearBox onFirstAppear={() => logger.appear('header-back-icon')}>
+              <BackIcon
+                onClick={() => {
+                  logger.click('header-back-icon');
+                  navigate(-1);
+                }}
+              />
+            </AppearBox>
+          )}
           <TitleText>{title}</TitleText>
         </FlexBox>
         <FlexBox $alignItems={FlexAlign.center}>{rightArea}</FlexBox>

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { propsHandler } from './util';
+import { formatSize } from '@/hooks/use-format-font-size';
 
 export enum FlexDirection {
   row = 'row',
@@ -35,17 +36,21 @@ interface FlexBoxProps {
   $wrap?: FlexWrap;
   $justifyItems?: FlexJustify;
   $alignContent?: FlexAlign;
+  $gap?: string | number;
   children?: React.ReactNode;
 }
 
 const needProps = ['$flex', '$justifyContent', '$alignItems', '$justifyItems', '$alignContent'];
 
 function generateFlexSheet(props: FlexBoxProps) {
-  const { $direction: direction, $wrap: wrap, ...otherProps } = props;
+  const { $direction: direction, $wrap: wrap, $gap = 0, ...otherProps } = props;
+
+  const gap = formatSize($gap);
 
   return {
     flexDirection: direction,
     flexWrap: wrap,
+    gap,
     ...propsHandler(otherProps, [], needProps),
   };
 }

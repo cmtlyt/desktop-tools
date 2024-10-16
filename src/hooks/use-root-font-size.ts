@@ -23,3 +23,5 @@ export function useRootFontSize() {
 
   return fontSize;
 }
+
+export { getSize as getRootSize };

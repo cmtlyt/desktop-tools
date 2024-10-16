@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useFlowStoreSlice } from '../store';
 import { ButtonTheme, FlexAlign, FlexBox, ShadowFlexBox, Tag, TagProps, TagTheme } from '@/components/base';
 import { DateView } from '@/components/date-view';
-import { Flow, FlowStatus } from '@/types/flow';
+import { AccountType, Flow, FlowCategory, FlowStatus } from '@/types/flow';
 import { HoverExpandBox } from '@/components/hover-expand-box';
 import { ButtonList } from '@/components/button-list';
 import { Price } from '@/components/price';
@@ -27,6 +27,38 @@ const FlowStatusTag = memo(({ children }: { children: FlowStatus }) => {
   }[children];
 
   return <FlowTag {...tagProps}>{text}</FlowTag>;
+});
+
+const FlowAccount = memo(({ children }: { children: AccountType }) => {
+  const name = {
+    [AccountType.ALIPAY]: '支付宝',
+    [AccountType.WECHAT]: '微信',
+    [AccountType.BANK_CARD]: '银行卡',
+    [AccountType.CASH]: '现金',
+    [AccountType.HUABEI]: '花呗',
+    [AccountType.XIAN_YONG_HOU_FU]: '先用后付',
+  }[children];
+  return <FlowTag>{name}</FlowTag>;
+});
+
+const FlowCategoryTag = memo(({ children }: { children: FlowCategory }) => {
+  const name = {
+    [FlowCategory.CATERING]: '餐饮',
+    [FlowCategory.DEBIT]: '借记',
+    [FlowCategory.EDUCATION]: '教育',
+    [FlowCategory.ENTERTAINMENT]: '娱乐',
+    [FlowCategory.INCOME]: '收入',
+    [FlowCategory.MEDICAL]: '医疗',
+    [FlowCategory.LIFE]: '生活',
+    [FlowCategory.NET_SHOPPING]: '网购',
+    [FlowCategory.PAY]: '支出',
+    [FlowCategory.REFUND]: '退款',
+    [FlowCategory.SALARY]: '工资',
+    [FlowCategory.SHOPPING]: '购物',
+    [FlowCategory.TRANSFER]: '转账',
+    [FlowCategory.TRAVEL]: '差旅',
+  }[children];
+  return <FlowTag>{name}</FlowTag>;
 });
 
 const FlowDate = styled(DateView)`
@@ -121,7 +153,8 @@ export function FlowItem(props: FlowItemProps) {
       <HoverExpandBox rightArea={<HandleButtons flow={flow} />}>
         <FlexBox $flex="1" $alignItems={FlexAlign.center}>
           <FlowStatusTag>{flow.status}</FlowStatusTag>
-          <FlowTag>{flow.account}</FlowTag>
+          <FlowAccount>{flow.account}</FlowAccount>
+          <FlowCategoryTag>{flow.category}</FlowCategoryTag>
           <FlowPrice value={flow.amount} $status={flow.status} showPrefix />
           <FlowTitle>{flow.title}</FlowTitle>
         </FlexBox>

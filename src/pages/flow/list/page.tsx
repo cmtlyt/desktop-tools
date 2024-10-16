@@ -4,7 +4,7 @@ import { useLoaderData, useNavigate } from 'react-router-dom';
 import { FlowItem } from './flow-item';
 import { useFlowStoreSlice } from '../store';
 import { ButtonTheme, FlexBox, FlexDirection } from '@/components/base';
-import { Flow, FlowStatus } from '@/types/flow';
+import { AccountType, Flow, FlowCategory, FlowStatus } from '@/types/flow';
 import { ButtonList } from '@/components/button-list';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
@@ -54,18 +54,20 @@ export async function loader(): Promise<LoaderData> {
         title:
           '流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1流水1',
         status: FlowStatus.PAID,
-        account: '流水1账号',
+        account: AccountType.ALIPAY,
+        category: FlowCategory.CATERING,
         amount: (Math.random() * 10).toFixed(2),
         creator: '流水1创建人',
         createTime: '2024/09/18',
         updateTime: '2024/09/18',
-        amountDistributions: [],
+        amountDistributions: [{ account: AccountType.ALIPAY, amount: (Math.random() * 10).toFixed(2) }],
       },
       {
         id: '2',
         title: '流水2',
         status: FlowStatus.INCOME,
-        account: '流水2账号',
+        account: AccountType.ALIPAY,
+        category: FlowCategory.CATERING,
         amount: (Math.random() * 10).toFixed(2),
         creator: '流水2创建人',
         createTime: '2024/09/18',
@@ -76,7 +78,8 @@ export async function loader(): Promise<LoaderData> {
         id: '3',
         title: '流水3',
         status: FlowStatus.CANCELED,
-        account: '流水3账号',
+        account: AccountType.ALIPAY,
+        category: FlowCategory.CATERING,
         amount: (Math.random() * 10).toFixed(2),
         creator: '流水3创建人',
         createTime: '2024/09/18',
@@ -87,7 +90,8 @@ export async function loader(): Promise<LoaderData> {
         id: '4',
         title: '流水4',
         status: FlowStatus.REFUNDED,
-        account: '流水4账号',
+        account: AccountType.ALIPAY,
+        category: FlowCategory.CATERING,
         amount: (Math.random() * 10).toFixed(2),
         creator: '流水4创建人',
         createTime: '2024/09/18',
@@ -98,7 +102,8 @@ export async function loader(): Promise<LoaderData> {
         id: '5',
         title: '流水5',
         status: FlowStatus.UNPAID,
-        account: '流水5账号',
+        account: AccountType.ALIPAY,
+        category: FlowCategory.CATERING,
         amount: (Math.random() * 10).toFixed(2),
         creator: '流水5创建人',
         createTime: '2024/09/18',

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { isNaN } from '@cmtlyt/base';
-import { useRootFontSize } from './use-root-font-size';
+import { getRootSize, useRootFontSize } from './use-root-font-size';
 
 function getSize(fontSize: string | number, rootFontSize: number) {
   if (typeof fontSize === 'string') {
@@ -21,4 +21,9 @@ export function useFormatFontSize(fontSize: string | number) {
   }, [fontSize, rootFontSize]);
 
   return size;
+}
+
+export function formatSize(size: string | number) {
+  const rootSize = getRootSize();
+  return getSize(size, rootSize);
 }
