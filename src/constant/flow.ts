@@ -1,4 +1,5 @@
 import { AccountType, FlowCategory, FlowStatus } from '@/types/flow';
+import { TObject } from '@cmtlyt/base';
 
 export interface OptionItem {
   label: string;
@@ -42,3 +43,16 @@ export const ACCOUNT_TYPE = [
   { label: '花呗', value: AccountType.HUABEI, alias: 'huabei' },
   { label: '先用后付', value: AccountType.XIAN_YONG_HOU_FU, alias: 'xianyonghoufu' },
 ];
+
+function generateLabelMap<T>(list: OptionItem[]) {
+  return list.reduce((dist, curr) => {
+    dist[curr.value] = curr.label;
+    return dist;
+  }, {} as TObject<unknown>) as T;
+}
+
+export const FLOW_CATEGORY_LABEL_MAP: Record<FlowCategory, string> = generateLabelMap(FLOW_CATEGORY);
+
+export const ACCOUNT_TYPE_LABEL_MAP: Record<AccountType, string> = generateLabelMap(ACCOUNT_TYPE);
+
+export const FLOW_STATUS_LABEL_MAP: Record<FlowStatus, string> = generateLabelMap(FLOW_STATUS);

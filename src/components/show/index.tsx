@@ -4,6 +4,6 @@ interface ShowProps {
 }
 
 export function Show(props: ShowProps) {
-  const { if: _if, children } = props;
-  return _if ? children : null;
+  const { if: flag, children } = props;
+  return flag ? children : null;
 }

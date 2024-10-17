@@ -7,7 +7,7 @@ import { useFlowStoreSlice } from './store';
 import { useLayoutStoreSlice } from '@/store';
 import { logger } from '@/utils';
 import { Button, ButtonTheme, FlexBox, FlexDirection } from '@/components/base';
-import { ACCOUNT_TYPE, FLOW_CATEGORY, FLOW_STATUS, OptionItem } from './constant';
+import { ACCOUNT_TYPE, FLOW_CATEGORY, FLOW_STATUS, OptionItem } from '@/constant';
 import { EditorFlow } from '@/types/flow';
 import { Show } from '@/components/show';
 
@@ -21,10 +21,6 @@ interface FlowFormProps {
   pageStatus?: PageStatus;
   onFinish?: (values: EditorFlow) => void;
 }
-
-// const onFinish = (values: unknown) => {
-//   console.log('Received values of form:', values);
-// };
 
 function filterOption(inputValue: string, option?: unknown) {
   const _option = option as OptionItem;

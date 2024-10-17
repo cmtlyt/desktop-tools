@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { useSelector } from '@/hooks/use-selector';
+import { useSelector } from '@/hooks';
 import { Many } from '@/types';
 import { Flow } from '@/types/flow';
 

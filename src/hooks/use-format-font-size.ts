@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { shallow } from 'zustand/shallow';
 import { isNaN } from '@cmtlyt/base';
 import { getRootSize, useRootFontSize } from './use-root-font-size';
 import { Many } from '@/types';
@@ -21,13 +22,17 @@ function getSize<T extends Many<string | number>>(sizes: T, rootFontSize: number
 
 export function useFormatFontSize<T extends Many<string | number>>(fontSize: T) {
   const rootFontSize = useRootFontSize();
-  const [size, setSize] = useState(getSize(fontSize, rootFontSize));
+  const sizes = useRef(getSize(fontSize, rootFontSize));
+  const [, forceUpdate] = useState<number>(0);
 
   useEffect(() => {
-    setSize(getSize(fontSize, rootFontSize));
+    const nextSizes = getSize(fontSize, rootFontSize);
+    if (shallow(sizes.current, nextSizes)) return;
+    sizes.current = nextSizes;
+    forceUpdate(Math.random());
   }, [fontSize, rootFontSize]);
 
-  return size as T extends unknown[] ? string[] : string;
+  return sizes.current as T extends unknown[] ? string[] : string;
 }
 
 export function formatSize<T extends Many<string | number>>(size: T) {

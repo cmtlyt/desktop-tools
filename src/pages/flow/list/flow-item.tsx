@@ -7,6 +7,7 @@ import { AccountType, Flow, FlowCategory, FlowStatus } from '@/types/flow';
 import { HoverExpandBox } from '@/components/hover-expand-box';
 import { ButtonList } from '@/components/button-list';
 import { Price } from '@/components/price';
+import { ACCOUNT_TYPE_LABEL_MAP, FLOW_CATEGORY_LABEL_MAP, FLOW_STATUS_LABEL_MAP } from '@/constant/flow';
 
 interface FlowItemProps {
   flow: Flow;
@@ -18,46 +19,26 @@ const FlowTag = styled(Tag)`
 `;
 
 const FlowStatusTag = memo(({ children }: { children: FlowStatus }) => {
-  const { text, ...tagProps }: TagProps & { text: string } = {
-    [FlowStatus.PAID]: { $presetTheme: TagTheme.SUCCESS, text: '已支付' },
-    [FlowStatus.UNPAID]: { $presetTheme: TagTheme.PROCESSING, text: '待支付' },
-    [FlowStatus.REFUNDED]: { $presetTheme: TagTheme.WARNING, text: '已退款' },
-    [FlowStatus.CANCELED]: { $presetTheme: TagTheme.INFO, text: '已取消' },
-    [FlowStatus.INCOME]: { $presetTheme: TagTheme.SUCCESS, text: '收入' },
+  const tagProps: TagProps = {
+    [FlowStatus.PAID]: { $presetTheme: TagTheme.SUCCESS },
+    [FlowStatus.UNPAID]: { $presetTheme: TagTheme.PROCESSING },
+    [FlowStatus.REFUNDED]: { $presetTheme: TagTheme.WARNING },
+    [FlowStatus.CANCELED]: { $presetTheme: TagTheme.INFO },
+    [FlowStatus.INCOME]: { $presetTheme: TagTheme.SUCCESS },
   }[children];
+
+  const text = FLOW_STATUS_LABEL_MAP[children];
 
   return <FlowTag {...tagProps}>{text}</FlowTag>;
 });
 
 const FlowAccount = memo(({ children }: { children: AccountType }) => {
-  const name = {
-    [AccountType.ALIPAY]: '支付宝',
-    [AccountType.WECHAT]: '微信',
-    [AccountType.BANK_CARD]: '银行卡',
-    [AccountType.CASH]: '现金',
-    [AccountType.HUABEI]: '花呗',
-    [AccountType.XIAN_YONG_HOU_FU]: '先用后付',
-  }[children];
+  const name = ACCOUNT_TYPE_LABEL_MAP[children];
   return <FlowTag>{name}</FlowTag>;
 });
 
 const FlowCategoryTag = memo(({ children }: { children: FlowCategory }) => {
-  const name = {
-    [FlowCategory.CATERING]: '餐饮',
-    [FlowCategory.DEBIT]: '借记',
-    [FlowCategory.EDUCATION]: '教育',
-    [FlowCategory.ENTERTAINMENT]: '娱乐',
-    [FlowCategory.INCOME]: '收入',
-    [FlowCategory.MEDICAL]: '医疗',
-    [FlowCategory.LIFE]: '生活',
-    [FlowCategory.NET_SHOPPING]: '网购',
-    [FlowCategory.PAY]: '支出',
-    [FlowCategory.REFUND]: '退款',
-    [FlowCategory.SALARY]: '工资',
-    [FlowCategory.SHOPPING]: '购物',
-    [FlowCategory.TRANSFER]: '转账',
-    [FlowCategory.TRAVEL]: '差旅',
-  }[children];
+  const name = FLOW_CATEGORY_LABEL_MAP[children];
   return <FlowTag>{name}</FlowTag>;
 });
 

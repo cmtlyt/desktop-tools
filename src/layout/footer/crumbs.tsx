@@ -3,6 +3,7 @@ import { Link, useMatches } from 'react-router-dom';
 import styled from 'styled-components';
 import { FlexBox } from '@/components/base';
 import { UIMatchWithHandle } from '@/types';
+import { logger } from '@/utils';
 
 const GrayLink = styled(Link)`
   display: flex;
@@ -45,12 +46,16 @@ export function Crumbs() {
       {crumbs.map((crumb, idx, arr) => {
         if (idx < arr.length - 1) {
           return (
-            <GrayLink to={crumb.path} key={crumb.path}>
+            <GrayLink to={crumb.path} key={crumb.path} onClick={() => logger.click('crumb-link-click')}>
               /{crumb.label}
             </GrayLink>
           );
         }
-        return <ActiveCrumb key={crumb.path}>/{crumb.label}</ActiveCrumb>;
+        return (
+          <ActiveCrumb key={crumb.path} onClick={() => logger.click('crumb-acitve-text-click')}>
+            /{crumb.label}
+          </ActiveCrumb>
+        );
       })}
     </CrumbList>
   );

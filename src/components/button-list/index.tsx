@@ -46,7 +46,6 @@ export function ButtonList(props: ButtonListProps) {
 
         const button = (
           <Button
-            key={idx}
             {...buttonProps}
             onClick={(e) => {
               if (!to) logger.click({ action: action || 'button-list-click', ...loggerInfo });
@@ -58,9 +57,8 @@ export function ButtonList(props: ButtonListProps) {
         );
 
         return (
-          <Switch if={!isUndef(to)} fullback={button}>
+          <Switch if={!isUndef(to)} fullback={button} key={idx}>
             <Link
-              key={idx}
               to={to!}
               children={button}
               onClick={(e) => {

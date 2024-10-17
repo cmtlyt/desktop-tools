@@ -2,7 +2,7 @@ import { memo, useState } from 'react';
 import { isUndef } from '@cmtlyt/base';
 import styled from 'styled-components';
 import { FlexAlign, FlexBox } from '../base';
-import { useFormatFontSize } from '@/hooks/use-format-font-size';
+import { useFormatFontSize } from '@/hooks';
 import { Show } from '../show';
 
 interface PriceProps {
