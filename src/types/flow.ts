@@ -94,7 +94,7 @@ export interface Flow {
 export interface EditorFlow {
   title: string;
   desctription?: string;
-  category: string;
-  status: string;
+  category: FlowCategory;
+  status: FlowStatus;
   amountDistributions: AmountDistribution[];
 }

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { useEditorStoreSlice } from './store';
+import { getEditorStore, useEditorStoreSlice } from './store';
 import { FlowForm, FlowFormRef, PageStatus } from '../flow-form';
 import { ButtonList } from '@/components/button-list';
 import { ButtonTheme, FlexBox } from '@/components/base';
-import { useLayoutStoreSlice } from '@/store';
+import { getFlowsStore, useLayoutStoreSlice } from '@/store';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { EditorFlow } from '@/types/flow';
@@ -32,13 +32,16 @@ export function Component() {
     });
   }, ActionType.SAVE);
 
-  const onFinish = useCallback(
-    (flowInfo: EditorFlow) => {
-      window.logger.todo('flowInfo', flowInfo);
-      emitEditorAction({ id, type: ActionType.SAVE_SUCCESS });
-    },
-    [id],
-  );
+  const onFinish = useCallback((flowInfo: EditorFlow) => {
+    const { id } = getEditorStore();
+    const { addFlow, updateFlow } = getFlowsStore();
+    if (id.length) {
+      updateFlow(id, flowInfo);
+    } else {
+      addFlow(flowInfo);
+    }
+    emitEditorAction({ id, type: ActionType.SAVE_SUCCESS });
+  }, []);
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('flow-editor', { id, pageStatus })}>

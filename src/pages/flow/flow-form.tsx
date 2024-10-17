@@ -42,6 +42,7 @@ const InputField = styled(Input)`
 
 const SelectField = styled(Select)`
   flex: 1;
+  flex-shrink: 0;
 `;
 
 interface InputFieldProps extends FormItemProps {
@@ -139,6 +140,7 @@ export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm
                         placeholder="请选择变更帐户"
                         filterOption={filterOption}
                         options={ACCOUNT_TYPE}
+                        style={{ width: '10rem', flex: '0 0 10rem' }}
                       />
                     </FieldWrapper>
                     <InputFieldWrapper
