@@ -9,6 +9,7 @@ import { logger } from '@/utils';
 import { Button, ButtonTheme, FlexBox, FlexDirection } from '@/components/base';
 import { ACCOUNT_TYPE, FLOW_CATEGORY, FLOW_STATUS, OptionItem } from './constant';
 import { EditorFlow } from '@/types/flow';
+import { Show } from '@/components/show';
 
 export enum PageStatus {
   CREATE = 'create',
@@ -83,6 +84,8 @@ export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm
   const { showMessage } = useLayoutStoreSlice('showMessage');
   const [form] = Form.useForm();
 
+  const readonly = pageStatus === PageStatus.VIEW;
+
   useImperativeHandle(ref, () => ({ form }), [form]);
 
   useEffect(() => {
@@ -106,6 +109,7 @@ export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm
       autoComplete="off"
       onFinish={onFinish as TAnyFunc}
       labelCol={{ span: labelSpan }}
+      disabled={readonly}
       clearOnDestroy
     >
       <FlexBox $gap="1.4" $direction={FlexDirection.column}>
@@ -150,17 +154,21 @@ export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm
                       placeholder="请输入金额"
                     />
                     <InputFieldWrapper noStyle name={[name, 'remark']} placeholder="请输入备注" />
-                    {fields.length > 1 && <MinusCircleOutlined onClick={() => remove(name)} />}
+                    <Show if={!readonly && fields.length > 1}>
+                      <MinusCircleOutlined onClick={() => remove(name)} />
+                    </Show>
                   </FlexBox>
                 ))}
-                <FieldWrapper>
-                  <Button type="button" onClick={() => add()} $presetTheme={ButtonTheme.INFO}>
-                    <FlexBox $gap="0.4">
-                      <PlusOutlined />
-                      <span>添加帐户</span>
-                    </FlexBox>
-                  </Button>
-                </FieldWrapper>
+                <Show if={!readonly}>
+                  <FieldWrapper>
+                    <Button type="button" onClick={() => add()} $presetTheme={ButtonTheme.INFO}>
+                      <FlexBox $gap="0.4">
+                        <PlusOutlined />
+                        <span>添加帐户</span>
+                      </FlexBox>
+                    </Button>
+                  </FieldWrapper>
+                </Show>
               </FlexBox>
             )}
           </Form.List>

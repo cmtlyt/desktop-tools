@@ -1,18 +1,25 @@
 import { useEffect, useState } from 'react';
 import { isNaN } from '@cmtlyt/base';
 import { getRootSize, useRootFontSize } from './use-root-font-size';
+import { Many } from '@/types';
 
-function getSize(fontSize: string | number, rootFontSize: number) {
-  if (typeof fontSize === 'string') {
-    const numFontSize = parseFloat(fontSize);
-    if (isNaN(numFontSize)) return fontSize;
-    if (String(numFontSize) === fontSize) return `${numFontSize}rem`;
-    return fontSize;
+function getSize<T extends Many<string | number>>(sizes: T, rootFontSize: number) {
+  const handler = (fontSize: string | number) => {
+    if (typeof fontSize === 'string') {
+      const numFontSize = parseFloat(fontSize);
+      if (isNaN(numFontSize)) return fontSize;
+      if (String(numFontSize) === fontSize) return `${numFontSize}rem`;
+      return fontSize;
+    }
+    return `${fontSize / rootFontSize}rem`;
+  };
+  if (Array.isArray(sizes)) {
+    return sizes.map(handler) as T extends unknown[] ? string[] : string;
   }
-  return `${fontSize / rootFontSize}rem`;
+  return handler(sizes as string | number) as T extends unknown[] ? string[] : string;
 }
 
-export function useFormatFontSize(fontSize: string | number) {
+export function useFormatFontSize<T extends Many<string | number>>(fontSize: T) {
   const rootFontSize = useRootFontSize();
   const [size, setSize] = useState(getSize(fontSize, rootFontSize));
 
@@ -20,10 +27,10 @@ export function useFormatFontSize(fontSize: string | number) {
     setSize(getSize(fontSize, rootFontSize));
   }, [fontSize, rootFontSize]);
 
-  return size;
+  return size as T extends unknown[] ? string[] : string;
 }
 
-export function formatSize(size: string | number) {
+export function formatSize<T extends Many<string | number>>(size: T) {
   const rootSize = getRootSize();
   return getSize(size, rootSize);
 }

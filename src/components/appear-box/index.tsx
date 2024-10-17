@@ -6,7 +6,7 @@ interface AppearBoxProps {
 }
 
 export function AppearBox(props: AppearBoxProps) {
-  const { onFirstAppear } = props;
+  const { children, onFirstAppear } = props;
   const firstAppear = useRef(true);
 
   useEffect(() => {
@@ -16,5 +16,5 @@ export function AppearBox(props: AppearBoxProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <>{props.children}</>;
+  return children;
 }

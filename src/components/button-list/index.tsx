@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 import { Link, To } from 'react-router-dom';
+import { isUndef } from '@cmtlyt/base';
 import { Button, FlexBox } from '../base';
 import { logger } from '@/utils';
+import { Switch } from '../switch';
 
 interface ButtonItemOtherProps {
   text?: React.ReactNode;
@@ -55,20 +57,19 @@ export function ButtonList(props: ButtonListProps) {
           </Button>
         );
 
-        if (to) {
-          return (
+        return (
+          <Switch if={!isUndef(to)} fullback={button}>
             <Link
               key={idx}
-              to={to}
+              to={to!}
               children={button}
               onClick={(e) => {
                 e.stopPropagation();
                 logger.click({ action: action || 'button-list-link-click', ...loggerInfo });
               }}
             />
-          );
-        }
-        return button;
+          </Switch>
+        );
       })}
     </ButtonListWrapper>
   );

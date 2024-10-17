@@ -3,6 +3,7 @@ import { isUndef } from '@cmtlyt/base';
 import styled from 'styled-components';
 import { FlexAlign, FlexBox } from '../base';
 import { useFormatFontSize } from '@/hooks/use-format-font-size';
+import { Show } from '../show';
 
 interface PriceProps {
   value: string | number;
@@ -43,9 +44,7 @@ export const Price = memo(function Price(props: PriceProps) {
   const [integer, decimal] = String(value).split('.');
   const [, forceUpdate] = useState<number>();
 
-  const _symbolSize = useFormatFontSize(symbolSize);
-  const _fontSize = useFormatFontSize(fontSize);
-  const _decimalSize = useFormatFontSize(decimalSize);
+  const [_symbolSize, _fontSize, _decimalSize] = useFormatFontSize([symbolSize, fontSize, decimalSize]);
 
   if (isUndef(integer)) return null;
 
@@ -58,19 +57,19 @@ export const Price = memo(function Price(props: PriceProps) {
         forceUpdate(Math.random());
       }}
     >
-      {showPrefix && (
+      <Show if={showPrefix}>
         <FontSpan $fontSize={_symbolSize} $color={symbolColor || color}>
           ¥
         </FontSpan>
-      )}
+      </Show>
       <FontSpan $fontSize={_fontSize} $color={color}>
         {integer}
       </FontSpan>
-      {decimal && (
+      <Show if={decimal.length > 0}>
         <FontSpan $fontSize={_decimalSize} $color={decimalColor || color}>
           {`.${decimal}`}
         </FontSpan>
-      )}
+      </Show>
     </FlexBox>
   );
 });

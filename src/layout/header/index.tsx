@@ -6,6 +6,7 @@ import { FlexAlign, FlexBox, FlexJustify, ShadowFlexBox } from '@/components/bas
 import { UIMatchWithHandle } from '@/types';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
+import { Show } from '@/components/show';
 
 interface PageInfo {
   title?: string;
@@ -44,7 +45,7 @@ export function Header() {
     <header>
       <HeaderContent $justifyContent={FlexJustify.between}>
         <FlexBox $alignItems={FlexAlign.center}>
-          {needBackIcon && (
+          <Show if={needBackIcon}>
             <AppearBox onFirstAppear={() => logger.appear('header-back-icon')}>
               <BackIcon
                 onClick={() => {
@@ -53,7 +54,7 @@ export function Header() {
                 }}
               />
             </AppearBox>
-          )}
+          </Show>
           <TitleText>{title}</TitleText>
         </FlexBox>
         <FlexBox $alignItems={FlexAlign.center}>{rightArea}</FlexBox>

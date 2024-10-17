@@ -6,6 +6,7 @@ import { ApplyStyle } from '@/types';
 import { AppInfo, appList } from './constant';
 import { applyStyleSheet } from '../base/util';
 import { logger } from '@/utils';
+import { Switch } from '../switch';
 
 interface AppItemProps extends ApplyStyle {
   $isActive?: boolean;
@@ -96,7 +97,9 @@ export function AppList(props: AppListProps) {
             {...shadowOption}
           >
             <IconWrap $style={app.iconStyle}>
-              {typeof app.icon === 'string' ? <span>{app.icon}</span> : app.icon}
+              <Switch if={typeof app.icon === 'string'} fullback={app.icon}>
+                <span>{app.icon}</span>
+              </Switch>
             </IconWrap>
             <AppName $style={app.labelStyle}>{app.name}</AppName>
           </AppItemContent>
