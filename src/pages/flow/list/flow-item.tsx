@@ -12,6 +12,7 @@ import { ACCOUNT_TYPE_LABEL_MAP, FLOW_CATEGORY_LABEL_MAP, FLOW_STATUS_LABEL_MAP 
 interface FlowItemProps {
   flow: Flow;
   onClick?: React.MouseEventHandler<HTMLElement>;
+  onDelete?: (id: Flow['id']) => void;
 }
 
 const FlowTag = styled(Tag)`
@@ -66,6 +67,7 @@ const FlowWrapper = styled(ShadowFlexBox)`
 
 interface HandleButtonsProps {
   flow: Flow;
+  onDelete?: (id: Flow['id']) => void;
 }
 
 const HandleButtonList = styled(ButtonList)`
@@ -73,7 +75,7 @@ const HandleButtonList = styled(ButtonList)`
 `;
 
 function HandleButtons(props: HandleButtonsProps) {
-  const { flow } = props;
+  const { flow, onDelete } = props;
   const { id } = flow;
   const { setFlow } = useFlowStoreSlice('setFlow');
 
@@ -85,9 +87,10 @@ function HandleButtons(props: HandleButtonsProps) {
         {
           text: '删除',
           $presetTheme: ButtonTheme.DANGER,
+          logInfo: { id },
           onClick(e) {
             e.stopPropagation();
-            window.logger.todo('delete id:', id);
+            onDelete?.(id);
           },
         },
       ]}
@@ -126,12 +129,12 @@ const FlowPrice = styled(Price)<FlowPriceProps>`
   }}
 `;
 
-export function FlowItem(props: FlowItemProps) {
-  const { flow, onClick } = props;
+export const FlowItem = memo((props: FlowItemProps) => {
+  const { flow, onClick, onDelete } = props;
 
   return (
     <FlowWrapper key={flow.id} onClick={onClick}>
-      <HoverExpandBox rightArea={<HandleButtons flow={flow} />}>
+      <HoverExpandBox rightArea={<HandleButtons flow={flow} onDelete={onDelete} />}>
         <FlexBox $flex="1" $alignItems={FlexAlign.center}>
           <FlowStatusTag>{flow.status}</FlowStatusTag>
           <FlowAccount>{flow.account}</FlowAccount>
@@ -143,4 +146,4 @@ export function FlowItem(props: FlowItemProps) {
       </HoverExpandBox>
     </FlowWrapper>
   );
-}
+});

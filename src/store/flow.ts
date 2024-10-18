@@ -1,6 +1,7 @@
 import { create, StoreApi } from 'zustand';
 import { persist, StateStorage, createJSONStorage } from 'zustand/middleware';
 import { produce } from 'immer';
+import { getRandomString } from '@cmtlyt/base';
 import { IndexedDBStorage } from '@cmtlyt/storage';
 import { FLOWS_STORAGE_KEY } from '@/constant';
 import { EditorFlow, Flow } from '@/types/flow';
@@ -45,7 +46,7 @@ const getActions: (set: SetFunc, get: GetFunc) => FlowsStoreActions = (set) => {
         produce(state, (draft) => {
           const saveFlowFlow: Flow = {
             ...flow,
-            id: String(draft.flows?.length || 0),
+            id: `local-${getRandomString(16)}`,
             creator: 'test',
             account: flow.amountDistributions[0].account,
             amount: String(flow.amountDistributions.reduce((acc, cur) => acc + +cur.amount, 0)),
@@ -64,6 +65,7 @@ const getActions: (set: SetFunc, get: GetFunc) => FlowsStoreActions = (set) => {
           draft.flows.splice(index, 1, {
             ...draft.flows[index],
             ...flow,
+            id: draft.flows[index].id,
             amount: String(flow.amountDistributions.reduce((acc, cur) => acc + +cur.amount, 0)),
             updateTime: new Date().toLocaleString(),
           });

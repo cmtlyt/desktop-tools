@@ -8,11 +8,16 @@ import { Flow } from '@/types/flow';
 import { ButtonList } from '@/components/button-list';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
-import { useFlowsStoreSlice } from '@/store';
+import { getFlowsStore, useFlowsStoreSlice } from '@/store';
 
 const FlowList = styled(FlexBox)`
   padding: 1.8rem;
 `;
+
+function deleteFlowHandler(id: Flow['id']) {
+  const { deleteFlow } = getFlowsStore();
+  deleteFlow(id);
+}
 
 export function Component() {
   const loaderData = useLoaderData() as LoaderData;
@@ -35,6 +40,7 @@ export function Component() {
           <FlowItem
             key={flow.id}
             flow={flow}
+            onDelete={deleteFlowHandler}
             onClick={() => {
               setFlow(flow);
               navigate(`/flow/detail/${flow.id}`);

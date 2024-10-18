@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Link, To } from 'react-router-dom';
-import { isUndef } from '@cmtlyt/base';
+import { isUndef, TObject } from '@cmtlyt/base';
 import { Button, FlexBox } from '../base';
 import { logger } from '@/utils';
 import { Switch } from '../switch';
@@ -9,6 +9,7 @@ interface ButtonItemOtherProps {
   text?: React.ReactNode;
   to?: To;
   action?: string;
+  logInfo?: TObject<unknown>;
 }
 
 type ButtonItem = Parameters<typeof Button>[0] & ButtonItemOtherProps;
@@ -41,8 +42,8 @@ export function ButtonList(props: ButtonListProps) {
 
   return (
     <ButtonListWrapper {...wrapperProps} $gap={$gap} className={className}>
-      {buttons.map(({ action, text, to, onClick, ...buttonProps }, idx) => {
-        const loggerInfo = { text, buttonProps };
+      {buttons.map(({ action, text, to, logInfo, onClick, ...buttonProps }, idx) => {
+        const loggerInfo = { text, buttonProps, to, ...logInfo };
 
         const button = (
           <Button

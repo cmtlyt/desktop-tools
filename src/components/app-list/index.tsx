@@ -87,7 +87,7 @@ export function AppList(props: AppListProps) {
           key={app.path}
           $isActive={checkActive(app.path, app.deepMatch)}
           $style={app.wrapperStyle}
-          onClick={() => logger.click('app-list-click', { app })}
+          onClick={() => logger.click('app-list-click', app)}
         >
           <AppItemContent
             $direction={FlexDirection.column}
