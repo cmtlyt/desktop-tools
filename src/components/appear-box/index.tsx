@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 interface AppearBoxProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onFirstAppear?: () => void;
 }
 

@@ -57,6 +57,7 @@ export const Tag = styled.section<TagProps>`
   }}
 
   padding: 0.5rem 1rem;
+  height: max-content;
   font-size: 1.2rem;
   border-radius: var(--radius-full);
   line-height: 1;

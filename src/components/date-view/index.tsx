@@ -1,13 +1,13 @@
 import { memo } from 'react';
 
 interface DateViewProps {
-  date?: string;
+  date?: string | number;
   children?: string;
   format?: string;
   className?: string;
 }
 
-function formatDateStr(date: string, format: string) {
+function formatDateStr(date: string | number, format: string) {
   const dateObj = new Date(date);
 
   const dateInfo = {

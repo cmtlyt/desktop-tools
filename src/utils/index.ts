@@ -3,14 +3,10 @@ import { getPageInfo } from '@/components/sync-page-info';
 import { isProd, LOGGER_STORAGE_KEY } from '@/constant';
 import { filterForJson } from './filter';
 import { addStorageItem, forceSaveStorage } from './storage';
+import { ExposeInfo } from '@/types/logger';
 
 type ExtendKind = 'click' | 'appear' | 'todo' | 'event';
-type AllKind = Kind | ExtendKind;
-
-interface ExposeInfo {
-  kind: AllKind;
-  info: unknown;
-}
+export type AllKind = Kind | ExtendKind;
 
 interface LoggerExtendOptions {
   store: {
@@ -65,7 +61,7 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
     const { kind } = e;
     if (needExposeKind.includes(kind)) {
       messagesHandler(e.messages);
-      this.store.exposeHandler({ kind, info: e.messages });
+      this.store.exposeHandler({ kind, info: e.messages, time: Date.now() });
       if (isProd) {
         e.preventDefault();
         // TODO: 线上日志上报
@@ -77,6 +73,7 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
 export { logger, getPageInfo };
 export * from './filter';
 export * from './storage';
+export * from './array';
 
 window.logger = {
   debug: logger.debug,

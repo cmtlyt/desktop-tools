@@ -11,7 +11,7 @@ export function Component() {
     <>
       <SyncPageInfo />
       <Message />
-      <FlexBox $flex="1">
+      <FlexBox $flex="1" style={{ height: '100%' }}>
         <Aside />
         <FlexBox $flex="1" $direction={FlexDirection.column} style={{ overflow: 'hidden' }}>
           <Header />

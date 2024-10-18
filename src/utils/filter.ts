@@ -9,7 +9,7 @@ function isJson(value: unknown) {
 }
 
 export function filterForJson<T>(obj: T): T {
-  if (!obj) return {} as T;
+  if (!obj) return obj;
   if (!isJson(obj)) return undefined as T;
   if (Array.isArray(obj)) return obj.map(filterForJson) as unknown as T;
   if (typeof obj === 'object' && obj !== null) {

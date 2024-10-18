@@ -49,7 +49,7 @@ export function ButtonList(props: ButtonListProps) {
           <Button
             {...buttonProps}
             onClick={(e) => {
-              if (!to) logger.click({ action: action || 'button-list-click', ...loggerInfo });
+              if (!to) logger.click(action || 'button-list-click', loggerInfo);
               onClick?.(e);
             }}
           >
