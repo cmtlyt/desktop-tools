@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { isUndef, TAnyFunc } from '@cmtlyt/base';
 import { useFlowStoreSlice } from './store';
-import { useLayoutStoreSlice } from '@/store';
+import { getLayoutStore } from '@/store';
 import { logger } from '@/utils';
 import { Button, ButtonTheme, FlexBox, FlexDirection } from '@/components/base';
 import { ACCOUNT_TYPE, FLOW_CATEGORY, FLOW_STATUS, OptionItem } from '@/constant';
@@ -79,7 +79,6 @@ export interface FlowFormRef {
 export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm(props, ref) {
   const { pageStatus, disabled, onFinish } = props;
   const { currentFlow: flow } = useFlowStoreSlice('currentFlow');
-  const { showMessage } = useLayoutStoreSlice('showMessage');
   const [form] = Form.useForm();
 
   const readonly = disabled ?? pageStatus === PageStatus.VIEW;
@@ -89,9 +88,9 @@ export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm
   useEffect(() => {
     if (isUndef(flow) && pageStatus !== PageStatus.CREATE) {
       logger.error('非法访问');
-      showMessage({ type: 'error', content: '非法访问, 系统将会记录本次访问' });
+      getLayoutStore().showMessage({ type: 'error', content: '非法访问, 系统将会记录本次访问' });
     }
-  }, [flow, showMessage, pageStatus]);
+  }, [flow, pageStatus]);
 
   useEffect(() => {
     form.setFieldsValue({

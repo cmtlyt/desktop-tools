@@ -4,7 +4,7 @@ import { getEditorStore, useEditorStoreSlice } from './store';
 import { FlowForm, FlowFormRef, PageStatus } from '../flow-form';
 import { ButtonList } from '@/components/button-list';
 import { ButtonTheme, FlexBox } from '@/components/base';
-import { getFlowsStore, useLayoutStoreSlice } from '@/store';
+import { getFlowsStore, getLayoutStore } from '@/store';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { EditorFlow } from '@/types/flow';
@@ -56,12 +56,11 @@ export function Component() {
 
 function FlowEditorButtonArea() {
   const { id } = useEditorStoreSlice('id');
-  const { showMessage } = useLayoutStoreSlice('showMessage');
   const navigate = useNavigate();
 
   useSubscribeEditorAction((action) => {
     if (action.id !== id) return logger.error('action.id !== id', action);
-    showMessage({
+    getLayoutStore().showMessage({
       type: 'success',
       content: '保存成功',
       onClose() {

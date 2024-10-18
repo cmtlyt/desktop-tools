@@ -22,3 +22,7 @@ type StoreKeys = Many<keyof (LayoutStore & LayoutStoreActions)>;
 export const useLayoutStoreSlice = (keys: StoreKeys) => {
   return useLayoutStore(useSelector(keys));
 };
+
+export function getLayoutStore() {
+  return useLayoutStore.getState();
+}
