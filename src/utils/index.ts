@@ -1,9 +1,11 @@
+import { getDeviceInfo } from '@cmtlyt/base';
 import { createLogger, Kind } from './logger';
 import { getPageInfo } from '@/components/sync-page-info';
 import { isProd, LOGGER_STORAGE_KEY } from '@/constant';
 import { filterForJson } from './filter';
 import { addStorageItem, forceSaveStorage } from './storage';
 import { ExposeInfo } from '@/types/logger';
+import { getUserFingerprint } from './get-user-fingerprint';
 
 type ExtendKind = 'click' | 'appear' | 'todo' | 'event';
 export type AllKind = Kind | ExtendKind;
@@ -13,6 +15,7 @@ interface LoggerExtendOptions {
     exposeCache: ExposeInfo[];
     needExposeKind: AllKind[];
     printToDebug: AllKind[];
+    getLoggerBaseInfo: () => Record<string, unknown>;
     messagesHandler: (oriMsgs: unknown[]) => void;
     exposeHandler: (info: ExposeInfo) => void;
   };
@@ -31,9 +34,12 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
     exposeCache: [],
     needExposeKind: ['click', 'appear', 'error', 'event'],
     printToDebug: ['click', 'appear', 'debug', 'event'],
+    getLoggerBaseInfo() {
+      return { pageInfo: getPageInfo(), userFingerprint: getUserFingerprint(), deviceInfo: getDeviceInfo() };
+    },
     messagesHandler(oriMsgs: unknown[]) {
-      const pageInfo = getPageInfo();
-      oriMsgs.push(pageInfo);
+      const loggerInfo = this.getLoggerBaseInfo();
+      oriMsgs.push(loggerInfo);
       const messages = [...oriMsgs];
       oriMsgs.length = 0;
       oriMsgs.push(...filterForJson(messages));
@@ -57,10 +63,10 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
     return (...args) => console.log(...args);
   },
   onLogBefore(e) {
-    const { needExposeKind, messagesHandler } = this.store;
+    const { needExposeKind } = this.store;
     const { kind } = e;
     if (needExposeKind.includes(kind)) {
-      messagesHandler(e.messages);
+      this.store.messagesHandler(e.messages);
       this.store.exposeHandler({ kind, info: e.messages, time: Date.now() });
       if (isProd) {
         e.preventDefault();
@@ -70,7 +76,7 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
   },
 });
 
-export { logger, getPageInfo };
+export { logger, getPageInfo, getUserFingerprint };
 export * from './filter';
 export * from './storage';
 export * from './array';

@@ -16,6 +16,7 @@
     "@ant-design/icons": "^5.5.1",
     "@cmtlyt/base": "^0.8.0",
     "@cmtlyt/storage": "^0.1.1",
+    "@fingerprintjs/fingerprintjs": "^4.5.1",
     "@types/node": "^22.5.4",
     "antd": "^5.20.6",
     "dayjs": "^1.11.13",
