@@ -13,6 +13,7 @@ export const routes: RouteObject[] = [
         generateRouteConfig('/flow/detail/:id'),
         generateRouteConfig('/flow/editor/:id?'),
       ]),
+      generateRouteConfig('/log-history'),
     ],
   },
 ];

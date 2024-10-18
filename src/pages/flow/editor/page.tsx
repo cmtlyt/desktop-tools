@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { getEditorStore, useEditorStoreSlice } from './store';
 import { FlowForm, FlowFormRef, PageStatus } from '../flow-form';
@@ -18,6 +18,7 @@ export function Component() {
   const { id } = useLoaderData() as LoaderData;
   const { setId: setEditorId } = useEditorStoreSlice('setId');
   const formRef = useRef({} as FlowFormRef);
+  const [disabled, setDisabled] = useState(false);
 
   const pageStatus = id ? PageStatus.EDITOR : PageStatus.CREATE;
 
@@ -29,6 +30,7 @@ export function Component() {
     if (action.id !== id) return logger.error('action.id !== id', action);
     formRef.current.form.validateFields().then(() => {
       formRef.current.form.submit();
+      setDisabled(true);
     });
   }, ActionType.SAVE);
 
@@ -46,7 +48,7 @@ export function Component() {
   return (
     <AppearBox onFirstAppear={() => logger.appear('flow-editor', { id, pageStatus })}>
       <FlexBox>
-        <FlowForm ref={formRef} pageStatus={pageStatus} onFinish={onFinish} />
+        <FlowForm ref={formRef} disabled={disabled} pageStatus={pageStatus} onFinish={onFinish} />
       </FlexBox>
     </AppearBox>
   );

@@ -1,16 +1,24 @@
 import { createLogger, Kind } from './logger';
 import { getPageInfo } from '@/components/sync-page-info';
-import { isProd } from '@/constant';
+import { isProd, LOGGER_STORAGE_KEY } from '@/constant';
 import { filterForJson } from './filter';
+import { addStorageItem, forceSaveStorage } from './storage';
 
-type ExtendKind = 'click' | 'appear' | 'todo';
+type ExtendKind = 'click' | 'appear' | 'todo' | 'event';
 type AllKind = Kind | ExtendKind;
+
+interface ExposeInfo {
+  kind: AllKind;
+  info: unknown;
+}
 
 interface LoggerExtendOptions {
   store: {
+    exposeCache: ExposeInfo[];
     needExposeKind: AllKind[];
     printToDebug: AllKind[];
     messagesHandler: (oriMsgs: unknown[]) => void;
+    exposeHandler: (info: ExposeInfo) => void;
   };
 }
 
@@ -18,19 +26,29 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
   needTrace: !isProd,
   logConfig: {
     click: { kind: 'click', inherit: 'info' },
+    event: { kind: 'event', inherit: 'info' },
     appear: { kind: 'appear', inherit: 'info', needTrace: false },
     todo: { kind: 'todo', inherit: 'warn', needTrace: true },
     error: { kind: 'error', needTrace: true },
   },
   store: {
-    needExposeKind: ['click', 'appear', 'error'],
-    printToDebug: ['click', 'appear', 'debug'],
+    exposeCache: [],
+    needExposeKind: ['click', 'appear', 'error', 'event'],
+    printToDebug: ['click', 'appear', 'debug', 'event'],
     messagesHandler(oriMsgs: unknown[]) {
       const pageInfo = getPageInfo();
       oriMsgs.push(pageInfo);
       const messages = [...oriMsgs];
       oriMsgs.length = 0;
       oriMsgs.push(...filterForJson(messages));
+    },
+    exposeHandler(info) {
+      const { exposeCache } = this;
+      exposeCache.push(info);
+      if (exposeCache.length >= 10) {
+        addStorageItem(LOGGER_STORAGE_KEY, exposeCache.splice(0), false);
+        forceSaveStorage();
+      }
     },
   },
   // 生产环境下不在控制台输出
@@ -47,9 +65,10 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
     const { kind } = e;
     if (needExposeKind.includes(kind)) {
       messagesHandler(e.messages);
+      this.store.exposeHandler({ kind, info: e.messages });
       if (isProd) {
         e.preventDefault();
-        // TODO: 上报日志
+        // TODO: 线上日志上报
       }
     }
   },
@@ -57,6 +76,7 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
 
 export { logger, getPageInfo };
 export * from './filter';
+export * from './storage';
 
 window.logger = {
   debug: logger.debug,

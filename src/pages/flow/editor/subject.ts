@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { Subject } from 'rxjs';
 import { TObject } from '@cmtlyt/base';
 import { Many } from '@/types';
+import { logger } from '@/utils';
 
 export enum ActionType {
   SAVE = 'save',
@@ -18,6 +19,7 @@ const actionSubject = new Subject<ActionSubject>();
 
 export function emitEditorAction(action: ActionSubject) {
   actionSubject.next(action);
+  logger.event('editor-action', action);
 }
 
 export function useSubscribeEditorAction(callback: (action: ActionSubject) => void, actionType?: Many<ActionType>) {

@@ -2,11 +2,11 @@ import { create, StoreApi } from 'zustand';
 import { persist, StateStorage, createJSONStorage } from 'zustand/middleware';
 import { produce } from 'immer';
 import { getRandomString } from '@cmtlyt/base';
-import { IndexedDBStorage } from '@cmtlyt/storage';
 import { FLOWS_STORAGE_KEY } from '@/constant';
 import { EditorFlow, Flow } from '@/types/flow';
 import { useSelector } from '@/hooks';
 import { Many } from '@/types';
+import { forceSaveStorage, getStorageItem, removeStorageItem, setStorageItem } from '@/utils';
 
 interface FlowsStore {
   flows: Flow[];
@@ -18,19 +18,15 @@ interface FlowsStoreActions {
   updateFlow: (id: string, flow: EditorFlow) => void;
 }
 
-const storage = new IndexedDBStorage({ dbName: FLOWS_STORAGE_KEY, autoSaveDelay: 0 });
-
 const stateStorage: StateStorage = {
-  async getItem(name) {
-    return await storage.getItem(name);
-  },
+  getItem: getStorageItem,
   async setItem(name, value) {
-    await storage.setItem(name, value);
-    storage.forceSave();
+    await setStorageItem(name, value);
+    forceSaveStorage();
   },
   async removeItem(name) {
-    await storage.removeItem(name);
-    storage.forceSave();
+    await removeStorageItem(name);
+    forceSaveStorage();
   },
 };
 

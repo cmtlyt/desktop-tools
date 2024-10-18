@@ -19,6 +19,7 @@ export enum PageStatus {
 
 interface FlowFormProps {
   pageStatus?: PageStatus;
+  disabled?: boolean;
   onFinish?: (values: EditorFlow) => void;
 }
 
@@ -76,12 +77,12 @@ export interface FlowFormRef {
 }
 
 export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm(props, ref) {
-  const { pageStatus, onFinish } = props;
+  const { pageStatus, disabled, onFinish } = props;
   const { currentFlow: flow } = useFlowStoreSlice('currentFlow');
   const { showMessage } = useLayoutStoreSlice('showMessage');
   const [form] = Form.useForm();
 
-  const readonly = pageStatus === PageStatus.VIEW;
+  const readonly = disabled ?? pageStatus === PageStatus.VIEW;
 
   useImperativeHandle(ref, () => ({ form }), [form]);
 

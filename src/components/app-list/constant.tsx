@@ -1,4 +1,5 @@
 import { TbBrandStackoverflow } from 'react-icons/tb';
+import { MdOutlineManageHistory } from 'react-icons/md';
 
 export interface AppInfo {
   name: string;
@@ -17,5 +18,10 @@ export const appList: AppInfo[] = [
     path: '/flow',
     deepMatch: true,
     icon: <TbBrandStackoverflow />,
+  },
+  {
+    name: '日志',
+    path: '/log-history',
+    icon: <MdOutlineManageHistory />,
   },
 ];
