@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
-    "@cmtlyt/base": "^0.8.0",
+    "@cmtlyt/base": "^0.8.2",
     "@cmtlyt/storage": "^0.1.1",
     "@fingerprintjs/fingerprintjs": "^4.5.1",
     "@types/node": "^22.5.4",
