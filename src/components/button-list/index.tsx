@@ -64,7 +64,7 @@ export function ButtonList(props: ButtonListProps) {
               children={button}
               onClick={(e) => {
                 e.stopPropagation();
-                logger.click({ action: action || 'button-list-link-click', ...loggerInfo });
+                logger.click(action || 'button-list-link-click', loggerInfo);
               }}
             />
           </Switch>

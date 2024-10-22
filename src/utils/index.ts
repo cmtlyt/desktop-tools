@@ -38,6 +38,7 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
       return { pageInfo: getPageInfo(), userFingerprint: getUserFingerprint(), deviceInfo: getDeviceInfo() };
     },
     messagesHandler(oriMsgs: unknown[]) {
+      if (typeof oriMsgs[0] !== 'string') throw new TypeError('action is not a string');
       const loggerInfo = this.getLoggerBaseInfo();
       oriMsgs.push(loggerInfo);
       const messages = [...oriMsgs];
@@ -66,7 +67,11 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
     const { needExposeKind } = this.store;
     const { kind } = e;
     if (needExposeKind.includes(kind)) {
-      this.store.messagesHandler(e.messages);
+      try {
+        this.store.messagesHandler(e.messages);
+      } catch (err) {
+        logger.error('logger.store.messagesHandler', { err, messages: e.messages, kind });
+      }
       this.store.exposeHandler({ kind, info: e.messages, time: Date.now() });
       if (isProd) {
         e.preventDefault();
