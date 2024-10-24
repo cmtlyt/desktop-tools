@@ -11,7 +11,7 @@ import { logger } from '@/utils';
 import { getFlowsStore, useFlowsStoreSlice } from '@/store';
 
 const FlowList = styled(FlexBox)`
-  padding: 1.8rem;
+  padding: var(--page-padding);
 `;
 
 function deleteFlowHandler(id: Flow['id']) {

@@ -40,6 +40,8 @@ const AppItemContent = styled(ShadowFlexBox)<ApplyStyle>`
 `;
 
 const IconWrap = styled(FlexBox)<ApplyStyle>`
+  width: 100%;
+  height: 100%;
   font-size: 2.4rem;
 
   ${applyStyleSheet('$style')}
@@ -96,7 +98,7 @@ export function AppList(props: AppListProps) {
             $style={app.contentStyle}
             {...shadowOption}
           >
-            <IconWrap $style={app.iconStyle}>
+            <IconWrap $style={app.iconStyle} $alignItems={FlexAlign.center} $justifyContent={FlexJustify.center}>
               <Switch if={typeof app.icon === 'string'} fullback={app.icon}>
                 <span>{app.icon}</span>
               </Switch>

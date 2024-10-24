@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import { getEditorStore, useEditorStoreSlice } from './store';
 import { FlowForm, FlowFormRef, PageStatus } from '../flow-form';
 import { ButtonList } from '@/components/button-list';
@@ -13,6 +14,10 @@ import { ActionType, emitEditorAction, useSubscribeEditorAction } from './subjec
 interface LoaderData {
   id: string;
 }
+
+const EditorWrapper = styled(FlexBox)`
+  padding: var(--page-padding);
+`;
 
 export function Component() {
   const { id } = useLoaderData() as LoaderData;
@@ -47,9 +52,9 @@ export function Component() {
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('flow-editor', { id, pageStatus })}>
-      <FlexBox>
+      <EditorWrapper>
         <FlowForm ref={formRef} disabled={disabled} pageStatus={pageStatus} onFinish={onFinish} />
-      </FlexBox>
+      </EditorWrapper>
     </AppearBox>
   );
 }

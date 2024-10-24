@@ -1,14 +1,20 @@
 import { useLoaderData } from 'react-router-dom';
-import { useDetailStoreSlice } from './store';
 import { useEffect } from 'react';
+import styled from 'styled-components';
+import { useDetailStoreSlice } from './store';
 import { ButtonList } from '@/components/button-list';
 import { FlowForm, PageStatus } from '../flow-form';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
+import { FlexBox } from '@/components/base';
 
 interface LoaderData {
   id: string;
 }
+
+const DetailWrapper = styled(FlexBox)`
+  padding: var(--page-padding);
+`;
 
 export function Component() {
   const { id } = useLoaderData() as LoaderData;
@@ -20,7 +26,9 @@ export function Component() {
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('flow-detail', { id })}>
-      <FlowForm pageStatus={PageStatus.VIEW} />
+      <DetailWrapper>
+        <FlowForm pageStatus={PageStatus.VIEW} />
+      </DetailWrapper>
     </AppearBox>
   );
 }

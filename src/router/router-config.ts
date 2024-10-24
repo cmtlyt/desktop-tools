@@ -14,6 +14,10 @@ export const routes: RouteObject[] = [
         generateRouteConfig('/flow/editor/:id?'),
       ]),
       generateRouteConfig('/log-history'),
+      generateRouteConfig('/game-center', [
+        generateRouteConfig('', [], '/game-center/list'),
+        generateRouteConfig('/game-center/sbwd'),
+      ]),
     ],
   },
 ];

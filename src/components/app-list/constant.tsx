@@ -1,5 +1,6 @@
 import { TbBrandStackoverflow } from 'react-icons/tb';
 import { MdOutlineManageHistory } from 'react-icons/md';
+import { GiGamepadCross } from 'react-icons/gi';
 
 export interface AppInfo {
   name: string;
@@ -23,5 +24,11 @@ export const appList: AppInfo[] = [
     name: '日志',
     path: '/log-history',
     icon: <MdOutlineManageHistory />,
+  },
+  {
+    name: '游戏',
+    path: '/game-center',
+    deepMatch: true,
+    icon: <GiGamepadCross />,
   },
 ];
