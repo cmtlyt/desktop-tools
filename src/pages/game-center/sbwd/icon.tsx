@@ -6,7 +6,8 @@ export const SBWDIcon = styled.section`
   height: 80%;
   aspect-ratio: 1/1;
   border-radius: 50%;
-  border: var(--color-primary) solid 1px;
+  color: var(--color-black);
+  border: currentColor solid 0.4rem;
 
   &::before {
     content: '';
@@ -14,9 +15,9 @@ export const SBWDIcon = styled.section`
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 0.2rem;
+    width: 0.4rem;
     height: 50%;
     border-radius: var(--radius-full);
-    background-color: var(--color-primary);
+    background-color: currentColor;
   }
 `;
