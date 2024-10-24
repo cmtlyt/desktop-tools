@@ -1,4 +1,4 @@
-import{r as s,o as t,p as z,u as L}from"./index-BSC9trQH.js";import{d as l,u as N,a as m,o as R,i as B,b as F,p as a,T as p,q as W,r as y,s as _,t as k,S as M,B as A,A as U,l as O,c as H}from"./index-CtNzYnNM.js";import{B as E,u as T}from"./store-CFTVdlZa.js";import{D as G}from"./index-B-j1rXt3.js";import{S as $}from"./index-DLUWWLMN.js";import{d as Y,g as q}from"./flow-BtjskJIx.js";import"./index-DFWCW1bo.js";const C=l(m)`
+import{r as s,o as t,p as z,u as L}from"./index-B0lFOTcI.js";import{d as l,u as N,a as m,o as R,i as B,b as F,p as a,T as p,q as W,r as y,s as _,t as k,S as M,B as A,A as U,l as O,c as H}from"./index-DBbXVGRZ.js";import{B as E,u as T}from"./store-CA08vS8x.js";import{D as G}from"./index-D7YS9fsT.js";import{S as $}from"./index-DLUWWLMN.js";import{d as Y,g as q}from"./flow-C09FetVe.js";import"./index-DFWCW1bo.js";const C=l(m)`
   overflow: hidden;
 `,V=l.section`
   display: grid;
@@ -35,5 +35,5 @@ import{r as s,o as t,p as z,u as L}from"./index-BSC9trQH.js";import{d as l,u as 
   margin-right: 1rem;
   ${o=>{const{$status:e}=o;return{color:ne(e),textDecoration:e===a.CANCELED?"line-through":"none"}}}
 `,ae=s.memo(o=>{const{flow:e,onClick:r,onDelete:n}=o;return t.jsx(oe,{onClick:r,children:t.jsxs(J,{rightArea:t.jsx(se,{flow:e,onDelete:n}),children:[t.jsxs(m,{$flex:"1",$alignItems:F.center,children:[t.jsx(Q,{children:e.status}),t.jsx(X,{children:e.account}),t.jsx(Z,{children:e.category}),t.jsx(ie,{value:e.amount,$status:e.status,showPrefix:!0}),t.jsx(te,{children:e.title})]}),t.jsx(ee,{children:e.createTime})]})},e.id)}),le=l(m)`
-  padding: 1.8rem;
+  padding: var(--page-padding);
 `;function ce(o){const{deleteFlow:e}=q();e(o)}function we(){const o=z(),{setFlow:e}=T("setFlow"),{flows:r}=Y("flows"),{flows:n}=o,d=L(),c=s.useMemo(()=>n||r,[r,n]);return s.useEffect(()=>{e(void 0)},[e]),t.jsx(U,{onFirstAppear:()=>O.appear("flow-list"),children:t.jsx(le,{$direction:H.column,children:c.map(i=>t.jsx(ae,{flow:i,onDelete:ce,onClick:()=>{e(i),d(`/flow/detail/${i.id}`)}},i.id))})})}async function Se(){return window.logger.todo("请求接口加载流水信息, 报错时使用本地存储中的流水信息"),{flows:null}}function de(){return t.jsx(E,{buttons:[{text:"新建",to:"/flow/editor",$presetTheme:A.PRIMARY}]})}const Ae={title:"流水列表",crumbLabel:"列表",rightArea:t.jsx(de,{})};export{we as Component,Ae as handle,Se as loader};
