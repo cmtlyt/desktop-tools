@@ -1,11 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { produce } from 'immer';
+import { debounce } from '@cmtlyt/base';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { FlexAlign, FlexBox, FlexDirection, FlexJustify } from '@/components/base';
 import { SBWDIcon } from './icon';
-import { debounce } from '@cmtlyt/base';
+import { getLayoutStore } from '@/store';
 
 const Wrapper = styled(FlexBox)`
   padding: var(--page-padding);
@@ -50,6 +51,7 @@ function createUpdateFunc(
   speed: number,
   setData: React.Dispatch<React.SetStateAction<number[][]>>,
   setTotalRotate: React.Dispatch<React.SetStateAction<number>>,
+  isRunner: React.MutableRefObject<boolean>,
 ) {
   const updateRotate = debounce(
     (row: number, col: number) => {
@@ -62,7 +64,7 @@ function createUpdateFunc(
           const [nextRow, nextCol] = getNextPos(row, col, dir);
           const nextValue = draft[nextRow]?.[nextCol];
           setTimeout(() => {
-            if (nextValue === undefined) return;
+            if (nextValue === undefined) return (isRunner.current = false);
             updateRotate(nextRow, nextCol);
           }, speed);
         }),
@@ -83,16 +85,28 @@ export function Component() {
   const speed = 500;
   const [totalRotate, setTotalRotate] = useState(0);
   const [totalStep, setTotalStep] = useState(10);
+  const isRunner = useRef(false);
 
-  const updateRotate = useMemo(() => createUpdateFunc(speed, setData, setTotalRotate), [speed]);
+  const updateRotate = useMemo(() => createUpdateFunc(speed, setData, setTotalRotate, isRunner), [speed]);
 
-  const onClick = useCallback(
-    (row: number, col: number) => {
-      setTotalStep((v) => v - 1);
-      updateRotate(row, col);
-    },
-    [updateRotate],
-  );
+  const onClick = (row: number, col: number) => {
+    if (isRunner.current) return;
+    isRunner.current = true;
+    if (totalStep <= 0) {
+      logger.event('game-sbwd-over', { totalRotate });
+      getLayoutStore().showMessage({
+        content: `游戏结束, 当前分数 ${totalRotate}!`,
+        onClose() {
+          setData(Array.from({ length: row }, () => new Array(col).fill(0)));
+          setTotalStep(10);
+          setTotalRotate(0);
+        },
+      });
+      return;
+    }
+    setTotalStep((v) => v - 1);
+    updateRotate(row, col);
+  };
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('game-sbwd')}>
