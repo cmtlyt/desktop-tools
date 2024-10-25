@@ -1,5 +1,6 @@
 import { RouteObject, createHashRouter } from 'react-router-dom';
 import { generateRouteConfig } from './util';
+import { BASENAME } from './constant';
 
 export const routes: RouteObject[] = [
   {
@@ -21,4 +22,4 @@ export const routes: RouteObject[] = [
   },
 ];
 
-export const routerConfig = createHashRouter(routes);
+export const routerConfig = createHashRouter(routes, { basename: BASENAME });
