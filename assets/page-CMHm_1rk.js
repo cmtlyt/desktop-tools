@@ -1,3 +1,0 @@
-import{o as e}from"./index-LKB_47o9.js";import{d as r,A as o,l as a,b as p}from"./index-BeK9J_P4.js";import{A as n}from"./index-DiiAY9CX.js";import{S as i}from"./icon-BLCgn2_S.js";import"./index-DFWCW1bo.js";const s=[{name:"十步万度",path:"./sbwd",icon:e.jsx(i,{})}],m=r(p)`
-  padding: var(--page-padding);
-`;function f(){return e.jsx(o,{onFirstAppear:()=>a.appear("game-list"),children:e.jsx(m,{children:e.jsx(n,{appListHander:()=>s.map(t=>({...t,contentStyle:{width:"10rem",height:"10rem"},iconStyle:{fontSize:"8rem"},labelStyle:{fontSize:"1.8rem"}}))})})})}const h={title:"游戏列表",crumbLabel:"列表"};export{f as Component,h as handle};
