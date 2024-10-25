@@ -17,6 +17,11 @@ interface PageInfo {
 const HeaderContent = styled(ShadowFlexBox)`
   height: 5rem;
   padding: 0 2rem;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    height: 0;
+  }
 `;
 
 const BackIcon = styled(IoCaretBack)`
@@ -32,6 +37,10 @@ const TitleText = styled.span`
   letter-spacing: 0.04rem;
 `;
 
+const TitleWrapper = styled(FlexBox)`
+  flex-shrink: 0;
+`;
+
 export function Header() {
   const navigate = useNavigate();
   const matches = useMatches() as UIMatchWithHandle<PageInfo>[];
@@ -43,8 +52,8 @@ export function Header() {
 
   return (
     <header>
-      <HeaderContent $justifyContent={FlexJustify.between}>
-        <FlexBox $alignItems={FlexAlign.center}>
+      <HeaderContent $gap="1" $justifyContent={FlexJustify.between}>
+        <TitleWrapper $alignItems={FlexAlign.center}>
           <Show if={needBackIcon}>
             <AppearBox onFirstAppear={() => logger.appear('header-back-icon')}>
               <BackIcon
@@ -56,7 +65,7 @@ export function Header() {
             </AppearBox>
           </Show>
           <TitleText>{title}</TitleText>
-        </FlexBox>
+        </TitleWrapper>
         <FlexBox $alignItems={FlexAlign.center}>{rightArea}</FlexBox>
       </HeaderContent>
     </header>
