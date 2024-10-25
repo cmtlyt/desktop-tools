@@ -1,3 +1,3 @@
-import{o as e}from"./index-B0lFOTcI.js";import{d as r,A as a,l as o,a as p}from"./index-DBbXVGRZ.js";import{A as n}from"./index-sLTKh7wW.js";import{S as i}from"./icon-i73GiklA.js";import"./index-DFWCW1bo.js";const s=[{name:"十步万度",path:"./sbwd",icon:e.jsx(i,{})}],m=r(p)`
+import{o as e}from"./index-VHn9tDtt.js";import{d as r,A as a,l as o,a as p}from"./index-DZG1hYte.js";import{A as n}from"./index-C3Yt6UKv.js";import{S as i}from"./icon-uJ3-9BtB.js";import"./index-DFWCW1bo.js";const s=[{name:"十步万度",path:"./sbwd",icon:e.jsx(i,{})}],m=r(p)`
   padding: var(--page-padding);
 `;function f(){return e.jsx(a,{onFirstAppear:()=>o.appear("game-list"),children:e.jsx(m,{children:e.jsx(n,{appListHander:()=>s.map(t=>({...t,contentStyle:{width:"10rem",height:"10rem"},iconStyle:{fontSize:"8rem"},labelStyle:{fontSize:"1.8rem"}}))})})})}const h={title:"游戏列表",crumbLabel:"列表"};export{f as Component,h as handle};
