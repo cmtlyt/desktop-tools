@@ -1,6 +1,5 @@
-import { createBrowserRouter, RouteObject } from 'react-router-dom';
+import { RouteObject, createHashRouter } from 'react-router-dom';
 import { generateRouteConfig } from './util';
-import { BASENAME } from './constant';
 
 export const routes: RouteObject[] = [
   {
@@ -22,4 +21,4 @@ export const routes: RouteObject[] = [
   },
 ];
 
-export const routerConfig = createBrowserRouter(routes, { basename: BASENAME });
+export const routerConfig = createHashRouter(routes);
