@@ -18,9 +18,10 @@ const LoadingWrapper = styled.section<{ $show: boolean }>`
   color: white;
   font-size: 10vmin;
   opacity: 0;
+  transition: opacity 100ms;
   ${({ $show }) => {
-    if ($show) return { opacity: 1, transition: `opacity ${minShowTime}ms` };
-    return 'pointer-events: none';
+    if ($show) return { opacity: 1 };
+    return { 'pointer-events': 'none', transition: `opacity ${minShowTime}ms` };
   }};
 `;
 
