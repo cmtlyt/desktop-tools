@@ -7,7 +7,7 @@ import { addStorageItem, forceSaveStorage } from './storage';
 import { ExposeInfo } from '@/types/logger';
 import { getUserFingerprint } from './get-user-fingerprint';
 
-type ExtendKind = 'click' | 'appear' | 'todo' | 'event';
+type ExtendKind = 'click' | 'appear' | 'todo' | 'event' | 'expose';
 export type AllKind = Kind | ExtendKind;
 
 interface LoggerExtendOptions {
@@ -18,6 +18,7 @@ interface LoggerExtendOptions {
     getLoggerBaseInfo: () => Record<string, unknown>;
     messagesHandler: (oriMsgs: unknown[]) => void;
     exposeHandler: (info: ExposeInfo) => void;
+    expose: () => void;
   };
 }
 
@@ -29,10 +30,11 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
     appear: { kind: 'appear', inherit: 'info', needTrace: false },
     todo: { kind: 'todo', inherit: 'warn', needTrace: true },
     error: { kind: 'error', needTrace: true },
+    expose: { kind: 'expose', inherit: 'info', needTrace: false },
   },
   store: {
     exposeCache: [],
-    needExposeKind: ['click', 'appear', 'error', 'event'],
+    needExposeKind: ['click', 'appear', 'error', 'event', 'expose'],
     printToDebug: ['click', 'appear', 'debug', 'event'],
     getLoggerBaseInfo() {
       return { pageInfo: getPageInfo(), userFingerprint: getUserFingerprint(), deviceInfo: getDeviceInfo() };
@@ -45,13 +47,15 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
       oriMsgs.length = 0;
       oriMsgs.push(...filterForJson(messages));
     },
+    expose() {
+      const { exposeCache } = this;
+      addStorageItem(LOGGER_STORAGE_KEY, exposeCache.splice(0), false);
+      forceSaveStorage();
+    },
     exposeHandler(info) {
       const { exposeCache } = this;
       exposeCache.push(info);
-      if (exposeCache.length >= 10) {
-        addStorageItem(LOGGER_STORAGE_KEY, exposeCache.splice(0), false);
-        forceSaveStorage();
-      }
+      if (exposeCache.length >= 10 || info.kind === 'expose') this.expose();
     },
   },
   // 生产环境下不在控制台输出

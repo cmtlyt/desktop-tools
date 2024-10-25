@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { produce } from 'immer';
 import { debounce } from '@cmtlyt/base';
@@ -22,12 +22,12 @@ interface CellProps {
   $rotate: number;
 }
 
-const Cell = styled(SBWDIcon)<CellProps>`
+const Cell = memo(styled(SBWDIcon)<CellProps>`
   width: 100%;
   height: 100%;
   transform: rotate(${({ $rotate }) => $rotate}deg);
   transition: transform ${({ $speed }) => $speed}ms;
-`;
+`);
 
 const Text = styled.span`
   font-size: 3rem;
@@ -47,37 +47,6 @@ function getNextPos(row: number, col: number, dir: ReturnType<typeof getDirectio
   return [row, col - 1];
 }
 
-function createUpdateFunc(
-  speed: number,
-  setData: React.Dispatch<React.SetStateAction<number[][]>>,
-  setTotalRotate: React.Dispatch<React.SetStateAction<number>>,
-  isRunner: React.MutableRefObject<boolean>,
-) {
-  const updateRotate = debounce(
-    (row: number, col: number) => {
-      setTotalRotate((v) => v + 90);
-      setData(
-        produce((draft) => {
-          const currRotate = (draft[row][col] = draft[row][col] + 90);
-
-          const dir = getDirection(currRotate);
-          const [nextRow, nextCol] = getNextPos(row, col, dir);
-          const nextValue = draft[nextRow]?.[nextCol];
-          setTimeout(() => {
-            if (nextValue === undefined) return (isRunner.current = false);
-            updateRotate(nextRow, nextCol);
-          }, speed);
-        }),
-      );
-    },
-    10,
-    true,
-  );
-  return (row: number, col: number) => {
-    updateRotate(row, col);
-  };
-}
-
 export function Component() {
   const size = [5, 5];
   const [row, col] = size;
@@ -85,28 +54,52 @@ export function Component() {
   const speed = 500;
   const [totalRotate, setTotalRotate] = useState(0);
   const [totalStep, setTotalStep] = useState(10);
-  const isRunner = useRef(false);
+  const [isRunner, setIsRunner] = useState(false);
 
-  const updateRotate = useMemo(() => createUpdateFunc(speed, setData, setTotalRotate, isRunner), [speed]);
+  const updateRotate = useMemo(() => {
+    const updateRotateDebounce = debounce(
+      (row: number, col: number) => {
+        setTotalRotate((v) => v + 90);
+        setData(
+          produce((draft) => {
+            const currRotate = (draft[row][col] = draft[row][col] + 90);
+
+            const dir = getDirection(currRotate);
+            const [nextRow, nextCol] = getNextPos(row, col, dir);
+            const nextValue = draft[nextRow]?.[nextCol];
+            setTimeout(() => {
+              if (nextValue === undefined) return setIsRunner(false);
+              updateRotateDebounce(nextRow, nextCol);
+            }, speed);
+          }),
+        );
+      },
+      10,
+      true,
+    );
+    return updateRotateDebounce;
+  }, [speed]);
 
   const onClick = (row: number, col: number) => {
-    if (isRunner.current) return;
-    isRunner.current = true;
-    if (totalStep <= 0) {
-      logger.event('game-sbwd-over', { totalRotate });
-      getLayoutStore().showMessage({
-        content: `游戏结束, 当前分数 ${totalRotate}!`,
-        onClose() {
-          setData(Array.from({ length: row }, () => new Array(col).fill(0)));
-          setTotalStep(10);
-          setTotalRotate(0);
-        },
-      });
-      return;
-    }
-    setTotalStep((v) => v - 1);
+    if (isRunner) return;
+    setIsRunner(true);
     updateRotate(row, col);
+    setTotalStep((v) => v - 1);
   };
+
+  const resetFunc = useCallback(() => {
+    setData(Array.from({ length: row }, () => new Array(col).fill(0)));
+    setTotalStep(10);
+    setTotalRotate(0);
+  }, [row, col]);
+
+  useEffect(() => {
+    if (!isRunner && totalStep <= 0) {
+      logger.event('game-sbwd-over', { totalRotate });
+      logger.expose();
+      getLayoutStore().showMessage({ content: `游戏结束, 当前分数 ${totalRotate}!`, onClose: resetFunc });
+    }
+  }, [isRunner, resetFunc, totalRotate, totalStep]);
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('game-sbwd')}>
@@ -125,8 +118,8 @@ export function Component() {
           {data.map((cells, rowIndex) => (
             <FlexBox $gap="1" key={rowIndex}>
               {cells.map((rotate, colIndex) => (
-                <FlexBox $flex="1" key={colIndex}>
-                  <Cell $rotate={rotate} $speed={speed} onClick={() => onClick(rowIndex, colIndex)} />
+                <FlexBox $flex="1" key={colIndex} onClick={() => onClick(rowIndex, colIndex)}>
+                  <Cell $rotate={rotate} $speed={speed} />
                 </FlexBox>
               ))}
             </FlexBox>
