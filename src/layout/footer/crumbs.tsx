@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
-import { Link, useMatches } from 'react-router-dom';
+import { useMatches } from 'react-router-dom';
 import styled from 'styled-components';
 import { FlexBox } from '@/components/base';
 import { UIMatchWithHandle } from '@/types';
 import { logger } from '@/utils';
+import { Link } from '@/components/link';
 
 const GrayLink = styled(Link)`
   display: flex;

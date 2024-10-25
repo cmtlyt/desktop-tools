@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import { DatePicker, Drawer, Form, Input, Popconfirm, Select } from 'antd';
 import styled from 'styled-components';
 import { debounce } from '@cmtlyt/base';
@@ -10,6 +10,9 @@ import { ExposeInfo } from '@/types/logger';
 import { Button, FlexAlign, FlexBox, FlexDirection, ShadowFlexBox, Tag } from '@/components/base';
 import { DateView } from '@/components/date-view';
 import { getLayoutStore } from '@/store';
+import { useNavigate } from '@/hooks/use-navigate';
+import { Switch } from '@/components/switch';
+import { Empty } from '@/components/empty';
 
 const LogWrapper = styled(ShadowFlexBox)`
   padding: 1rem 1.4rem;
@@ -182,9 +185,11 @@ export function Component() {
       <FlexBox $direction={FlexDirection.column} style={{ height: '100%' }}>
         <FilterBar filterInfo={filterInfo} includedKinds={includedKinds} onChange={(info) => setFilterInfo(info)} />
         <PageWrapper $direction={FlexDirection.column} $gap="1" $flex="1">
-          {filteredHistory.map((item, idx) => (
-            <LogItem key={idx} {...item} onClick={() => setLogDetail(item)} />
-          ))}
+          <Switch if={filteredHistory.length > 0} fullback={<Empty />}>
+            {filteredHistory.map((item, idx) => (
+              <LogItem key={idx} {...item} onClick={() => setLogDetail(item)} />
+            ))}
+          </Switch>
         </PageWrapper>
       </FlexBox>
       <Drawer open={!!logDetail} title="日志详情" width="50%" onClose={() => setLogDetail(null)}>

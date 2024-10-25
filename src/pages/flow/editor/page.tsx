@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import styled from 'styled-components';
 import { getEditorStore, useEditorStoreSlice } from './store';
 import { FlowForm, FlowFormRef, PageStatus } from '../flow-form';
@@ -10,6 +10,7 @@ import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { EditorFlow } from '@/types/flow';
 import { ActionType, emitEditorAction, useSubscribeEditorAction } from './subject';
+import { useNavigate } from '@/hooks/use-navigate';
 
 interface LoaderData {
   id: string;

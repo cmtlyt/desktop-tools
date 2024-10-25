@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useMatches, useNavigate } from 'react-router-dom';
+import { useMatches } from 'react-router-dom';
 import styled from 'styled-components';
 import { IoCaretBack } from 'react-icons/io5';
 import { FlexAlign, FlexBox, FlexJustify, ShadowFlexBox } from '@/components/base';
@@ -7,6 +7,7 @@ import { UIMatchWithHandle } from '@/types';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { Show } from '@/components/show';
+import { useNavigate } from '@/hooks/use-navigate';
 
 interface PageInfo {
   title?: string;

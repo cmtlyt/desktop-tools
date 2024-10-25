@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import { FlowItem } from './flow-item';
 import { useFlowStoreSlice } from '../store';
 import { ButtonTheme, FlexBox, FlexDirection } from '@/components/base';
@@ -9,6 +9,9 @@ import { ButtonList } from '@/components/button-list';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { getFlowsStore, useFlowsStoreSlice } from '@/store';
+import { useNavigate } from '@/hooks/use-navigate';
+import { Switch } from '@/components/switch';
+import { Empty } from '@/components/empty';
 
 const FlowList = styled(FlexBox)`
   padding: var(--page-padding);
@@ -36,17 +39,19 @@ export function Component() {
   return (
     <AppearBox onFirstAppear={() => logger.appear('flow-list')}>
       <FlowList $direction={FlexDirection.column}>
-        {flows.map((flow) => (
-          <FlowItem
-            key={flow.id}
-            flow={flow}
-            onDelete={deleteFlowHandler}
-            onClick={() => {
-              setFlow(flow);
-              navigate(`/flow/detail/${flow.id}`);
-            }}
-          />
-        ))}
+        <Switch if={flows.length > 0} fullback={<Empty />}>
+          {flows.map((flow) => (
+            <FlowItem
+              key={flow.id}
+              flow={flow}
+              onDelete={deleteFlowHandler}
+              onClick={() => {
+                setFlow(flow);
+                navigate(`/flow/detail/${flow.id}`);
+              }}
+            />
+          ))}
+        </Switch>
       </FlowList>
     </AppearBox>
   );

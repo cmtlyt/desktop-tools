@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AppearBox } from '@/components/appear-box';
 import { Button, ButtonTheme, FlexAlign, FlexBox, FlexDirection, FlexJustify, ShadowFlexBox } from '@/components/base';
-import { getStorageItem, logger } from '@/utils';
+import { getStorageItem, logger, reverse } from '@/utils';
 import { SBWD_HISTORY_STORAGE_KEY } from '../constant';
 import { DateView } from '@/components/date-view';
 import { GameInfo } from './type';
 import { Switch } from '@/components/switch';
 import { SBWDActionType, useSubscribeSBWDAction } from './subject';
+import { Empty } from '@/components/empty';
 
 interface SBWDHistoryProps {
   onReplay: (stepHistory: string[]) => void;
@@ -36,7 +37,7 @@ export function SBWDHistory(props: SBWDHistoryProps) {
 
   const loadHistory = async () => {
     const history: HistoryInfo[] = await getStorageItem(SBWD_HISTORY_STORAGE_KEY);
-    setHistory([...history].reverse());
+    setHistory(reverse(history));
   };
 
   useEffect(() => {
@@ -55,7 +56,7 @@ export function SBWDHistory(props: SBWDHistoryProps) {
   return (
     <AppearBox onFirstAppear={() => logger.appear('game-sbwd-history')}>
       <FlexBox $direction={FlexDirection.column} $gap="1">
-        <Switch if={history?.length > 0} fullback={<span>暂无对局记录</span>}>
+        <Switch if={history.length > 0} fullback={<Empty />}>
           {history?.map((info) => (
             <HistoryItem key={info.gameId} $direction={FlexDirection.column} $gap="0.5">
               <HistoryInfoWrapper $alignItems={FlexAlign.center} $justifyContent={FlexJustify.between}>

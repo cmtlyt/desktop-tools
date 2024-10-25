@@ -7,6 +7,7 @@ import { Aside } from './aside';
 import { FlexBox, FlexDirection } from '@/components/base';
 import { SyncPageInfo } from '@/components/sync-page-info';
 import { Message } from '@/components/message';
+import { LayoutLoading } from './loading';
 
 const PageWrapper = styled(FlexBox)`
   position: relative;
@@ -22,6 +23,7 @@ const WatermarkStyle = styled(Watermark)`
 export function Component() {
   return (
     <WatermarkStyle content={['cmtlyt', 'desktop-tools']} font={{ color: 'rgba(0,0,0,0.05)' }}>
+      <LayoutLoading />
       <SyncPageInfo />
       <Message />
       <FlexBox $flex="1" style={{ height: '100%' }}>

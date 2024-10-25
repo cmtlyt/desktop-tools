@@ -1,9 +1,10 @@
 import styled from 'styled-components';
-import { Link, To } from 'react-router-dom';
+import { To } from 'react-router-dom';
 import { isUndef, TObject } from '@cmtlyt/base';
 import { Button, FlexBox } from '../base';
 import { logger } from '@/utils';
 import { Switch } from '../switch';
+import { Link } from '../link';
 
 interface ButtonItemOtherProps {
   text?: React.ReactNode;

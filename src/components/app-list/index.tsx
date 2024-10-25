@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { Link, useMatches, matchPath } from 'react-router-dom';
+import { useMatches, matchPath } from 'react-router-dom';
 import styled from 'styled-components';
 import { FlexAlign, FlexBox, FlexDirection, FlexJustify, FlexWrap, ShadowFlexBox } from '@/components/base';
 import { ApplyStyle } from '@/types';
@@ -7,6 +7,7 @@ import { AppInfo, appList } from './constant';
 import { applyStyleSheet } from '../base/util';
 import { logger } from '@/utils';
 import { Switch } from '../switch';
+import { Link } from '../link';
 
 interface AppItemProps extends ApplyStyle {
   $isActive?: boolean;
