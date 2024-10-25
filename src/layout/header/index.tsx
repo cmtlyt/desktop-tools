@@ -41,6 +41,11 @@ const TitleWrapper = styled(FlexBox)`
   flex-shrink: 0;
 `;
 
+const HeaderWrapper = styled.header`
+  width: 100%;
+  overflow: hidden;
+`;
+
 export function Header() {
   const navigate = useNavigate();
   const matches = useMatches() as UIMatchWithHandle<PageInfo>[];
@@ -51,7 +56,7 @@ export function Header() {
   const rightArea = lastMatch?.handle?.rightArea;
 
   return (
-    <header>
+    <HeaderWrapper>
       <HeaderContent $gap="1" $justifyContent={FlexJustify.between}>
         <TitleWrapper $alignItems={FlexAlign.center}>
           <Show if={needBackIcon}>
@@ -68,6 +73,6 @@ export function Header() {
         </TitleWrapper>
         <FlexBox $alignItems={FlexAlign.center}>{rightArea}</FlexBox>
       </HeaderContent>
-    </header>
+    </HeaderWrapper>
   );
 }
