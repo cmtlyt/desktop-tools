@@ -192,7 +192,7 @@ export function Component() {
           </Switch>
         </PageWrapper>
       </FlexBox>
-      <Drawer open={!!logDetail} title="日志详情" width="50%" onClose={() => setLogDetail(null)}>
+      <Drawer open={!!logDetail} title="日志详情" width="80rem" onClose={() => setLogDetail(null)}>
         {logDetail && <LogDetail {...logDetail} action={String(logDetail.info[0])} />}
       </Drawer>
     </AppearBox>
