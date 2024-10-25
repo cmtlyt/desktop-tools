@@ -39,7 +39,7 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
     getLoggerBaseInfo() {
       return { pageInfo: getPageInfo(), userFingerprint: getUserFingerprint(), deviceInfo: getDeviceInfo() };
     },
-    messagesHandler(oriMsgs: unknown[]) {
+    messagesHandler(oriMsgs) {
       if (typeof oriMsgs[0] !== 'string') throw new TypeError('action is not a string');
       const loggerInfo = this.getLoggerBaseInfo();
       oriMsgs.push(loggerInfo);
@@ -47,9 +47,9 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
       oriMsgs.length = 0;
       oriMsgs.push(...filterForJson(messages));
     },
-    expose() {
+    async expose() {
       const { exposeCache } = this;
-      addStorageItem(LOGGER_STORAGE_KEY, exposeCache.splice(0), false);
+      await addStorageItem(LOGGER_STORAGE_KEY, exposeCache.splice(0), false);
       forceSaveStorage();
     },
     exposeHandler(info) {
@@ -74,7 +74,7 @@ const logger = createLogger<ExtendKind, LoggerExtendOptions>({
       try {
         this.store.messagesHandler(e.messages);
       } catch (err) {
-        logger.error('logger.store.messagesHandler', { err, messages: e.messages, kind });
+        logger.error('logger.store.messagesHandler', { err: (err as Error).stack, messages: e.messages, kind });
       }
       this.store.exposeHandler({ kind, info: e.messages, time: Date.now() });
       if (isProd) {

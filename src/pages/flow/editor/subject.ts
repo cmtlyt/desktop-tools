@@ -1,39 +1,19 @@
-import { useEffect, useMemo } from 'react';
 import { Subject } from 'rxjs';
-import { TObject } from '@cmtlyt/base';
-import { Many } from '@/types';
 import { logger } from '@/utils';
+import { ActionSubject, createActionSubscribeHook } from '@/utils/create-action-subscribe-hook';
 
 export enum ActionType {
   SAVE = 'save',
   SAVE_SUCCESS = 'save_success',
 }
 
-interface ActionSubject {
-  id: string;
-  type: ActionType;
-  ext?: TObject<unknown>;
-}
+type EditorSubject = ActionSubject<ActionType>;
 
-const actionSubject = new Subject<ActionSubject>();
+const actionSubject = new Subject<EditorSubject>();
 
-export function emitEditorAction(action: ActionSubject) {
+export function emitEditorAction(action: EditorSubject) {
   actionSubject.next(action);
   logger.event('editor-action', action);
 }
 
-export function useSubscribeEditorAction(callback: (action: ActionSubject) => void, actionType?: Many<ActionType>) {
-  const _actionType = useMemo(() => {
-    return actionType && (Array.isArray(actionType) ? actionType : [actionType]);
-  }, [actionType]);
-
-  useEffect(() => {
-    const subscribe = actionSubject.subscribe((action) => {
-      if (_actionType && !_actionType.includes(action.type)) return;
-      callback(action);
-    });
-    return () => {
-      subscribe.unsubscribe();
-    };
-  }, [callback, _actionType]);
-}
+export const useSubscribeEditorAction = createActionSubscribeHook(actionSubject);

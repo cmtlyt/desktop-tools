@@ -2,7 +2,7 @@ import { memo } from 'react';
 
 interface DateViewProps {
   date?: string | number;
-  children?: string;
+  children?: string | number;
   format?: string;
   className?: string;
 }
