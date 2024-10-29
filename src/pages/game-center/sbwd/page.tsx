@@ -117,7 +117,7 @@ export function Component() {
       forceSaveStorage();
       logger.event('game-sbwd-over', gameInfo);
       logger.expose('game-sbwd-over');
-      emitSBWDAction({ id: 'clear-history', type: SBWDActionType.RELOAD_HISTORY });
+      emitSBWDAction({ id: 'reload-history', type: SBWDActionType.RELOAD_HISTORY });
       getLayoutStore().showMessage({ content: `游戏结束, 当前分数 ${totalRotate}!`, onClose: resetFunc });
     }
   }, [isRunner, resetFunc, totalRotate, totalStep]);
