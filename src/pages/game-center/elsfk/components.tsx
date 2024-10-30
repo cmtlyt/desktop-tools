@@ -79,7 +79,7 @@ export const NextElement = memo(function (props: NextElementProps) {
   const { elementData = [], size } = elementInfo;
 
   return (
-    <NextContainer $gap="0.5" $direction={FlexDirection.column}>
+    <NextContainer $gap="0.5" $direction={FlexDirection.COLUMN}>
       {elementData.map((rowData, rowIdx) => (
         <Row key={rowIdx} rowData={rowData} col={size} />
       ))}
@@ -90,7 +90,7 @@ export const NextElement = memo(function (props: NextElementProps) {
 export function RightArea() {
   const { gameStatus } = useELSFKStoreSlice('gameStatus');
 
-  const isRunning = gameStatus === GameStatus.running;
+  const isRunning = gameStatus === GameStatus.RUNNING;
 
   return (
     <ButtonList

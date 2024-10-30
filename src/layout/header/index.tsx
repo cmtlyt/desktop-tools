@@ -52,8 +52,8 @@ export function Header() {
   const rightArea = lastMatch?.handle?.rightArea;
 
   return (
-    <HeaderContent $gap="1" $justifyContent={FlexJustify.between}>
-      <TitleWrapper $alignItems={FlexAlign.center}>
+    <HeaderContent $gap="1" $justifyContent={FlexJustify.BETWEEN}>
+      <TitleWrapper $alignItems={FlexAlign.CENTER}>
         <Show if={needBackIcon}>
           <AppearBox onFirstAppear={() => logger.appear('header-back-icon')}>
             <BackIcon
@@ -66,7 +66,7 @@ export function Header() {
         </Show>
         <TitleText>{title}</TitleText>
       </TitleWrapper>
-      <FlexBox $alignItems={FlexAlign.center}>{rightArea}</FlexBox>
+      <FlexBox $alignItems={FlexAlign.CENTER}>{rightArea}</FlexBox>
     </HeaderContent>
   );
 }

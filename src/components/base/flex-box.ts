@@ -3,29 +3,29 @@ import { propsHandler } from './util';
 import { formatSize } from '@/hooks';
 
 export enum FlexDirection {
-  row = 'row',
-  column = 'column',
+  ROW = 'row',
+  COLUMN = 'column',
 }
 
 export enum FlexWrap {
-  nowrap = 'nowrap',
-  wrap = 'wrap',
+  NOWRAP = 'nowrap',
+  WRAP = 'wrap',
 }
 
 export enum FlexAlign {
-  start = 'flex-start',
-  end = 'flex-end',
-  center = 'center',
-  baseline = 'baseline',
-  stretch = 'stretch',
+  START = 'flex-start',
+  END = 'flex-end',
+  CENTER = 'center',
+  BASELINE = 'baseline',
+  STRETCH = 'stretch',
 }
 
 export enum FlexJustify {
-  start = 'flex-start',
-  end = 'flex-end',
-  center = 'center',
-  between = 'space-between',
-  around = 'space-around',
+  START = 'flex-start',
+  END = 'flex-end',
+  CENTER = 'center',
+  BETWEEN = 'space-between',
+  AROUND = 'space-around',
 }
 
 interface FlexBoxProps {

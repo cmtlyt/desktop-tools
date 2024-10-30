@@ -35,7 +35,7 @@ export function Aside() {
 
   return (
     <AsideWrapper ref={asideRef} $width={width} $expandAside={expandAside}>
-      <AsideContent $direction={FlexDirection.column}>
+      <AsideContent $direction={FlexDirection.COLUMN}>
         <AsideAppList />
       </AsideContent>
     </AsideWrapper>

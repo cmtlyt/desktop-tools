@@ -155,15 +155,15 @@ export function Component() {
       <Wrapper
         $flex="1"
         $gap="5"
-        $direction={FlexDirection.column}
-        $alignItems={FlexAlign.center}
-        $justifyContent={FlexJustify.center}
+        $direction={FlexDirection.COLUMN}
+        $alignItems={FlexAlign.CENTER}
+        $justifyContent={FlexJustify.CENTER}
       >
         <FlexBox $gap="1">
           <Text>剩余步数: {totalStep}</Text>
           <Text>当前度数: {totalRotate}</Text>
         </FlexBox>
-        <Table $direction={FlexDirection.column} $gap="1">
+        <Table $direction={FlexDirection.COLUMN} $gap="1">
           {data.map((cells, rowIndex) => (
             <FlexBox $gap="1" key={rowIndex}>
               {cells.map((rotate, colIndex) => (

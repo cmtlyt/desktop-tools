@@ -25,7 +25,7 @@ export function RightArea() {
                 centered: true,
                 content: (
                   <AppearBox onFirstAppear={() => logger.appear('game-sbwd-rule')}>
-                    <FlexBox $gap="0.3" $direction={FlexDirection.column}>
+                    <FlexBox $gap="0.3" $direction={FlexDirection.COLUMN}>
                       <span>1. 点击指针, 其指针顺时针旋转 90 度后指向的圆圈指针依次旋转</span>
                       <span>2. 剩余步数用完, 游戏结束</span>
                     </FlexBox>

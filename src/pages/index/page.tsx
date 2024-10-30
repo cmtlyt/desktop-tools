@@ -6,7 +6,7 @@ import { logger } from '@/utils';
 export function Component() {
   return (
     <AppearBox onFirstAppear={() => logger.appear('index')}>
-      <FlexBox $direction={FlexDirection.column}>
+      <FlexBox $direction={FlexDirection.COLUMN}>
         <span>Hello World</span>
         <IndexAppList />
       </FlexBox>

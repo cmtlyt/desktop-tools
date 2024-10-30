@@ -109,7 +109,7 @@ export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm
       disabled={readonly}
       clearOnDestroy
     >
-      <FlexBox $gap="1.4" $direction={FlexDirection.column}>
+      <FlexBox $gap="1.4" $direction={FlexDirection.COLUMN}>
         <InputFieldWrapper
           name="title"
           label="标题"
@@ -126,7 +126,7 @@ export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm
         <FieldWrapper label="变更帐户" required>
           <Form.List name="amountDistributions">
             {(fields, { add, remove }) => (
-              <FlexBox $gap="1.4" $direction={FlexDirection.column}>
+              <FlexBox $gap="1.4" $direction={FlexDirection.COLUMN}>
                 {fields.map(({ key, name, ...restField }) => (
                   <FlexBox key={key} $gap="1">
                     <FieldWrapper

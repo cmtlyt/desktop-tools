@@ -83,7 +83,7 @@ export function AppList(props: AppListProps) {
   }, [appListHander]);
 
   return (
-    <FlexBox $wrap={FlexWrap.wrap} $direction={direction} className={className}>
+    <FlexBox $wrap={FlexWrap.WRAP} $direction={direction} className={className}>
       {appListFinished.map((app) => (
         <AppItem
           to={app.path}
@@ -93,13 +93,13 @@ export function AppList(props: AppListProps) {
           onClick={() => logger.click('app-list-click', app)}
         >
           <AppItemContent
-            $direction={FlexDirection.column}
-            $alignItems={FlexAlign.center}
-            $justifyContent={FlexJustify.between}
+            $direction={FlexDirection.COLUMN}
+            $alignItems={FlexAlign.CENTER}
+            $justifyContent={FlexJustify.BETWEEN}
             $style={app.contentStyle}
             {...shadowOption}
           >
-            <IconWrap $style={app.iconStyle} $alignItems={FlexAlign.center} $justifyContent={FlexJustify.center}>
+            <IconWrap $style={app.iconStyle} $alignItems={FlexAlign.CENTER} $justifyContent={FlexJustify.CENTER}>
               <Switch if={typeof app.icon === 'string'} fullback={app.icon}>
                 <span>{app.icon}</span>
               </Switch>

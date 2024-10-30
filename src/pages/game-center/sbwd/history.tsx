@@ -55,15 +55,15 @@ export function SBWDHistory(props: SBWDHistoryProps) {
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('game-sbwd-history')}>
-      <FlexBox $direction={FlexDirection.column} $gap="1">
+      <FlexBox $direction={FlexDirection.COLUMN} $gap="1">
         <Switch if={history.length > 0} fullback={<Empty />}>
           {history?.map((info) => (
-            <HistoryItem key={info.gameId} $direction={FlexDirection.column} $gap="0.5">
-              <HistoryInfoWrapper $alignItems={FlexAlign.center} $justifyContent={FlexJustify.between}>
+            <HistoryItem key={info.gameId} $direction={FlexDirection.COLUMN} $gap="0.5">
+              <HistoryInfoWrapper $alignItems={FlexAlign.CENTER} $justifyContent={FlexJustify.BETWEEN}>
                 <span>分数: {info.totalRotate}</span>
                 <DateView format="yyyy-MM-DD hh:mm:ss">{info.time}</DateView>
               </HistoryInfoWrapper>
-              <FlexBox $justifyContent={FlexJustify.end}>
+              <FlexBox $justifyContent={FlexJustify.END}>
                 <Button $presetTheme={ButtonTheme.PRIMARY} onClick={() => onClick(info.stepHistory)}>
                   重放
                 </Button>

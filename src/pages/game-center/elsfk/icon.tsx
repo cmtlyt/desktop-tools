@@ -23,8 +23,8 @@ const IconWrapper = styled(FlexBox)`
 export function ELSFKIcon() {
   return (
     <IconWrapper $gap="0.5">
-      <Block $gap="0.5" $direction={FlexDirection.column} />
-      <Block $gap="0.5" $direction={FlexDirection.column} />
+      <Block $gap="0.5" $direction={FlexDirection.COLUMN} />
+      <Block $gap="0.5" $direction={FlexDirection.COLUMN} />
     </IconWrapper>
   );
 }

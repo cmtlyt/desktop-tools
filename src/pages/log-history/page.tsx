@@ -132,22 +132,22 @@ const LogDetailLabel = styled.span`
 function LogDetail(props: LogDetailProps) {
   const { kind, action, time, info } = props;
   return (
-    <FlexBox $gap="1" $direction={FlexDirection.column}>
-      <FlexBox $alignItems={FlexAlign.center}>
+    <FlexBox $gap="1" $direction={FlexDirection.COLUMN}>
+      <FlexBox $alignItems={FlexAlign.CENTER}>
         <LogDetailLabel>Kind: </LogDetailLabel>
         <Tag>{kind}</Tag>
       </FlexBox>
-      <FlexBox $alignItems={FlexAlign.center}>
+      <FlexBox $alignItems={FlexAlign.CENTER}>
         <LogDetailLabel>Action: </LogDetailLabel>
         <Tag>{String(action)}</Tag>
       </FlexBox>
-      <FlexBox $alignItems={FlexAlign.center}>
+      <FlexBox $alignItems={FlexAlign.CENTER}>
         <LogDetailLabel>Time: </LogDetailLabel>
         <Tag>
           <DateSpan date={time} format="yyyy-MM-DD hh:mm:ss" />
         </Tag>
       </FlexBox>
-      <FlexBox $flex="1" $direction={FlexDirection.column}>
+      <FlexBox $flex="1" $direction={FlexDirection.COLUMN}>
         <LogDetailLabel>Info:</LogDetailLabel>
         <InfoContent>{JSON.stringify(info, null, 2)}</InfoContent>
       </FlexBox>
@@ -182,9 +182,9 @@ export function Component() {
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('log-history')}>
-      <FlexBox $direction={FlexDirection.column} style={{ height: '100%' }}>
+      <FlexBox $direction={FlexDirection.COLUMN} style={{ height: '100%' }}>
         <FilterBar filterInfo={filterInfo} includedKinds={includedKinds} onChange={(info) => setFilterInfo(info)} />
-        <PageWrapper $direction={FlexDirection.column} $gap="1" $flex="1">
+        <PageWrapper $direction={FlexDirection.COLUMN} $gap="1" $flex="1">
           <Switch if={filteredHistory.length > 0} fullback={<Empty />}>
             {filteredHistory.map((item, idx) => (
               <LogItem key={idx} {...item} onClick={() => setLogDetail(item)} />

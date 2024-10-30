@@ -4,9 +4,9 @@ import { useSelector } from '@/hooks';
 import { Many } from '@/types';
 
 export enum GameStatus {
-  running = 'running',
-  pause = 'pause',
-  over = 'over',
+  RUNNING = 'running',
+  PAUSE = 'pause',
+  OVER = 'over',
 }
 
 interface ELSFKStoreState {
@@ -30,12 +30,12 @@ export const useELSFKStore = create<ELSFKStoreState & ELSFKStoreHandlers>((set) 
   row: 20,
   col: 10,
   moveAddRow: 2,
-  gameStatus: GameStatus.over,
+  gameStatus: GameStatus.OVER,
 
   setRow: (row) => set({ row }),
   setCol: (col) => set({ col }),
   setMoveAddRow: (moveAddRow) => set({ moveAddRow }),
-  updateGameId: () => set({ gameId: getRandomString(), gameStatus: GameStatus.over }),
+  updateGameId: () => set({ gameId: getRandomString(), gameStatus: GameStatus.OVER }),
   setGameStatus: (gameStatus) => set({ gameStatus }),
 }));
 

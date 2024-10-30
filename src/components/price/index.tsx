@@ -51,7 +51,7 @@ export const Price = memo(function Price(props: PriceProps) {
   return (
     <FlexBox
       className={className}
-      $alignItems={FlexAlign.baseline}
+      $alignItems={FlexAlign.BASELINE}
       onClick={(e) => {
         e.stopPropagation();
         forceUpdate(Math.random());

@@ -28,9 +28,9 @@ export function Component() {
       <Message />
       <FlexBox $flex="1" style={{ height: '100%' }}>
         <Aside />
-        <FlexBox $flex="1" $direction={FlexDirection.column} style={{ overflow: 'hidden' }}>
+        <FlexBox $flex="1" $direction={FlexDirection.COLUMN} style={{ overflow: 'hidden' }}>
           <Header />
-          <PageWrapper $flex="1" $direction={FlexDirection.column}>
+          <PageWrapper $flex="1" $direction={FlexDirection.COLUMN}>
             <Outlet />
           </PageWrapper>
           <Footer />

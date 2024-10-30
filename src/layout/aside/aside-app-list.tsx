@@ -12,7 +12,7 @@ export const AsideAppList = memo(() => {
   return (
     <AppListBox
       needActiveStyle
-      direction={FlexDirection.column}
+      direction={FlexDirection.COLUMN}
       shadowOption={{ $blur: '0.8rem' }}
       appListHander={(list) => [{ name: '首页', path: '/', icon: <TbHomeFilled /> }, ...list]}
     />

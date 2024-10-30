@@ -84,7 +84,7 @@ export function Component() {
   });
 
   const gameOver = useCallback(() => {
-    getELSFKStore().setGameStatus(GameStatus.over);
+    getELSFKStore().setGameStatus(GameStatus.OVER);
     const gameInfo: GameInfo = { gameId: getELSFKStore().gameId, score: score.current };
     addStorageItem(ELSFK_HISTORY_STORAGE_KEY, { ...gameInfo, time: Date.now() });
     forceSaveStorage();
@@ -97,7 +97,7 @@ export function Component() {
   const nextTick = useMemo(() => {
     return debounce(() => {
       const gameStatus = getELSFKStore().gameStatus;
-      if (gameStatus !== GameStatus.running) return;
+      if (gameStatus !== GameStatus.RUNNING) return;
       setTimeout(() => {
         try {
           moveMap.current = moveFunc('bottom', staticMap.current, moveMap.current);
@@ -148,8 +148,8 @@ export function Component() {
   );
 
   const start = useCallback(() => {
-    if (getELSFKStore().gameStatus !== GameStatus.over) return;
-    getELSFKStore().setGameStatus(GameStatus.running);
+    if (getELSFKStore().gameStatus !== GameStatus.OVER) return;
+    getELSFKStore().setGameStatus(GameStatus.RUNNING);
     reset();
     createNext();
     nextTick();
@@ -158,15 +158,15 @@ export function Component() {
   useSubscribeELSFKAction(({ type }) => {
     const { setGameStatus, gameStatus } = getELSFKStore();
     if (type === ELSFKActionType.START) {
-      if (gameStatus === GameStatus.pause) {
-        setGameStatus(GameStatus.running);
+      if (gameStatus === GameStatus.PAUSE) {
+        setGameStatus(GameStatus.RUNNING);
         nextTick();
       } else start();
     } else if (type === ELSFKActionType.PAUSE) {
-      setGameStatus(GameStatus.pause);
+      setGameStatus(GameStatus.PAUSE);
     } else if (type === ELSFKActionType.RELOAD) {
       reset(true);
-      setGameStatus(GameStatus.over);
+      setGameStatus(GameStatus.OVER);
       updateRenderMap();
     }
   });
@@ -175,14 +175,14 @@ export function Component() {
     <AppearBox>
       <FlexBox
         $flex="1"
-        $alignItems={FlexAlign.center}
-        $justifyContent={FlexJustify.center}
+        $alignItems={FlexAlign.CENTER}
+        $justifyContent={FlexJustify.CENTER}
         $gap="1"
-        $direction={FlexDirection.column}
+        $direction={FlexDirection.COLUMN}
       >
         <Text>当前得分: {score.current}</Text>
-        <FlexBox $gap="1" $justifyContent={FlexJustify.center}>
-          <Container $gap="0.5" $direction={FlexDirection.column}>
+        <FlexBox $gap="1" $justifyContent={FlexJustify.CENTER}>
+          <Container $gap="0.5" $direction={FlexDirection.COLUMN}>
             {renderMap.map((rowData, rowIdx) => (
               <Row key={rowIdx} rowData={rowData} $isClear={clearLine.includes(rowIdx)} />
             ))}

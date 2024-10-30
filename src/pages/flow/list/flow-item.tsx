@@ -81,7 +81,7 @@ function HandleButtons(props: HandleButtonsProps) {
 
   return (
     <HandleButtonList
-      wrapperProps={{ $alignItems: FlexAlign.center }}
+      wrapperProps={{ $alignItems: FlexAlign.CENTER }}
       buttons={[
         { text: '编辑', $presetTheme: ButtonTheme.PRIMARY, to: `/flow/editor/${id}`, onClick: () => setFlow(flow) },
         {
@@ -135,7 +135,7 @@ export const FlowItem = memo((props: FlowItemProps) => {
   return (
     <FlowWrapper key={flow.id} onClick={onClick}>
       <HoverExpandBox rightArea={<HandleButtons flow={flow} onDelete={onDelete} />}>
-        <FlexBox $flex="1" $alignItems={FlexAlign.center}>
+        <FlexBox $flex="1" $alignItems={FlexAlign.CENTER}>
           <FlowStatusTag>{flow.status}</FlowStatusTag>
           <FlowAccount>{flow.account}</FlowAccount>
           <FlowCategoryTag>{flow.category}</FlowCategoryTag>

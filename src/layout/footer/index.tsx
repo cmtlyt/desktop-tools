@@ -24,7 +24,7 @@ export function Footer() {
 
   return (
     <footer>
-      <FooterContent $gap="1" $alignItems={FlexAlign.center}>
+      <FooterContent $gap="1" $alignItems={FlexAlign.CENTER}>
         <ExpandIcon onClick={onExpand} $expandAside={expandAside} />
         <Crumbs />
       </FooterContent>
