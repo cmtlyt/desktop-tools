@@ -1,56 +1,17 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { produce } from 'immer';
 import { debounce } from '@cmtlyt/base';
 import { AppearBox } from '@/components/appear-box';
 import { addStorageItem, forceSaveStorage, logger } from '@/utils';
 import { FlexAlign, FlexBox, FlexDirection, FlexJustify } from '@/components/base';
-import { SBWDIcon } from './icon';
 import { getLayoutStore } from '@/store';
 import { getSBWDStore, useSBWDStoreSlice } from './store';
 import { SBWD_HISTORY_STORAGE_KEY } from '../constant';
 import { GameInfo } from './type';
 import { RightArea } from './right-area';
 import { emitSBWDAction, SBWDActionType } from './subject';
-
-const Wrapper = styled(FlexBox)`
-  padding: var(--page-padding);
-`;
-
-const Table = styled(FlexBox)`
-  width: 60vmin;
-  height: 60vmin;
-`;
-
-interface CellProps {
-  $speed: number;
-  $rotate: number;
-}
-
-const Cell = memo(styled(SBWDIcon)<CellProps>`
-  width: 100%;
-  height: 100%;
-  transform: rotate(${({ $rotate }) => $rotate}deg);
-  transition: transform ${({ $speed }) => $speed}ms;
-`);
-
-const Text = styled.span`
-  font-size: 3rem;
-`;
-
-function getDirection(deg: number) {
-  if (deg % 360 === 0) return 'top';
-  if (deg % 360 === 90) return 'right';
-  if (deg % 360 === 180) return 'bottom';
-  return 'left';
-}
-
-function getNextPos(row: number, col: number, dir: ReturnType<typeof getDirection>) {
-  if (dir === 'top') return [row - 1, col];
-  if (dir === 'right') return [row, col + 1];
-  if (dir === 'bottom') return [row + 1, col];
-  return [row, col - 1];
-}
+import { Cell, Table, Text, Wrapper } from './components';
+import { getDirection, getNextPos } from './util';
 
 export function Component() {
   const size = [5, 5];
