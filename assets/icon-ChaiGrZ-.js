@@ -1,4 +1,4 @@
-import{d as o}from"./index-DJiqVJxb.js";const t=o.section`
+import{d as o}from"./index-Cf_foYDs.js";const t=o.section`
   box-sizing: border-box;
   position: relative;
   height: 80%;
