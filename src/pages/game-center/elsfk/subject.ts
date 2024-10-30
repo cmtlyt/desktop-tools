@@ -3,7 +3,6 @@ import { ActionSubject, createActionSubscribeHook } from '@/utils/create-action-
 import { logger } from '@/utils';
 
 export enum ELSFKActionType {
-  RELOAD_HISTORY = 'reload_history',
   START = 'start',
   PAUSE = 'pause',
   RELOAD = 'reload',

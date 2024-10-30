@@ -9,9 +9,9 @@ import { getSBWDStore, useSBWDStoreSlice } from './store';
 import { SBWD_HISTORY_STORAGE_KEY } from '../constant';
 import { GameInfo } from './type';
 import { RightArea } from './right-area';
-import { emitSBWDAction, SBWDActionType } from './subject';
 import { Cell, Table, Text, Wrapper } from './components';
 import { getDirection, getNextPos } from './util';
+import { emitHistoryAction, HistoryActionType } from '../components/history-drawer/subject';
 
 export function Component() {
   const size = [5, 5];
@@ -78,7 +78,7 @@ export function Component() {
       forceSaveStorage();
       logger.event('game-sbwd-over', gameInfo);
       logger.expose('game-sbwd-over');
-      emitSBWDAction({ id: 'reload-history', type: SBWDActionType.RELOAD_HISTORY });
+      emitHistoryAction({ id: 'reload-history', type: HistoryActionType.RELOAD_HISTORY });
       getLayoutStore().showMessage({ content: `游戏结束, 当前分数 ${totalRotate}!`, onClose: resetFunc });
     }
   }, [isRunner, resetFunc, totalRotate, totalStep]);

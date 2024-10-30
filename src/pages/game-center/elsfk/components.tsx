@@ -1,11 +1,9 @@
 import styled from 'styled-components';
 import { FlexAlign, FlexBox, FlexDirection } from '@/components/base';
 import { number2VO } from './util';
-import { GameStatus, useELSFKStoreSlice } from './store';
+import { useELSFKStoreSlice } from './store';
 import { ElementInfo, Position } from './type';
 import { memo } from 'react';
-import { ButtonList } from '@/components/button-list';
-import { ELSFKActionType, emitELSFKAction } from './subject';
 import { FiArrowLeftCircle, FiArrowRightCircle } from 'react-icons/fi';
 import { MdOutlineRotate90DegreesCcw } from 'react-icons/md';
 
@@ -91,35 +89,6 @@ export const NextElement = memo(function (props: NextElementProps) {
     </NextContainer>
   );
 });
-
-export function RightArea() {
-  const { gameStatus } = useELSFKStoreSlice('gameStatus');
-
-  const isRunning = gameStatus === GameStatus.RUNNING;
-
-  return (
-    <ButtonList
-      buttons={[
-        {
-          text: isRunning ? '暂停' : '开始',
-          onClick() {
-            // getELSFKStore().setGameStatus(gameStatus === GameStatus.running ? GameStatus.pause : GameStatus.running);
-            emitELSFKAction({
-              id: `elsfk-${isRunning ? 'pause' : 'start'}`,
-              type: isRunning ? ELSFKActionType.PAUSE : ELSFKActionType.START,
-            });
-          },
-        },
-        {
-          text: '重置',
-          onClick() {
-            emitELSFKAction({ id: 'elsfk-reload', type: ELSFKActionType.RELOAD });
-          },
-        },
-      ]}
-    />
-  );
-}
 
 const IconWrapper = styled(FlexBox)`
   height: 70%;

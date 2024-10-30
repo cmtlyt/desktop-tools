@@ -13,12 +13,14 @@ import { FlexAlign, FlexBox, FlexDirection, FlexJustify } from '@/components/bas
 import { ElementInfo, ELSFKCustomEvent, GameInfo, Position } from './type';
 import { useGlobalEvent } from '@/hooks/use-global-event';
 import { debounce } from '@cmtlyt/base';
-import { Container, Controller, GameWrapper, NextElement, RightArea, Row, Text, ToolsWrapper } from './components';
+import { Container, Controller, GameWrapper, NextElement, Row, Text, ToolsWrapper } from './components';
 import { GameStatus, getELSFKStore, useELSFKStoreSlice } from './store';
 import { getLayoutStore } from '@/store';
-import { ELSFKActionType, emitELSFKAction, useSubscribeELSFKAction } from './subject';
+import { ELSFKActionType, useSubscribeELSFKAction } from './subject';
 import { addStorageItem, forceSaveStorage, logger } from '@/utils';
 import { ELSFK_HISTORY_STORAGE_KEY } from '../constant';
+import { RightArea } from './right-area';
+import { emitHistoryAction, HistoryActionType } from '../components/history-drawer/subject';
 
 export function Component() {
   const { row, col, moveAddRow } = useELSFKStoreSlice(['row', 'col', 'moveAddRow']);
@@ -108,7 +110,7 @@ export function Component() {
     forceSaveStorage();
     logger.event('game-elsfk-over', gameInfo);
     logger.expose('game-elsfk-over');
-    emitELSFKAction({ id: 'reload-history', type: ELSFKActionType.RELOAD_HISTORY });
+    emitHistoryAction({ id: 'reload-history', type: HistoryActionType.RELOAD_HISTORY });
     getLayoutStore().showMessage({ content: `游戏结束, 得分: ${score.current}` });
   }, []);
 

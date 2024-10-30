@@ -1,13 +1,18 @@
-import { Drawer, Modal } from 'antd';
+import { Modal } from 'antd';
 import { useState } from 'react';
 import { AppearBox } from '@/components/appear-box';
-import { FlexBox, FlexDirection } from '@/components/base';
+import { Button, ButtonTheme, FlexAlign, FlexBox, FlexDirection, FlexJustify } from '@/components/base';
 import { ButtonList } from '@/components/button-list';
-import { forceSaveStorage, logger, setStorageItem } from '@/utils';
+import { logger } from '@/utils';
 import { getSBWDStore } from './store';
-import { SBWDHistory } from './history';
 import { SBWD_HISTORY_STORAGE_KEY } from '../constant';
-import { emitSBWDAction, SBWDActionType } from './subject';
+import { DateView } from '@/components/date-view';
+import { GameInfo } from './type';
+import { HistoryDrawer, HistoryInfoWrapper, HistoryItem } from '../components/history-drawer';
+
+interface HistoryInfo extends GameInfo {
+  time: number;
+}
 
 export function RightArea() {
   const [openHistory, setOpenHistory] = useState(false);
@@ -34,38 +39,33 @@ export function RightArea() {
               });
             },
           },
-          { text: '对局记录', onClick: () => setOpenHistory(true) },
+          { text: '游戏记录', onClick: () => setOpenHistory(true) },
           { text: '重置', onClick: () => getSBWDStore().reset() },
         ]}
       />
-      <Drawer
-        title="对局记录"
-        onClose={() => setOpenHistory(false)}
-        open={openHistory}
-        width="40rem"
-        styles={{ body: { padding: 'var(--page-padding)' } }}
-        extra={
-          <ButtonList
-            buttons={[
-              {
-                text: '清空记录',
-                async onClick() {
-                  await setStorageItem(SBWD_HISTORY_STORAGE_KEY, []);
-                  await forceSaveStorage();
-                  emitSBWDAction({ id: 'clear-history', type: SBWDActionType.RELOAD_HISTORY });
-                },
-              },
-            ]}
-          />
-        }
-      >
-        <SBWDHistory
-          onReplay={(stepHistory) => {
-            setOpenHistory(false);
-            getSBWDStore().replay(stepHistory);
-          }}
-        />
-      </Drawer>
+      <HistoryDrawer open={openHistory} storeKey={SBWD_HISTORY_STORAGE_KEY} onClose={() => setOpenHistory(false)}>
+        {(info: HistoryInfo) => (
+          <HistoryItem key={info.gameId} $direction={FlexDirection.COLUMN} $gap="0.5">
+            <HistoryInfoWrapper $alignItems={FlexAlign.CENTER} $justifyContent={FlexJustify.BETWEEN}>
+              <span>分数: {info.totalRotate}</span>
+              <DateView format="yyyy-MM-DD hh:mm:ss">{info.time}</DateView>
+            </HistoryInfoWrapper>
+            <FlexBox $justifyContent={FlexJustify.END}>
+              <Button
+                $presetTheme={ButtonTheme.PRIMARY}
+                onClick={() => {
+                  const stepHistory = info.stepHistory;
+                  setOpenHistory(false);
+                  getSBWDStore().replay(stepHistory);
+                  logger.click('game-sbwd-history-replay', { stepHistory });
+                }}
+              >
+                重放
+              </Button>
+            </FlexBox>
+          </HistoryItem>
+        )}
+      </HistoryDrawer>
     </>
   );
 }
