@@ -1,19 +1,24 @@
 import styled from 'styled-components';
-import { FlexBox, FlexDirection } from '@/components/base';
+import { FlexAlign, FlexBox, FlexDirection } from '@/components/base';
 import { number2VO } from './util';
 import { GameStatus, useELSFKStoreSlice } from './store';
-import { ElementInfo } from './type';
+import { ElementInfo, Position } from './type';
 import { memo } from 'react';
 import { ButtonList } from '@/components/button-list';
 import { ELSFKActionType, emitELSFKAction } from './subject';
+import { FiArrowLeftCircle, FiArrowRightCircle } from 'react-icons/fi';
+import { MdOutlineRotate90DegreesCcw } from 'react-icons/md';
 
 interface BlockProps {
   $active: boolean;
 }
 
 export const Container = styled(FlexBox)`
-  width: 40vh;
-  height: 80vh;
+  width: 100%;
+  height: 100%;
+  max-width: 35vh;
+  max-height: 70vh;
+  aspect-ratio: 1/2;
   color: var(--color-primary);
 `;
 
@@ -115,3 +120,61 @@ export function RightArea() {
     />
   );
 }
+
+const IconWrapper = styled(FlexBox)`
+  height: 70%;
+  aspect-ratio: 1/1;
+
+  & > svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  @media screen and (min-width: 768px) {
+    height: unset;
+    width: 40%;
+  }
+`;
+
+interface ControllerProps {
+  move: (pos: Position) => void;
+  rotate: () => void;
+}
+
+const ControllerContainer = styled(FlexBox)`
+  @media screen and (min-width: 768px) {
+    flex-direction: column-reverse;
+    margin-bottom: 40%;
+  }
+`;
+
+export function Controller(props: ControllerProps) {
+  const { move, rotate } = props;
+  return (
+    <ControllerContainer $gap="1" $alignItems={FlexAlign.CENTER}>
+      <IconWrapper onClick={() => move('left')}>
+        <FiArrowLeftCircle />
+      </IconWrapper>
+      <IconWrapper onClick={() => move('right')}>
+        <FiArrowRightCircle />
+      </IconWrapper>
+      <IconWrapper onClick={() => rotate()}>
+        <MdOutlineRotate90DegreesCcw />
+      </IconWrapper>
+    </ControllerContainer>
+  );
+}
+
+export const ToolsWrapper = styled(FlexBox)`
+  padding: 0 2rem;
+
+  @media screen and (min-width: 768px) {
+    flex-direction: column-reverse;
+  }
+`;
+
+export const GameWrapper = styled(FlexBox)`
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
+`;

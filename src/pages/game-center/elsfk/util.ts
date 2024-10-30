@@ -82,7 +82,7 @@ export function getElementVoPos(col: number, element: ElementInfo) {
   return new Array(topPos).fill(0).concat(elementData.map((item) => item << _rightSpace));
 }
 
-export function rotate(elementInfo: ElementInfo): ElementInfo {
+export function rotateElement(elementInfo: ElementInfo): ElementInfo {
   const { size, elementData } = elementInfo;
   const rotateData = getElementVo(size, elementData);
   const target = Array.from({ length: rotateData.length }, () => new Array(rotateData.length));

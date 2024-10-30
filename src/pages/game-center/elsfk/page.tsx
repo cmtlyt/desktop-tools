@@ -6,14 +6,14 @@ import {
   getElementVoPos,
   getMoveFunc,
   mergeRenderMap,
-  rotate,
+  rotateElement,
 } from './util';
 import { AppearBox } from '@/components/appear-box';
 import { FlexAlign, FlexBox, FlexDirection, FlexJustify } from '@/components/base';
-import { ElementInfo, ELSFKCustomEvent, GameInfo } from './type';
+import { ElementInfo, ELSFKCustomEvent, GameInfo, Position } from './type';
 import { useGlobalEvent } from '@/hooks/use-global-event';
 import { debounce } from '@cmtlyt/base';
-import { Container, NextElement, RightArea, Row, Text } from './components';
+import { Container, Controller, GameWrapper, NextElement, RightArea, Row, Text, ToolsWrapper } from './components';
 import { GameStatus, getELSFKStore, useELSFKStoreSlice } from './store';
 import { getLayoutStore } from '@/store';
 import { ELSFKActionType, emitELSFKAction, useSubscribeELSFKAction } from './subject';
@@ -45,7 +45,7 @@ export function Component() {
   const createNext = useCallback(() => {
     const currElement = nextElement.current;
     let _nextElement = generaeteElement(col);
-    new Array(Math.floor(Math.random() * 4)).forEach(() => (_nextElement = rotate(_nextElement)));
+    new Array(Math.floor(Math.random() * 4)).forEach(() => (_nextElement = rotateElement(_nextElement)));
     const currVo = getElementVoPos(col, currElement);
     nextElement.current = _nextElement;
     element.current = currElement;
@@ -54,21 +54,25 @@ export function Component() {
     moveMap.current.splice(moveRow);
   }, [getInitData, moveRow, col]);
 
+  const moveX = (pos: Position) => {
+    const offset = { left: 1, right: -1, bottom: 0 }[pos] || 0;
+    moveMap.current = moveFunc(pos, staticMap.current, moveMap.current);
+    element.current.rightSpace += offset;
+    updateRenderMap();
+  };
+
+  const rotate = () => {
+    element.current = rotateElement(element.current);
+    const voPos = getElementVoPos(col, element.current);
+    moveMap.current = [...voPos].concat(new Array(moveRow - voPos.length).fill(0));
+    updateRenderMap();
+  };
+
   useGlobalEvent('keydown', (event: KeyboardEvent) => {
-    if (event.code === 'ArrowLeft') {
-      moveMap.current = moveFunc('left', staticMap.current, moveMap.current);
-      element.current.rightSpace += 1;
-      updateRenderMap();
-    } else if (event.code === 'ArrowRight') {
-      moveMap.current = moveFunc('right', staticMap.current, moveMap.current);
-      element.current.rightSpace -= 1;
-      updateRenderMap();
-    } else if (event.code === 'ArrowUp') {
-      element.current = rotate(element.current);
-      const voPos = getElementVoPos(col, element.current);
-      moveMap.current = [...voPos].concat(new Array(moveRow - voPos.length).fill(0));
-      updateRenderMap();
-    } else if (event.code === 'ArrowDown') {
+    if (event.code === 'ArrowLeft') moveX('left');
+    else if (event.code === 'ArrowRight') moveX('right');
+    else if (event.code === 'ArrowUp') rotate();
+    else if (event.code === 'ArrowDown') {
       // 加速
       if (downLock.current) return;
       downLock.current = true;
@@ -104,31 +108,29 @@ export function Component() {
           element.current.topPos += 1;
         } catch (e) {
           const err = e as ELSFKCustomEvent;
-          if (err.custom && err.action === 'submit') {
-            const _staticMap = mergeRenderMap(moveAddRow, staticMap.current, moveMap.current);
-            staticMap.current = _staticMap;
-            // 判断是否有需要消除的行
-            const clearLine = getClearLine(row, _staticMap, rowMax);
-            if (clearLine.length) {
-              score.current += clearLine.length * col;
-              setClearLine(clearLine);
-              setTimeout(() => {
-                clearLine.forEach((idx) => {
-                  _staticMap.splice(idx, 1);
-                  _staticMap.unshift(0);
-                });
-                setClearLine([]);
-                createNext();
-                nextTick();
-              }, 2000);
-              return;
-            }
-            // 判断是否触顶
-            if (_staticMap[0]) {
-              return gameOver();
-            }
-            createNext();
+          if (!err.custom) return logger.error('elsfk-next-tick', e);
+          if (err.action !== 'submit') return;
+          const _staticMap = mergeRenderMap(moveAddRow, staticMap.current, moveMap.current);
+          staticMap.current = _staticMap;
+          // 判断是否有需要消除的行
+          const clearLine = getClearLine(row, _staticMap, rowMax);
+          if (clearLine.length) {
+            score.current += clearLine.length * col;
+            setClearLine(clearLine);
+            setTimeout(() => {
+              clearLine.forEach((idx) => {
+                _staticMap.splice(idx, 1);
+                _staticMap.unshift(0);
+              });
+              setClearLine([]);
+              createNext();
+              nextTick();
+            }, 2000);
+            return;
           }
+          // 判断是否触顶
+          if (_staticMap[0]) return gameOver();
+          createNext();
         }
         updateRenderMap();
         nextTick();
@@ -181,16 +183,19 @@ export function Component() {
         $direction={FlexDirection.COLUMN}
       >
         <Text>当前得分: {score.current}</Text>
-        <FlexBox $gap="1" $justifyContent={FlexJustify.CENTER}>
-          <Container $gap="0.5" $direction={FlexDirection.COLUMN}>
-            {renderMap.map((rowData, rowIdx) => (
-              <Row key={rowIdx} rowData={rowData} $isClear={clearLine.includes(rowIdx)} />
-            ))}
-          </Container>
-          <FlexBox>
-            <NextElement elementInfo={nextElement.current} />
+        <GameWrapper $flex="1" $gap="1" $justifyContent={FlexJustify.CENTER} style={{ width: '100%' }}>
+          <FlexBox $justifyContent={FlexJustify.CENTER}>
+            <Container $gap="0.5" $direction={FlexDirection.COLUMN}>
+              {renderMap.map((rowData, rowIdx) => (
+                <Row key={rowIdx} rowData={rowData} $isClear={clearLine.includes(rowIdx)} />
+              ))}
+            </Container>
           </FlexBox>
-        </FlexBox>
+          <ToolsWrapper $direction={FlexDirection.ROW} $justifyContent={FlexJustify.BETWEEN}>
+            <Controller move={moveX} rotate={rotate} />
+            <NextElement elementInfo={nextElement.current} />
+          </ToolsWrapper>
+        </GameWrapper>
       </FlexBox>
     </AppearBox>
   );
