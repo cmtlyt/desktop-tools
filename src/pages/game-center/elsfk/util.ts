@@ -55,13 +55,13 @@ export function getMoveFunc(col: number, moveRow: number, moveAdd: number) {
         if (notDown || lastRow) throw { custom: true, action: 'submit' };
         moveMap.unshift(0);
         moveMap.pop();
-        break;
+        return moveMap;
       }
       default:
         pos satisfies never;
-        return moveMap;
+        return _moveMap;
     }
-    return moveMap;
+    return _moveMap;
   };
 }
 
@@ -70,14 +70,15 @@ function getElementVo(size: number, elementData: number[]) {
 }
 
 function getElementWidth(elementData: number[]): number {
-  return Math.max(...elementData.map((item) => item.toString(2).replace(/(^0+)|(0+$)/g, '').length));
+  const flatElement = elementData.reduce((pre, cur) => pre | cur);
+  return flatElement.toString(2).replace(/(^0+)|(0+$)/g, '').length;
 }
 
-export function getElementVoPos(col: number, element: ElementInfo) {
-  const { elementData, rightSpace, topPos, width } = element;
+export function getElementVoPos(col: number, element: ElementInfo): number[] {
+  const { elementData, rightSpace, topPos, width, size } = element;
   let _rightSpace = rightSpace;
   if (_rightSpace - width / 2 < 0) _rightSpace = 0;
-  else if (_rightSpace + width > col) _rightSpace = col - width;
+  else if (_rightSpace + width >= col) _rightSpace = col - size;
   element.rightSpace = _rightSpace;
   return new Array(topPos).fill(0).concat(elementData.map((item) => item << _rightSpace));
 }

@@ -56,14 +56,28 @@ export function Component() {
 
   const moveX = (pos: Position) => {
     const offset = { left: 1, right: -1, bottom: 0 }[pos] || 0;
-    moveMap.current = moveFunc(pos, staticMap.current, moveMap.current);
+    const oldMap = moveMap.current;
+    const currMap = moveFunc(pos, staticMap.current, moveMap.current);
+    if (oldMap === currMap) return;
+    moveMap.current = currMap;
     element.current.rightSpace += offset;
     updateRenderMap();
   };
 
   const rotate = () => {
+    const oldElement = element.current;
     element.current = rotateElement(element.current);
     const voPos = getElementVoPos(col, element.current);
+    const map = staticMap.current;
+    if (
+      voPos.some((item, idx) => {
+        const mapRow = map[idx - moveAddRow];
+        return mapRow && mapRow & item;
+      })
+    ) {
+      element.current = oldElement;
+      return;
+    }
     moveMap.current = [...voPos].concat(new Array(moveRow - voPos.length).fill(0));
     updateRenderMap();
   };
@@ -145,6 +159,7 @@ export function Component() {
       nextElement.current = isUser ? ({} as ElementInfo) : generaeteElement(col);
       speed.current = 500;
       downLock.current = false;
+      score.current = 0;
     },
     [getInitData, col],
   );
