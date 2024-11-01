@@ -1,6 +1,7 @@
 import { AppInfo } from '@/components/app-list/constant';
 import { SBWDIcon } from '../sbwd/icon';
 import { ELSFKIcon } from '../elsfk/icon';
+import { GiGoldMine } from 'react-icons/gi';
 
 export const gameList: AppInfo[] = [
   {
@@ -12,5 +13,10 @@ export const gameList: AppInfo[] = [
     name: '俄罗斯方块',
     path: './elsfk',
     icon: <ELSFKIcon />,
+  },
+  {
+    name: '扫雷',
+    path: './sl',
+    icon: <GiGoldMine />,
   },
 ];

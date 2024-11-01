@@ -191,7 +191,7 @@ export function Component() {
   });
 
   return (
-    <AppearBox>
+    <AppearBox onFirstAppear={() => logger.expose('game-elsfk')}>
       <FlexBox
         $flex="1"
         $alignItems={FlexAlign.CENTER}
