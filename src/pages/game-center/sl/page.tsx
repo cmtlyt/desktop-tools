@@ -12,6 +12,8 @@ import { SL_HISTORY_STORAGE_KEY } from '../constant';
 import { getSLStore } from './store';
 import { HistoryInfo, RightArea } from './right-area';
 import { emitHistoryAction, HistoryActionType } from '../components/history-drawer/subject';
+import { isPhone } from '@/utils/is-phone';
+import { PhoneController } from './components';
 
 export function Component() {
   const canvasRef = useRef<HTMLElement>(null);
@@ -20,10 +22,13 @@ export function Component() {
     row: 30,
     col: 30,
     startTime: Date.now(),
-    mineTotal: 300,
+    mineTotal: 20,
+    mineCount: 0,
     gap: 2,
     blockSize: 20,
+    openBlock: 0,
     blocks: [],
+    isPhone: isPhone(),
     status: 'paying',
     leafer: null as unknown as Leafer,
   });
@@ -31,6 +36,7 @@ export function Component() {
 
   const start = () => {
     const { leafer } = gameInfo.current;
+    gameInfo.current.mineCount = 0;
     gameInfo.current.status = 'paying';
     gameInfo.current.startTime = Date.now();
     gameInfo.current.gameId = getRandomString();
@@ -53,7 +59,7 @@ export function Component() {
     gameInfo.current.status = 'over';
     setGameStatus('over');
     const isWin = ext?.isWin || false;
-    const { blocks: _, leafer: __, ...rest } = gameInfo.current;
+    const { blocks: _, leafer: __, isPhone: ___, ...rest } = gameInfo.current;
     const { startTime } = gameInfo.current;
     const time = Date.now();
     const historyInfo: HistoryInfo = { ...rest, time, isWin, durationOfUse: time - startTime, score: 0 };
@@ -76,6 +82,7 @@ export function Component() {
       <FlexBox $flex="1" $direction={FlexDirection.COLUMN}>
         <FlexBox $flex="1" ref={canvasRef} />
       </FlexBox>
+      <PhoneController />
     </AppearBox>
   );
 }

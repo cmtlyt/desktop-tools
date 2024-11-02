@@ -172,7 +172,7 @@ function getContentInfo(args: unknown[]): ContentInfo[] {
 }
 
 function joinContentInfo(contentInfo: ContentInfo[], lineWidth: number) {
-  return contentInfo.map((info) => `${info.text}${' '.repeat(lineWidth - info.length)}`).join('%c\n%c');
+  return contentInfo.map((info) => `${info.text}${' '.repeat(Math.max(0, lineWidth - info.length))}`).join('%c\n%c');
 }
 
 const fontStyle = `line-height:1.5;`;
@@ -195,7 +195,7 @@ function generateContentStyles(contentInfo: ContentInfo[], baseContentStyle: str
 }
 
 function getLineWidth(contentInfo: ContentInfo[]) {
-  if (contentInfo.length > 1 && contentInfo.some((info) => info.hasChinese)) return 500;
+  if (contentInfo.length > 1 && contentInfo.some((info) => info.hasChinese)) return 1000;
   return Math.max(10, Math.max(...contentInfo.map((info) => info.length)));
 }
 

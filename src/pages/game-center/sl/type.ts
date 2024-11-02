@@ -21,7 +21,7 @@ export interface FinishedBlock extends Block {
 
 export type GameStatus = 'paying' | 'over';
 
-export interface GameInfo {
+export interface BaseGameInfo {
   gameId: string;
   row: number;
   col: number;
@@ -29,7 +29,13 @@ export interface GameInfo {
   startTime: number;
   blockSize: number;
   mineTotal: number;
-  leafer: Leafer;
+  mineCount: number;
+  openBlock: number;
   status: GameStatus;
+}
+
+export interface GameInfo extends BaseGameInfo {
+  isPhone: boolean;
+  leafer: Leafer;
   blocks: FinishedBlock[][];
 }

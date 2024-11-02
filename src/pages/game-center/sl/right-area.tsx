@@ -1,14 +1,13 @@
+import { useState } from 'react';
 import { ButtonList } from '@/components/button-list';
 import { emitSLAction, SLActionType } from './subject';
 import { HistoryDrawer, HistoryInfoWrapper, HistoryItem } from '../components/history-drawer';
-import { useState } from 'react';
 import { SL_HISTORY_STORAGE_KEY } from '../constant';
 import { FlexAlign, FlexDirection, FlexJustify } from '@/components/base';
 import { DateView } from '@/components/date-view';
-import { GameInfo } from './type';
-import { TExclude } from '@cmtlyt/base';
+import { BaseGameInfo } from './type';
 
-export interface HistoryInfo extends TExclude<GameInfo, 'leafer' | 'blocks'> {
+export interface HistoryInfo extends BaseGameInfo {
   time: number;
   isWin: boolean;
   score: number;

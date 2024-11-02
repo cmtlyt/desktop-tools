@@ -90,15 +90,15 @@ export async function openBlockWithGeneraterFunc(
   const { blockSize, leafer } = gameInfo;
   try {
     const openedBlock = openBlock([block]);
-    updateRender(leafer.children[0] as Box, openedBlock, blockSize);
+    updateRender(leafer.children[0] as Box, openedBlock, blockSize, gameInfo);
     const emptyBlockAroundUnOpenBlocks = getEmptyBlockAroundUnOpenBlocksWithGapTime(blocks, [block], 100);
     for await (const emptyBlockSet of emptyBlockAroundUnOpenBlocks) {
       const openedBlock = openBlock([...emptyBlockSet]);
-      updateRender(leafer.children[0] as Box, openedBlock, blockSize);
+      updateRender(leafer.children[0] as Box, openedBlock, blockSize, gameInfo);
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
-    updateRender(leafer.children[0] as Box, [block], blockSize);
+    updateRender(leafer.children[0] as Box, [block], blockSize, gameInfo);
     gameOver(false);
     if (e.custom) throw e;
   }
@@ -109,8 +109,9 @@ function syncChangeChildrenState(box: IUI, state: BlockStatus) {
   box.children?.forEach((item) => (item.state = state));
 }
 
-export function updateRender(group: Box | undefined, blocks: FinishedBlock[], blockSize: number) {
+export function updateRender(group: Box | undefined, blocks: FinishedBlock[], blockSize: number, gameInfo: GameInfo) {
   if (!group) return;
+  gameInfo.openBlock += blocks.length;
   blocks.forEach((block) => {
     const $block = group.children[block.row]?.children?.[block.col];
     if (!$block) return;
@@ -185,23 +186,67 @@ function gameOver(isWin: boolean) {
 function menuTapHandler(block: FinishedBlock, gameInfo: GameInfo) {
   const { status, type } = block;
   if (status === BlockStatus.open) return;
+  const { leafer, blockSize } = gameInfo;
   if (status === BlockStatus.unopen) {
     block.status = BlockStatus.flag;
-    if (type === 'mine') --gameInfo.mineTotal;
-    if (gameInfo.mineTotal === 0) gameOver(true);
+    if (type === 'mine') ++gameInfo.mineCount;
   } else if (status === BlockStatus.flag) {
     block.status = BlockStatus.question;
-    if (type === 'mine') ++gameInfo.mineTotal;
+    if (type === 'mine') --gameInfo.mineCount;
   } else if (status === BlockStatus.question) block.status = BlockStatus.unopen;
-  const { leafer, blockSize } = gameInfo;
-  updateRender(leafer.children[0] as Box, [block], blockSize);
+  updateRender(leafer.children[0] as Box, [block], blockSize, gameInfo);
 }
 
-function blockEventHandler(e: PointerEvent, _box: Box, block: FinishedBlock, gameInfo: GameInfo) {
-  if (gameInfo.status === 'over') return;
-  if (e.type === PointerEvent.TAP) return tapHandler(block, gameInfo);
-  if (e.type === PointerEvent.MENU_TAP) return menuTapHandler(block, gameInfo);
+function runHandler(type: string, block: FinishedBlock, gameInfo: GameInfo) {
+  if (type === PointerEvent.TAP) tapHandler(block, gameInfo);
+  else if (type === PointerEvent.MENU_TAP) menuTapHandler(block, gameInfo);
+
+  const { openBlock, mineTotal, row, col, mineCount } = gameInfo;
+  if (mineTotal === mineCount) gameOver(true);
+  if (openBlock + mineTotal >= row * col) gameOver(true);
 }
+
+function showPointer(box: Box) {
+  const oldState = box.state;
+  box.state = 'highlight';
+
+  return () => (box.state = oldState);
+}
+
+const blockEventHandler = (() => {
+  let prevHidePointer: (() => void) | null = null;
+  const setPrevHidePointer = (func: typeof prevHidePointer) => {
+    prevHidePointer = () => {
+      func?.();
+      prevHidePointer = null;
+    };
+  };
+  return function blockEventHandler(e: PointerEvent, box: Box, block: FinishedBlock, gameInfo: GameInfo) {
+    if (gameInfo.status === 'over') return;
+    if (gameInfo.isPhone) {
+      prevHidePointer?.();
+      if (block.status === BlockStatus.open && block.type === 'number' && block.mineCount === 0) {
+        return emitSLAction({ id: 'sl-phone-handler', type: SLActionType.PHONE_HANDLER });
+      }
+      const hidePointer = showPointer(box);
+      setPrevHidePointer(hidePointer);
+      return emitSLAction({
+        id: 'sl-phone-handler',
+        type: SLActionType.PHONE_HANDLER,
+        ext: {
+          block,
+          gameInfo,
+          disableAutoLogger: true,
+          eventCallback(type) {
+            prevHidePointer?.();
+            runHandler(type, block, gameInfo);
+          },
+        },
+      });
+    }
+    runHandler(e.type, block, gameInfo);
+  };
+})();
 
 function createBlock(block: FinishedBlock, gameInfo: GameInfo) {
   const { blockSize } = gameInfo;
@@ -213,7 +258,19 @@ function createBlock(block: FinishedBlock, gameInfo: GameInfo) {
     zIndex: 1,
     states: {
       [BlockStatus.open]: {
-        animation: { keyframes: [{ fill: 'yellowgreen' }, { fill: 'transparent' }], duration: 1, ending: 'to' },
+        animation: {
+          keyframes: [{ fill: 'yellowgreen' }, { fill: 'transparent' }],
+          duration: 1,
+          ending: 'to',
+        },
+      },
+      highlight: {
+        animation: {
+          keyframes: [{ fill: '#ffcac4' }, { fill: '#ff4949' }],
+          duration: 0.5,
+          swing: true,
+          loop: true,
+        },
       },
     },
   });
@@ -229,6 +286,8 @@ export function getScore(gameInfo: HistoryInfo) {
   const totalCell = row * col;
   const mineScore = Math.min(mineTotal / totalCell, 0.5) * 100 * 2;
   const durationScore = Math.abs(Math.min(durationOfUse / 1000 / totalCell - 1, 0)) * 100;
-  if (isWin) return Math.min(100, mineScore * 0.3 + durationScore * 0.3 + 40);
-  return Number(Math.min(mineScore * 0.3 + (100 - durationScore) * 0.3, 60).toFixed(3));
+  let score;
+  if (isWin) score = Math.min(100, mineScore * 0.3 + durationScore * 0.3 + 40);
+  else score = Math.min(mineScore * 0.3 + (100 - durationScore) * 0.3, 60);
+  return Number(score.toFixed(3));
 }

@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 export interface ActionSubject<T, E = unknown> {
   id: string;
   type: T;
-  ext?: E & TObject<unknown>;
+  ext?: Partial<E> & TObject<unknown>;
 }
 
 type ActionType<S> = S extends ActionSubject<infer T> ? T : unknown;
