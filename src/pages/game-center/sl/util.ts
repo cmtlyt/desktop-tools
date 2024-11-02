@@ -4,6 +4,7 @@ import '@leafer-in/animate';
 import '@leafer-in/flow';
 import { Block, BlockStatus, FinishedBlock, GameInfo } from './type';
 import { emitSLAction, SLActionType } from './subject';
+import { HistoryInfo } from './right-area';
 
 function getAroundBlocks<T extends Block>(blocks: T[][], block: FinishedBlock): T[] {
   const { row, col } = block;
@@ -218,4 +219,16 @@ function createBlock(block: FinishedBlock, gameInfo: GameInfo) {
   });
   box.on([PointerEvent.TAP, PointerEvent.MENU_TAP], (e) => blockEventHandler(e, box, block, gameInfo));
   return box;
+}
+
+export function getScore(gameInfo: HistoryInfo) {
+  const { row, col, mineTotal, durationOfUse, isWin } = gameInfo;
+  // 雷比得分(30): >50% -> 100
+  // 时长得分(30): 时长(s) / 格数 <= 0.5 -> 100
+  // 胜利得分(40): win -> 100
+  const totalCell = row * col;
+  const mineScore = Math.min(mineTotal / totalCell, 0.5) * 100 * 2;
+  const durationScore = Math.abs(Math.min(durationOfUse / 1000 / totalCell - 1, 0)) * 100;
+  if (isWin) return Math.min(100, mineScore * 0.3 + durationScore * 0.3 + 40);
+  return Number(Math.min(mineScore * 0.3 + (100 - durationScore) * 0.3, 60).toFixed(3));
 }

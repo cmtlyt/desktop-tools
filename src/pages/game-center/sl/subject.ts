@@ -4,6 +4,7 @@ import { logger } from '@/utils';
 
 export enum SLActionType {
   GAME_OVER = 'game_over',
+  RESTART = 'restart',
 }
 
 interface ExtendProps {

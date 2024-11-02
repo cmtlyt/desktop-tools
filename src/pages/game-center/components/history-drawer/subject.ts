@@ -12,7 +12,7 @@ const actionSubject = new Subject<HistorySubject>();
 
 export function emitHistoryAction(action: HistorySubject) {
   actionSubject.next(action);
-  logger.event('Game-action', action);
+  logger.event('history-action', action);
 }
 
 export const useSubscribeHistoryAction = createActionSubscribeHook(actionSubject);

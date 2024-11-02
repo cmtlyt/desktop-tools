@@ -19,7 +19,10 @@ export interface FinishedBlock extends Block {
   hasContent: boolean;
 }
 
+export type GameStatus = 'paying' | 'over';
+
 export interface GameInfo {
+  gameId: string;
   row: number;
   col: number;
   gap: number;
@@ -27,6 +30,6 @@ export interface GameInfo {
   blockSize: number;
   mineTotal: number;
   leafer: Leafer;
-  status: 'paying' | 'over';
+  status: GameStatus;
   blocks: FinishedBlock[][];
 }
