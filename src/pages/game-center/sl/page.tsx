@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Leafer } from 'leafer-ui';
 import { getRandomString } from '@cmtlyt/base';
 import { FlexBox, FlexDirection } from '@/components/base';
-import { generateBlocks, getScore, render } from './util';
+import { generateBlocks, getBlockFromPoint, getPointDistance, getScore, probeAround, render } from './util';
 import { GameInfo } from './type';
 import { SLActionType, useSubscribeSLAction } from './subject';
 import { getLayoutStore } from '@/store';
@@ -22,7 +22,7 @@ export function Component() {
     row: 30,
     col: 30,
     startTime: Date.now(),
-    mineTotal: 20,
+    mineTotal: 200,
     mineCount: 0,
     gap: 2,
     blockSize: 20,
@@ -37,6 +37,7 @@ export function Component() {
   const start = () => {
     const { leafer } = gameInfo.current;
     gameInfo.current.mineCount = 0;
+    gameInfo.current.openBlock = 0;
     gameInfo.current.status = 'paying';
     gameInfo.current.startTime = Date.now();
     gameInfo.current.gameId = getRandomString();
@@ -77,10 +78,30 @@ export function Component() {
 
   useSubscribeSLAction(start, SLActionType.RESTART);
 
+  const onMouseHandler: React.MouseEventHandler<HTMLElement> = useMemo(() => {
+    let pos: [number, number] = [0, 0];
+    return (e) => {
+      if (gameInfo.current.status === 'over') return;
+      if (e.type === 'mousedown') return (pos = [e.clientX, e.clientY]);
+      if (e.button === 1) {
+        const currPos = [e.clientX, e.clientY];
+        const distance = getPointDistance(pos, currPos);
+        if (distance > 0) return;
+        const rect = canvasRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        const { leafer } = gameInfo.current;
+        const innerPoint = leafer.getInnerPointByLocal({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        const block = getBlockFromPoint(innerPoint, gameInfo.current);
+        if (!block) return;
+        probeAround(block, gameInfo.current);
+      }
+    };
+  }, []);
+
   return (
     <AppearBox onFirstAppear={() => logger.appear('game-sl')}>
       <FlexBox $flex="1" $direction={FlexDirection.COLUMN}>
-        <FlexBox $flex="1" ref={canvasRef} />
+        <FlexBox $flex="1" ref={canvasRef} onMouseDown={onMouseHandler} onMouseUp={onMouseHandler} />
       </FlexBox>
       <PhoneController />
     </AppearBox>

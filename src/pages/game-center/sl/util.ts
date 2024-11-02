@@ -1,10 +1,11 @@
-import { Box, IUIInputData, PointerEvent, IUI } from 'leafer-ui';
+import { Box, IUIInputData, PointerEvent, IUI, IPointData } from 'leafer-ui';
 import '@leafer-in/state';
 import '@leafer-in/animate';
 import '@leafer-in/flow';
 import { Block, BlockStatus, FinishedBlock, GameInfo } from './type';
 import { emitSLAction, SLActionType } from './subject';
 import { HistoryInfo } from './right-area';
+import { isEmpty } from '@cmtlyt/base';
 
 function getAroundBlocks<T extends Block>(blocks: T[][], block: FinishedBlock): T[] {
   const { row, col } = block;
@@ -53,7 +54,7 @@ function getAroundUnOpenBlocks(blocks: FinishedBlock[][], baseBlocks: FinishedBl
 }
 
 function getEmptyBlockAroundUnOpenBlocks(blocks: FinishedBlock[][], baseBlocks: FinishedBlock[]) {
-  const filterBaseBlocks = baseBlocks.filter((block) => block.type === 'number' && block.mineCount === 0);
+  const filterBaseBlocks = baseBlocks.filter(isEmptyBlock);
   return getAroundUnOpenBlocks(blocks, filterBaseBlocks);
 }
 
@@ -72,9 +73,10 @@ async function* getEmptyBlockAroundUnOpenBlocksWithGapTime(
   } while (blockSet.size);
 }
 
-function openBlock(blocks: FinishedBlock[]) {
+function openBlock(blocks: FinishedBlock[], gameInfo: GameInfo) {
+  gameInfo.openBlock += blocks.length;
   return blocks.map((block) => {
-    if (block.status === BlockStatus.unopen) block.status = BlockStatus.open;
+    block.status = BlockStatus.open;
     if (block.type === 'mine') throw { custom: true, msg: 'game over' };
     return block;
   });
@@ -82,23 +84,40 @@ function openBlock(blocks: FinishedBlock[]) {
 
 export async function openBlockWithGeneraterFunc(
   blocks: FinishedBlock[][],
+  needOpenBlocks: FinishedBlock[],
+  gameInfo: GameInfo,
+): Promise<void>;
+export async function openBlockWithGeneraterFunc(
+  blocks: FinishedBlock[][],
   row: number,
   col: number,
   gameInfo: GameInfo,
+): Promise<void>;
+export async function openBlockWithGeneraterFunc(
+  blocks: FinishedBlock[][],
+  row: number | FinishedBlock[],
+  col: number | GameInfo,
+  gameInfo?: GameInfo,
 ) {
-  const block = blocks[row][col];
-  const { blockSize, leafer } = gameInfo;
+  let _needOpenBlock: FinishedBlock[];
+  if (typeof row === 'number' && typeof col === 'number') _needOpenBlock = [blocks[row][col]];
+  else if (Array.isArray(row) && typeof col === 'object') {
+    gameInfo = col;
+    _needOpenBlock = row;
+  } else return;
+  const _gameInfo = gameInfo!;
+  const { blockSize, leafer } = _gameInfo;
   try {
-    const openedBlock = openBlock([block]);
-    updateRender(leafer.children[0] as Box, openedBlock, blockSize, gameInfo);
-    const emptyBlockAroundUnOpenBlocks = getEmptyBlockAroundUnOpenBlocksWithGapTime(blocks, [block], 100);
+    const openedBlock = openBlock(_needOpenBlock, _gameInfo);
+    updateRender(leafer.children[0] as Box, openedBlock, blockSize);
+    const emptyBlockAroundUnOpenBlocks = getEmptyBlockAroundUnOpenBlocksWithGapTime(blocks, _needOpenBlock, 100);
     for await (const emptyBlockSet of emptyBlockAroundUnOpenBlocks) {
-      const openedBlock = openBlock([...emptyBlockSet]);
-      updateRender(leafer.children[0] as Box, openedBlock, blockSize, gameInfo);
+      const openedBlock = openBlock([...emptyBlockSet], _gameInfo);
+      updateRender(leafer.children[0] as Box, openedBlock, blockSize);
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
-    updateRender(leafer.children[0] as Box, [block], blockSize, gameInfo);
+    updateRender(leafer.children[0] as Box, _needOpenBlock, blockSize);
     gameOver(false);
     if (e.custom) throw e;
   }
@@ -109,9 +128,8 @@ function syncChangeChildrenState(box: IUI, state: BlockStatus) {
   box.children?.forEach((item) => (item.state = state));
 }
 
-export function updateRender(group: Box | undefined, blocks: FinishedBlock[], blockSize: number, gameInfo: GameInfo) {
+export function updateRender(group: Box | undefined, blocks: FinishedBlock[], blockSize: number) {
   if (!group) return;
-  gameInfo.openBlock += blocks.length;
   blocks.forEach((block) => {
     const $block = group.children[block.row]?.children?.[block.col];
     if (!$block) return;
@@ -194,16 +212,21 @@ function menuTapHandler(block: FinishedBlock, gameInfo: GameInfo) {
     block.status = BlockStatus.question;
     if (type === 'mine') --gameInfo.mineCount;
   } else if (status === BlockStatus.question) block.status = BlockStatus.unopen;
-  updateRender(leafer.children[0] as Box, [block], blockSize, gameInfo);
+  updateRender(leafer.children[0] as Box, [block], blockSize);
+}
+
+function checkGameOver(gameInfo: GameInfo) {
+  const { openBlock, mineTotal, row, col, mineCount } = gameInfo;
+
+  if (mineTotal === mineCount) gameOver(true);
+  if (openBlock + mineTotal >= row * col) gameOver(true);
 }
 
 function runHandler(type: string, block: FinishedBlock, gameInfo: GameInfo) {
   if (type === PointerEvent.TAP) tapHandler(block, gameInfo);
   else if (type === PointerEvent.MENU_TAP) menuTapHandler(block, gameInfo);
 
-  const { openBlock, mineTotal, row, col, mineCount } = gameInfo;
-  if (mineTotal === mineCount) gameOver(true);
-  if (openBlock + mineTotal >= row * col) gameOver(true);
+  checkGameOver(gameInfo);
 }
 
 function showPointer(box: Box) {
@@ -225,7 +248,7 @@ const blockEventHandler = (() => {
     if (gameInfo.status === 'over') return;
     if (gameInfo.isPhone) {
       prevHidePointer?.();
-      if (block.status === BlockStatus.open && block.type === 'number' && block.mineCount === 0) {
+      if (block.status === BlockStatus.open && isEmpty(block)) {
         return emitSLAction({ id: 'sl-phone-handler', type: SLActionType.PHONE_HANDLER });
       }
       const hidePointer = showPointer(box);
@@ -239,6 +262,7 @@ const blockEventHandler = (() => {
           disableAutoLogger: true,
           eventCallback(type) {
             prevHidePointer?.();
+            if (!type) return;
             runHandler(type, block, gameInfo);
           },
         },
@@ -290,4 +314,35 @@ export function getScore(gameInfo: HistoryInfo) {
   if (isWin) score = Math.min(100, mineScore * 0.3 + durationScore * 0.3 + 40);
   else score = Math.min(mineScore * 0.3 + (100 - durationScore) * 0.3, 60);
   return Number(score.toFixed(3));
+}
+
+export function getPointDistance(pos1: number[], pos2: number[]): number {
+  const x = Math.abs(pos2[0] - pos1[0]);
+  const y = Math.abs(pos2[1] - pos1[1]);
+  return Math.sqrt(x * x + y * y);
+}
+
+export function getBlockFromPoint(pos: IPointData, gameInfo: GameInfo): FinishedBlock | null {
+  const { x, y } = pos;
+  const { blockSize, gap, blocks, row: maxRow, col: maxCol } = gameInfo;
+  const _blockSize = blockSize + gap;
+  const row = Math.floor(y / _blockSize);
+  const col = Math.floor(x / _blockSize);
+  if (row >= maxRow || col >= maxCol) return null;
+  return blocks[row][col];
+}
+
+export function isEmptyBlock(block: FinishedBlock): boolean {
+  return block.type === 'number' && block.mineCount === 0;
+}
+
+export async function probeAround(block: FinishedBlock, gameInfo: GameInfo) {
+  if (block.status !== BlockStatus.open || isEmptyBlock(block)) return;
+  const { blocks } = gameInfo;
+  const aroundBlocks = getAroundBlocks(blocks, block);
+  // 存在未标记的地雷 block
+  if (aroundBlocks.some((item) => item.type === 'mine' && item.status !== BlockStatus.flag)) return;
+  const filteredAroundBlock = aroundBlocks.filter((item) => item.status === BlockStatus.unopen);
+  if (!filteredAroundBlock.length) return;
+  return openBlockWithGeneraterFunc(blocks, filteredAroundBlock, gameInfo).then(() => checkGameOver(gameInfo));
 }

@@ -14,7 +14,7 @@ interface ExtendProps {
   block: FinishedBlock;
   gameInfo: GameInfo;
   disableAutoLogger: boolean;
-  eventCallback: (type: string) => void;
+  eventCallback: (type?: string) => void;
 }
 
 type SLSubject = ActionSubject<SLActionType, ExtendProps>;

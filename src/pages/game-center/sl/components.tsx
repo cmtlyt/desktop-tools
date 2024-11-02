@@ -3,14 +3,16 @@ import { PointerEvent } from 'leafer-ui';
 import styled from 'styled-components';
 import { MdFlip } from 'react-icons/md';
 import { PiFlagPennantFill } from 'react-icons/pi';
+import { LuRadar } from 'react-icons/lu';
 import { FaQuestion } from 'react-icons/fa6';
 import { TbWashDrycleanOff } from 'react-icons/tb';
 import { SLActionType, useSubscribeSLAction } from './subject';
 import { Show } from '@/components/show';
 import { BlockStatus, FinishedBlock, GameInfo } from './type';
 import { FlexBox, ShadowFlexBox } from '@/components/base';
+import { isEmptyBlock, probeAround } from './util';
 
-type EventCallback = (type: string) => void;
+type EventCallback = (type?: string) => void;
 
 interface EventInfo {
   block: FinishedBlock;
@@ -63,14 +65,24 @@ export function PhoneController() {
     setShowController(true);
   }, SLActionType.PHONE_HANDLER);
 
+  const probeHandler = () => {
+    const { block, gameInfo, callback } = eventInfo;
+    if (!block || !gameInfo || !callback) return;
+    probeAround(block, gameInfo);
+    callback();
+  };
+
   return (
     <Show if={showController}>
       <ControllerWrapper $gap="1" onClick={() => setShowController(false)}>
         <IconWrapper onClick={() => eventInfo?.callback?.(PointerEvent.TAP)}>
-          <MdFlip />
+          {eventInfo?.block?.status === BlockStatus.unopen && <MdFlip />}
         </IconWrapper>
         <IconWrapper onClick={() => eventInfo?.callback?.(PointerEvent.MENU_TAP)}>
           {getIcon(eventInfo?.block?.status)}
+        </IconWrapper>
+        <IconWrapper onClick={probeHandler}>
+          {eventInfo?.block?.status === BlockStatus.open && !isEmptyBlock(eventInfo?.block) && <LuRadar />}
         </IconWrapper>
       </ControllerWrapper>
     </Show>
