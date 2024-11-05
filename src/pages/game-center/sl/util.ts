@@ -311,16 +311,19 @@ function createBlock(block: FinishedBlock, gameInfo: GameInfo) {
 export function getScore(gameInfo: HistoryInfo) {
   const { row, col, mineTotal, durationOfUse, isWin, openBlock } = gameInfo;
   // 雷比得分(20): >50% -> 100
-  // 时长得分(10): 时长(s) / 格数 <= 0.5 -> 100
-  // 翻开格数(30): 翻开格数 / 格数 * 100 | win -> 100
+  // 时长得分(20): 时长(s) / 格数 <= 0.5 -> 100
+  // 翻开格数(20): 翻开格数 / 格数 * 100 | win -> 100
   // 胜利得分(40): win -> 100
   const totalCell = row * col;
   const mineScore = Math.min(mineTotal / totalCell, 0.5) * 100 * 2;
   const durationScore = Math.abs(Math.min(durationOfUse / 1000 / totalCell - 1, 0)) * 100;
   const openBlockScore = (openBlock / (totalCell - mineTotal)) * 100;
+  const minePc = 20;
+  const durationPc = 20;
+  const openBlockPc = 20;
   let score;
-  if (isWin) score = Math.min(100, mineScore * 0.3 + durationScore * 0.3 + 40 + 30);
-  else score = Math.min(mineScore * 0.3 + (100 - durationScore) * 0.3 + openBlockScore * 0.3, 60);
+  if (isWin) score = Math.min(100, mineScore * minePc + durationScore * durationPc + 40 + 30);
+  else score = Math.min(mineScore * minePc + (100 - durationScore) * durationPc + openBlockScore * openBlockPc, 60);
   return Number(score.toFixed(3));
 }
 
