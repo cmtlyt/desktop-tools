@@ -318,11 +318,11 @@ export function getScore(gameInfo: HistoryInfo) {
   const mineScore = Math.min(mineTotal / totalCell, 0.5) * 100 * 2;
   const durationScore = Math.abs(Math.min(durationOfUse / 1000 / totalCell - 1, 0)) * 100;
   const openBlockScore = (openBlock / (totalCell - mineTotal)) * 100;
-  const minePc = 20;
-  const durationPc = 20;
-  const openBlockPc = 20;
+  const minePc = 0.2;
+  const durationPc = 0.2;
+  const openBlockPc = 0.2;
   let score;
-  if (isWin) score = Math.min(100, mineScore * minePc + durationScore * durationPc + 40 + 30);
+  if (isWin) score = Math.min(100, mineScore * minePc + durationScore * durationPc + 40 + 20);
   else score = Math.min(mineScore * minePc + (100 - durationScore) * durationPc + openBlockScore * openBlockPc, 60);
   return Number(score.toFixed(3));
 }
