@@ -21,18 +21,21 @@ function getAroundBlocks<T extends Block>(blocks: T[][], block: FinishedBlock): 
   ].filter(Boolean);
 }
 
-function generateBlocksMineInfo(blocks: Block[][]): FinishedBlock[][] {
-  return blocks.map((row, rowIdx) => {
+function generateBlocksMineInfo(blocks: Block[][]): [FinishedBlock[][], string[]] {
+  const mines: string[] = [];
+  const _blocks = blocks.map((row, rowIdx) => {
     return row.map((block, colIdx) => {
+      if (block.type === 'mine') mines.push(`${rowIdx}-${colIdx}`);
       const posBlock = { ...block, row: rowIdx, col: colIdx, mineCount: 0, hasContent: false };
       const aroundBlocks = getAroundBlocks(blocks, posBlock);
       const mineCount = aroundBlocks.filter((block) => block.type === 'mine').length;
       return { ...posBlock, mineCount };
     });
   });
+  return [_blocks, mines];
 }
 
-export function generateBlocks(row: number, col: number, mineCount: number): FinishedBlock[][] {
+export function generateBlocks(row: number, col: number, mineCount: number): [FinishedBlock[][], string[]] {
   const random = () => Math.random() - 0.5;
   const flatBlocks = new Array(mineCount)
     .fill(0)
@@ -135,6 +138,7 @@ export function updateRender(group: Box | undefined, blocks: FinishedBlock[], bl
     if (!$block) return;
     const { status, hasContent, type, mineCount } = block;
     if (!hasContent && (status !== BlockStatus.open || type !== 'number' || mineCount !== 0)) {
+      block.hasContent = true;
       const content = generateContent(block, blockSize);
       $block.add(content);
     }
@@ -208,9 +212,11 @@ function menuTapHandler(block: FinishedBlock, gameInfo: GameInfo) {
   if (status === BlockStatus.unopen) {
     block.status = BlockStatus.flag;
     if (type === 'mine') ++gameInfo.mineCount;
+    ++gameInfo.userMiniCount;
   } else if (status === BlockStatus.flag) {
     block.status = BlockStatus.question;
     if (type === 'mine') --gameInfo.mineCount;
+    --gameInfo.userMiniCount;
   } else if (status === BlockStatus.question) block.status = BlockStatus.unopen;
   updateRender(leafer.children[0] as Box, [block], blockSize);
 }
@@ -303,16 +309,18 @@ function createBlock(block: FinishedBlock, gameInfo: GameInfo) {
 }
 
 export function getScore(gameInfo: HistoryInfo) {
-  const { row, col, mineTotal, durationOfUse, isWin } = gameInfo;
-  // 雷比得分(30): >50% -> 100
-  // 时长得分(30): 时长(s) / 格数 <= 0.5 -> 100
+  const { row, col, mineTotal, durationOfUse, isWin, openBlock } = gameInfo;
+  // 雷比得分(20): >50% -> 100
+  // 时长得分(10): 时长(s) / 格数 <= 0.5 -> 100
+  // 翻开格数(30): 翻开格数 / 格数 * 100 | win -> 100
   // 胜利得分(40): win -> 100
   const totalCell = row * col;
   const mineScore = Math.min(mineTotal / totalCell, 0.5) * 100 * 2;
   const durationScore = Math.abs(Math.min(durationOfUse / 1000 / totalCell - 1, 0)) * 100;
+  const openBlockScore = (openBlock / (totalCell - mineTotal)) * 100;
   let score;
-  if (isWin) score = Math.min(100, mineScore * 0.3 + durationScore * 0.3 + 40);
-  else score = Math.min(mineScore * 0.3 + (100 - durationScore) * 0.3, 60);
+  if (isWin) score = Math.min(100, mineScore * 0.3 + durationScore * 0.3 + 40 + 30);
+  else score = Math.min(mineScore * 0.3 + (100 - durationScore) * 0.3 + openBlockScore * 0.3, 60);
   return Number(score.toFixed(3));
 }
 
@@ -345,4 +353,19 @@ export async function probeAround(block: FinishedBlock, gameInfo: GameInfo) {
   const filteredAroundBlock = aroundBlocks.filter((item) => item.status === BlockStatus.unopen);
   if (!filteredAroundBlock.length) return;
   return openBlockWithGeneraterFunc(blocks, filteredAroundBlock, gameInfo).then(() => checkGameOver(gameInfo));
+}
+
+export function showAllMine(gameInfo: GameInfo) {
+  const { leafer, mines, blockSize, blocks } = gameInfo;
+  const box = leafer.children[0] as Box;
+  mines.forEach((item) => {
+    const [row, col] = item.split('-');
+    const block = blocks[+row][+col];
+    const $block = box.children[+row]?.children?.[+col] as Box;
+    if (!block.hasContent) {
+      const content = generateContent(block, blockSize);
+      $block.add(content);
+    }
+    syncChangeChildrenState($block, BlockStatus.open);
+  });
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { PointerEvent } from 'leafer-ui';
 import styled from 'styled-components';
 import { MdFlip } from 'react-icons/md';
@@ -9,7 +9,7 @@ import { TbWashDrycleanOff } from 'react-icons/tb';
 import { SLActionType, useSubscribeSLAction } from './subject';
 import { Show } from '@/components/show';
 import { BlockStatus, FinishedBlock, GameInfo } from './type';
-import { FlexBox, ShadowFlexBox } from '@/components/base';
+import { FlexBox, FlexJustify, ShadowFlexBox } from '@/components/base';
 import { isEmptyBlock, probeAround } from './util';
 
 type EventCallback = (type?: string) => void;
@@ -54,7 +54,7 @@ const ControllerWrapper = styled(FlexBox)`
   transform: translateX(-50%);
 `;
 
-export function PhoneController() {
+export const PhoneController = memo(function PhoneController() {
   const [showController, setShowController] = useState(false);
   const [eventInfo, setEventInfo] = useState(null as unknown as EventInfo);
 
@@ -86,5 +86,35 @@ export function PhoneController() {
         </IconWrapper>
       </ControllerWrapper>
     </Show>
+  );
+});
+
+const Text = styled.span`
+  padding: 1rem;
+  font-size: 2rem;
+`;
+
+interface GameInfoProps {
+  gameInfo: React.MutableRefObject<GameInfo>;
+}
+
+export function GameInfoBox(props: GameInfoProps) {
+  const { gameInfo } = props;
+  const [time, setTime] = useState(0);
+
+  useSubscribeSLAction(() => setTime(0), SLActionType.RESTART);
+
+  useEffect(() => {
+    if (gameInfo.current.status === 'over') return;
+    const timer = setInterval(() => setTime((time) => time + 1), 1000);
+    return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameInfo.current.status]);
+
+  return (
+    <FlexBox $justifyContent={FlexJustify.CENTER}>
+      <Text>剩余雷数: {gameInfo.current.mineTotal - gameInfo.current.userMiniCount}</Text>
+      <Text>用时: {time}</Text>
+    </FlexBox>
   );
 }

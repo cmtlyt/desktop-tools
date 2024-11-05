@@ -32,6 +32,8 @@ export interface BaseGameInfo {
   mineCount: number;
   openBlock: number;
   status: GameStatus;
+  mines: string[];
+  userMiniCount: number;
 }
 
 export interface GameInfo extends BaseGameInfo {

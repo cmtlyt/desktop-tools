@@ -2,7 +2,15 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Leafer } from 'leafer-ui';
 import { getRandomString } from '@cmtlyt/base';
 import { FlexBox, FlexDirection } from '@/components/base';
-import { generateBlocks, getBlockFromPoint, getPointDistance, getScore, probeAround, render } from './util';
+import {
+  generateBlocks,
+  getBlockFromPoint,
+  getPointDistance,
+  getScore,
+  probeAround,
+  render,
+  showAllMine,
+} from './util';
 import { GameInfo } from './type';
 import { SLActionType, useSubscribeSLAction } from './subject';
 import { getLayoutStore } from '@/store';
@@ -13,7 +21,7 @@ import { getSLStore } from './store';
 import { HistoryInfo, RightArea } from './right-area';
 import { emitHistoryAction, HistoryActionType } from '../components/history-drawer/subject';
 import { isPhone } from '@/utils/is-phone';
-import { PhoneController } from './components';
+import { GameInfoBox, PhoneController } from './components';
 
 export function Component() {
   const canvasRef = useRef<HTMLElement>(null);
@@ -24,9 +32,11 @@ export function Component() {
     startTime: Date.now(),
     mineTotal: 200,
     mineCount: 0,
+    userMiniCount: 0,
     gap: 2,
     blockSize: 20,
     openBlock: 0,
+    mines: [],
     blocks: [],
     isPhone: isPhone(),
     status: 'paying',
@@ -44,7 +54,9 @@ export function Component() {
     setGameStatus('paying');
     leafer.clear();
     const { row, col, mineTotal } = gameInfo.current;
-    gameInfo.current.blocks = generateBlocks(row, col, mineTotal);
+    const [blocks, mines] = generateBlocks(row, col, mineTotal);
+    gameInfo.current.blocks = blocks;
+    gameInfo.current.mines = mines;
     render(gameInfo.current);
   };
 
@@ -60,6 +72,7 @@ export function Component() {
     gameInfo.current.status = 'over';
     setGameStatus('over');
     const isWin = ext?.isWin || false;
+    if (!isWin) showAllMine(gameInfo.current);
     const { blocks: _, leafer: __, isPhone: ___, ...rest } = gameInfo.current;
     const { startTime } = gameInfo.current;
     const time = Date.now();
@@ -100,6 +113,7 @@ export function Component() {
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('game-sl')}>
+      <GameInfoBox gameInfo={gameInfo} />
       <FlexBox $flex="1" $direction={FlexDirection.COLUMN}>
         <FlexBox $flex="1" ref={canvasRef} onMouseDown={onMouseHandler} onMouseUp={onMouseHandler} />
       </FlexBox>
