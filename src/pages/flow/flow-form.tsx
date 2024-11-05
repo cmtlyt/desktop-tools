@@ -153,19 +153,21 @@ export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm
                     />
                     <InputFieldWrapper noStyle name={[name, 'remark']} placeholder="请输入备注" />
                     <Show if={!readonly && fields.length > 1}>
-                      <MinusCircleOutlined onClick={() => remove(name)} />
+                      {() => <MinusCircleOutlined onClick={() => remove(name)} />}
                     </Show>
                   </FlexBox>
                 ))}
                 <Show if={!readonly}>
-                  <FieldWrapper>
-                    <Button type="button" onClick={() => add()} $presetTheme={ButtonTheme.INFO}>
-                      <FlexBox $gap="0.4">
-                        <PlusOutlined />
-                        <span>添加帐户</span>
-                      </FlexBox>
-                    </Button>
-                  </FieldWrapper>
+                  {() => (
+                    <FieldWrapper>
+                      <Button type="button" onClick={() => add()} $presetTheme={ButtonTheme.INFO}>
+                        <FlexBox $gap="0.4">
+                          <PlusOutlined />
+                          <span>添加帐户</span>
+                        </FlexBox>
+                      </Button>
+                    </FieldWrapper>
+                  )}
                 </Show>
               </FlexBox>
             )}

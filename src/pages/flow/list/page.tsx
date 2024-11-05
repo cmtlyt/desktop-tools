@@ -40,17 +40,19 @@ export function Component() {
     <AppearBox onFirstAppear={() => logger.appear('flow-list')}>
       <FlowList $direction={FlexDirection.COLUMN}>
         <Switch if={flows.length > 0} fullback={<Empty />}>
-          {flows.map((flow) => (
-            <FlowItem
-              key={flow.id}
-              flow={flow}
-              onDelete={deleteFlowHandler}
-              onClick={() => {
-                setFlow(flow);
-                navigate(`/flow/detail/${flow.id}`);
-              }}
-            />
-          ))}
+          {() =>
+            flows.map((flow) => (
+              <FlowItem
+                key={flow.id}
+                flow={flow}
+                onDelete={deleteFlowHandler}
+                onClick={() => {
+                  setFlow(flow);
+                  navigate(`/flow/detail/${flow.id}`);
+                }}
+              />
+            ))
+          }
         </Switch>
       </FlowList>
     </AppearBox>

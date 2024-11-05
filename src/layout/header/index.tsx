@@ -55,14 +55,16 @@ export function Header() {
     <HeaderContent $gap="1" $justifyContent={FlexJustify.BETWEEN}>
       <TitleWrapper $alignItems={FlexAlign.CENTER}>
         <Show if={needBackIcon}>
-          <AppearBox onFirstAppear={() => logger.appear('header-back-icon')}>
-            <BackIcon
-              onClick={() => {
-                logger.click('header-back-icon');
-                navigate(-1);
-              }}
-            />
-          </AppearBox>
+          {() => (
+            <AppearBox onFirstAppear={() => logger.appear('header-back-icon')}>
+              <BackIcon
+                onClick={() => {
+                  logger.click('header-back-icon');
+                  navigate(-1);
+                }}
+              />
+            </AppearBox>
+          )}
         </Show>
         <TitleText>{title}</TitleText>
       </TitleWrapper>

@@ -58,17 +58,21 @@ export const Price = memo(function Price(props: PriceProps) {
       }}
     >
       <Show if={showPrefix}>
-        <FontSpan $fontSize={_symbolSize} $color={symbolColor || color}>
-          ¥
-        </FontSpan>
+        {() => (
+          <FontSpan $fontSize={_symbolSize} $color={symbolColor || color}>
+            ¥
+          </FontSpan>
+        )}
       </Show>
       <FontSpan $fontSize={_fontSize} $color={color}>
         {integer}
       </FontSpan>
       <Show if={decimal?.length > 0}>
-        <FontSpan $fontSize={_decimalSize} $color={decimalColor || color}>
-          {`.${decimal}`}
-        </FontSpan>
+        {() => (
+          <FontSpan $fontSize={_decimalSize} $color={decimalColor || color}>
+            {`.${decimal}`}
+          </FontSpan>
+        )}
       </Show>
     </FlexBox>
   );

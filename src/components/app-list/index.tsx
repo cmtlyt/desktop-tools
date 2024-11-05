@@ -101,7 +101,7 @@ export function AppList(props: AppListProps) {
           >
             <IconWrap $style={app.iconStyle} $alignItems={FlexAlign.CENTER} $justifyContent={FlexJustify.CENTER}>
               <Switch if={typeof app.icon === 'string'} fullback={app.icon}>
-                <span>{app.icon}</span>
+                {() => <span>{app.icon}</span>}
               </Switch>
             </IconWrap>
             <AppName $style={app.labelStyle}>{app.name}</AppName>

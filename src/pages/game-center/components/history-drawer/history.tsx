@@ -48,7 +48,7 @@ export function History(props: HistoryProps) {
     <AppearBox onFirstAppear={() => logger.appear('game-sbwd-history')}>
       <FlexBox $direction={FlexDirection.COLUMN} $gap="1">
         <Switch if={history.length > 0} fullback={<Empty />}>
-          {history?.map((info) => children(info))}
+          {() => history?.map((info) => children(info))}
         </Switch>
       </FlexBox>
     </AppearBox>

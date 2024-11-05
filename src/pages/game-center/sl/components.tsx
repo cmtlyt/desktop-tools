@@ -77,17 +77,19 @@ export const PhoneController = memo(function PhoneController() {
 
   return (
     <Show if={showController}>
-      <ControllerWrapper $gap="1" onClick={() => setShowController(false)}>
-        <IconWrapper onClick={() => eventInfo?.callback?.(PointerEvent.TAP)}>
-          {eventInfo?.block?.status === BlockStatus.unopen && <MdFlip />}
-        </IconWrapper>
-        <IconWrapper onClick={() => eventInfo?.callback?.(PointerEvent.MENU_TAP)}>
-          {getIcon(eventInfo?.block?.status)}
-        </IconWrapper>
-        <IconWrapper onClick={probeHandler}>
-          {eventInfo?.block?.status === BlockStatus.open && !isEmptyBlock(eventInfo?.block) && <LuRadar />}
-        </IconWrapper>
-      </ControllerWrapper>
+      {() => (
+        <ControllerWrapper $gap="1" onClick={() => setShowController(false)}>
+          <IconWrapper onClick={() => eventInfo?.callback?.(PointerEvent.TAP)}>
+            {eventInfo?.block?.status === BlockStatus.unopen && <MdFlip />}
+          </IconWrapper>
+          <IconWrapper onClick={() => eventInfo?.callback?.(PointerEvent.MENU_TAP)}>
+            {getIcon(eventInfo?.block?.status)}
+          </IconWrapper>
+          <IconWrapper onClick={probeHandler}>
+            {eventInfo?.block?.status === BlockStatus.open && !isEmptyBlock(eventInfo?.block) && <LuRadar />}
+          </IconWrapper>
+        </ControllerWrapper>
+      )}
     </Show>
   );
 });

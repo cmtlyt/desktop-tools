@@ -70,14 +70,16 @@ const ButtonItemComp = (props: ButtonItem) => {
 
   return (
     <Switch if={!isUndef(to)} fullback={button}>
-      <Link
-        to={to!}
-        children={button}
-        onClick={(e) => {
-          e.stopPropagation();
-          logger.click(action || 'button-list-link-click', loggerInfo);
-        }}
-      />
+      {() => (
+        <Link
+          to={to!}
+          children={button}
+          onClick={(e) => {
+            e.stopPropagation();
+            logger.click(action || 'button-list-link-click', loggerInfo);
+          }}
+        />
+      )}
     </Switch>
   );
 };
@@ -101,13 +103,15 @@ export function ButtonList(props: ButtonListProps) {
     [buttons, $gap, wrapperProps, className],
   );
 
-  return isPhone() && buttons.length > 1 ? (
-    <Popover content={content} trigger="click">
-      <Button>
-        <MoreIcon />
-      </Button>
-    </Popover>
-  ) : (
-    content
+  return (
+    <Switch if={isPhone() && buttons.length > 1} fullback={content}>
+      {() => (
+        <Popover content={content} trigger="click">
+          <Button>
+            <MoreIcon />
+          </Button>
+        </Popover>
+      )}
+    </Switch>
   );
 }

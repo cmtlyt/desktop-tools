@@ -1,9 +1,9 @@
 interface ShowProps {
   if?: boolean;
-  children: React.ReactNode;
+  children: () => React.ReactNode;
 }
 
 export function Show(props: ShowProps) {
   const { if: flag, children } = props;
-  return flag ? children : null;
+  return flag ? children() : null;
 }

@@ -186,9 +186,9 @@ export function Component() {
         <FilterBar filterInfo={filterInfo} includedKinds={includedKinds} onChange={(info) => setFilterInfo(info)} />
         <PageWrapper $direction={FlexDirection.COLUMN} $gap="1" $flex="1">
           <Switch if={filteredHistory.length > 0} fullback={<Empty />}>
-            {filteredHistory.map((item, idx) => (
-              <LogItem key={idx} {...item} onClick={() => setLogDetail(item)} />
-            ))}
+            {() =>
+              filteredHistory.map((item, idx) => <LogItem key={idx} {...item} onClick={() => setLogDetail(item)} />)
+            }
           </Switch>
         </PageWrapper>
       </FlexBox>
