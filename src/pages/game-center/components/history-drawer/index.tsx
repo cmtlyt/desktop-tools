@@ -1,8 +1,8 @@
 import { ButtonList } from '@/components/button-list';
 import { History } from './history';
 import { forceSaveStorage, setStorageItem } from '@/utils';
-import { Drawer } from 'antd';
 import { emitHistoryAction, HistoryActionType } from './subject';
+import { Drawer } from '@/components/drawer';
 
 export { HistoryItem, HistoryInfoWrapper } from './history';
 
@@ -21,8 +21,6 @@ export function HistoryDrawer(props: HistoryDrawerProps) {
       title="对局记录"
       onClose={onClose}
       open={open}
-      width="40rem"
-      styles={{ body: { padding: 'var(--page-padding)' } }}
       extra={
         <ButtonList
           buttons={[

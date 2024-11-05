@@ -25,6 +25,10 @@ export function RightArea() {
             text: '重置',
             onClick: () => emitSLAction({ id: 'sl-restart', type: SLActionType.RESTART }),
           },
+          {
+            text: '游戏配置',
+            onClick: () => emitSLAction({ id: 'sl-config', type: SLActionType.CHANGE_CONFIG }),
+          },
           { text: '游戏记录', onClick: () => setOpenHistory(true) },
         ]}
       />

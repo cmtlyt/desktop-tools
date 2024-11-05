@@ -7,6 +7,7 @@ export enum SLActionType {
   GAME_OVER = 'game_over',
   RESTART = 'restart',
   PHONE_HANDLER = 'phone_handler',
+  CHANGE_CONFIG = 'change_config',
 }
 
 interface ExtendProps {

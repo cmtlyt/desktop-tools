@@ -6,11 +6,14 @@ import { PiFlagPennantFill } from 'react-icons/pi';
 import { LuRadar } from 'react-icons/lu';
 import { FaQuestion } from 'react-icons/fa6';
 import { TbWashDrycleanOff } from 'react-icons/tb';
-import { SLActionType, useSubscribeSLAction } from './subject';
+import { emitSLAction, SLActionType, useSubscribeSLAction } from './subject';
 import { Show } from '@/components/show';
 import { BlockStatus, FinishedBlock, GameInfo } from './type';
-import { FlexBox, FlexJustify, ShadowFlexBox } from '@/components/base';
+import { Button, ButtonTheme, FlexBox, FlexJustify, ShadowFlexBox } from '@/components/base';
 import { isEmptyBlock, probeAround } from './util';
+import { Drawer } from '@/components/drawer';
+import { Form, InputNumber } from 'antd';
+import { logger } from '@/utils';
 
 type EventCallback = (type?: string) => void;
 
@@ -116,5 +119,65 @@ export function GameInfoBox(props: GameInfoProps) {
       <Text>剩余雷数: {gameInfo.current.mineTotal - gameInfo.current.userMiniCount}</Text>
       <Text>用时: {time}</Text>
     </FlexBox>
+  );
+}
+
+const InputNumberField = styled(InputNumber)`
+  width: 100%;
+`;
+
+interface GameConfigDrawerProps {
+  gameInfo: React.MutableRefObject<GameInfo>;
+}
+
+export function GameConfigDrawer(props: GameConfigDrawerProps) {
+  const { gameInfo } = props;
+  const [showConfig, setShowConfig] = useState(false);
+  const [form] = Form.useForm();
+
+  useSubscribeSLAction(() => setShowConfig(true), SLActionType.CHANGE_CONFIG);
+
+  return (
+    <Drawer title="游戏配置" open={showConfig} onClose={() => setShowConfig(false)}>
+      <Form
+        form={form}
+        initialValues={{ row: gameInfo.current.row, col: gameInfo.current.col, mineTotal: gameInfo.current.mineTotal }}
+        onFinish={(values) => {
+          form.validateFields().then(() => {
+            gameInfo.current = { ...gameInfo.current, ...values };
+            emitSLAction({ id: 'sl-config-change', type: SLActionType.RESTART });
+            logger.event('sl-config-change', values);
+            setShowConfig(false);
+          });
+        }}
+      >
+        <Form.Item label="行数" name="row">
+          <InputNumberField min={10} max={100} />
+        </Form.Item>
+        <Form.Item label="列数" name="col">
+          <InputNumberField min={10} max={100} />
+        </Form.Item>
+        <Form.Item
+          label="雷数"
+          name="mineTotal"
+          rules={[
+            {
+              async validator(_, mineTotal) {
+                const { row, col } = form.getFieldsValue();
+                if (mineTotal > row * col) throw new Error(`雷数不能超过${row * col}`);
+              },
+            },
+          ]}
+        >
+          <InputNumberField min={10} />
+        </Form.Item>
+        <Form.Item>
+          <FlexBox $gap="1">
+            <Button $presetTheme={ButtonTheme.PRIMARY}>确定</Button>
+            <Button onClick={() => setShowConfig(false)}>取消</Button>
+          </FlexBox>
+        </Form.Item>
+      </Form>
+    </Drawer>
   );
 }

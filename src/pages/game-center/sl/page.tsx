@@ -21,7 +21,7 @@ import { getSLStore } from './store';
 import { HistoryInfo, RightArea } from './right-area';
 import { emitHistoryAction, HistoryActionType } from '../components/history-drawer/subject';
 import { isPhone } from '@/utils/is-phone';
-import { GameInfoBox, PhoneController } from './components';
+import { GameConfigDrawer, GameInfoBox, PhoneController } from './components';
 
 export function Component() {
   const canvasRef = useRef<HTMLElement>(null);
@@ -48,6 +48,7 @@ export function Component() {
     const { leafer } = gameInfo.current;
     gameInfo.current.mineCount = 0;
     gameInfo.current.openBlock = 0;
+    gameInfo.current.userMiniCount = 0;
     gameInfo.current.status = 'paying';
     gameInfo.current.startTime = Date.now();
     gameInfo.current.gameId = getRandomString();
@@ -118,6 +119,7 @@ export function Component() {
         <FlexBox $flex="1" ref={canvasRef} onMouseDown={onMouseHandler} onMouseUp={onMouseHandler} />
       </FlexBox>
       <PhoneController />
+      <GameConfigDrawer gameInfo={gameInfo} />
     </AppearBox>
   );
 }
