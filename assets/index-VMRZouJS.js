@@ -1,1 +1,0 @@
-import{x as e,S as n}from"./index-BX14GTdo.js";import{g as i}from"./index-DfRa9fh8.js";function u(o){const{onClick:t,...r}=o;return e.jsx(n,{...r,onClick:s=>{i().setLoading(!0),t==null||t(s)}})}export{u as L};
