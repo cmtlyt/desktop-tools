@@ -65,6 +65,11 @@ export function Component() {
     if (gameInfo.current.leafer) return;
     gameInfo.current.leafer = new Leafer({ view: canvasRef.current! });
     start();
+    return () => {
+      gameInfo.current.leafer.destroy();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      gameInfo.current.leafer = null as unknown as Leafer;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

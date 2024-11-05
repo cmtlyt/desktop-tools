@@ -1,7 +1,11 @@
+import { Popover } from 'antd';
+import { useMemo, useRef } from 'react';
+import { isPhone } from '@/utils/is-phone';
 import styled from 'styled-components';
 import { To } from 'react-router-dom';
+import { CgMoreR } from 'react-icons/cg';
 import { isUndef, TObject } from '@cmtlyt/base';
-import { Button, FlexBox } from '../base';
+import { Button, FlexBox, FlexDirection } from '../base';
 import { logger } from '@/utils';
 import { Switch } from '../switch';
 import { Link } from '../link';
@@ -38,39 +42,72 @@ const ButtonListWrapper = styled(FlexBox)<ButtonListWrapperProps>`
   }};
 `;
 
+const MoreIcon = styled(CgMoreR)`
+  height: 100%;
+`;
+
+const ButtonItemComp = (props: ButtonItem) => {
+  const { action, text, to, logInfo, onClick, ...buttonProps } = props;
+  const clickMore = useRef(false);
+
+  const loggerInfo = { text, buttonProps, to, ...logInfo };
+
+  const button = (
+    <Button
+      {...buttonProps}
+      onClick={(e) => {
+        if (clickMore.current) {
+          clickMore.current = false;
+          return logger.click('more-button-click');
+        }
+        if (!to) logger.click(action || 'button-list-click', loggerInfo);
+        onClick?.(e);
+      }}
+    >
+      {text}
+    </Button>
+  );
+
+  return (
+    <Switch if={!isUndef(to)} fullback={button}>
+      <Link
+        to={to!}
+        children={button}
+        onClick={(e) => {
+          e.stopPropagation();
+          logger.click(action || 'button-list-link-click', loggerInfo);
+        }}
+      />
+    </Switch>
+  );
+};
+
 export function ButtonList(props: ButtonListProps) {
   const { buttons, wrapperProps, $gap = 1, className } = props;
 
-  return (
-    <ButtonListWrapper {...wrapperProps} $gap={$gap} className={className}>
-      {buttons.map(({ action, text, to, logInfo, onClick, ...buttonProps }, idx) => {
-        const loggerInfo = { text, buttonProps, to, ...logInfo };
+  const content = useMemo(
+    () => (
+      <ButtonListWrapper
+        {...wrapperProps}
+        $gap={$gap}
+        $direction={FlexDirection[isPhone() ? 'COLUMN' : 'ROW']}
+        className={className}
+      >
+        {buttons.map((item, idx) => (
+          <ButtonItemComp {...item} key={idx} />
+        ))}
+      </ButtonListWrapper>
+    ),
+    [buttons, $gap, wrapperProps, className],
+  );
 
-        const button = (
-          <Button
-            {...buttonProps}
-            onClick={(e) => {
-              if (!to) logger.click(action || 'button-list-click', loggerInfo);
-              onClick?.(e);
-            }}
-          >
-            {text}
-          </Button>
-        );
-
-        return (
-          <Switch if={!isUndef(to)} fullback={button} key={idx}>
-            <Link
-              to={to!}
-              children={button}
-              onClick={(e) => {
-                e.stopPropagation();
-                logger.click(action || 'button-list-link-click', loggerInfo);
-              }}
-            />
-          </Switch>
-        );
-      })}
-    </ButtonListWrapper>
+  return isPhone() && buttons.length > 1 ? (
+    <Popover content={content} trigger="click">
+      <Button>
+        <MoreIcon />
+      </Button>
+    </Popover>
+  ) : (
+    content
   );
 }
