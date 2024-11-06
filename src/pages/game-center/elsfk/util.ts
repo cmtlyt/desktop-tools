@@ -1,4 +1,4 @@
-import { elementMap } from './constant';
+import { getElementMap } from './constant';
 import { ElementInfo, Position } from './type';
 
 export function generateInitData(moveRow: number, row: number) {
@@ -9,7 +9,8 @@ export function mergeRenderMap(moveAdd: number, map: number[], moveMap: number[]
   return map.map((item, idx) => item | moveMap[idx + moveAdd]);
 }
 
-export function generaeteElement(col: number): ElementInfo {
+export function generaeteElement(col: number, score: number): ElementInfo {
+  const elementMap = getElementMap(score);
   const random = Math.floor(Math.random() * elementMap.length);
   const elementZipData = elementMap[random].split('/');
   const size = elementZipData.length;

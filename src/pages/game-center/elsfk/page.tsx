@@ -46,7 +46,7 @@ export function Component() {
 
   const createNext = useCallback(() => {
     const currElement = nextElement.current;
-    let _nextElement = generaeteElement(col);
+    let _nextElement = generaeteElement(col, score.current);
     new Array(Math.floor(Math.random() * 4)).forEach(() => (_nextElement = rotateElement(_nextElement)));
     const currVo = getElementVoPos(col, currElement);
     nextElement.current = _nextElement;
@@ -144,24 +144,24 @@ export function Component() {
             }, 2000);
             return;
           }
-          // 判断是否触顶
-          if (_staticMap[0]) return gameOver();
+          // 判断是否超出顶部
+          if (moveMap.current[moveRow - row - 1]) return gameOver();
           createNext();
         }
         updateRenderMap();
         nextTick();
       }, speed.current);
     }, 10);
-  }, [moveFunc, createNext, rowMax, moveAddRow, row, col, updateRenderMap, gameOver]);
+  }, [moveFunc, createNext, rowMax, moveAddRow, moveRow, row, col, updateRenderMap, gameOver]);
 
   const reset = useCallback(
     (isUser = false) => {
       staticMap.current = getInitData(false);
       moveMap.current = getInitData(true);
-      nextElement.current = isUser ? ({} as ElementInfo) : generaeteElement(col);
       speed.current = 500;
       downLock.current = false;
       score.current = 0;
+      nextElement.current = isUser ? ({} as ElementInfo) : generaeteElement(col, score.current);
     },
     [getInitData, col],
   );
