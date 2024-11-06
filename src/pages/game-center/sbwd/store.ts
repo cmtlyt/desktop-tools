@@ -1,7 +1,5 @@
-import { create } from 'zustand';
 import { getRandomString } from '@cmtlyt/base';
-import { useSelector } from '@/hooks';
-import { Many } from '@/types';
+import { createStoreAndHelper } from '@/utils/create-store-helper';
 
 interface SBWDStoreState {
   speed: number;
@@ -15,7 +13,11 @@ interface SBWDStoreHandlers {
   replay: (history: string[] | null) => void;
 }
 
-export const useSBWDStore = create<SBWDStoreState & SBWDStoreHandlers>((set) => ({
+export const {
+  useStore: useSBWDStore,
+  useStoreSlice: useSBWDStoreSlice,
+  getState: getSBWDStore,
+} = createStoreAndHelper<SBWDStoreState & SBWDStoreHandlers>((set) => ({
   speed: 500,
   currentGameId: getRandomString(),
   replayStep: null,
@@ -24,11 +26,3 @@ export const useSBWDStore = create<SBWDStoreState & SBWDStoreHandlers>((set) => 
   reset: () => set({ currentGameId: getRandomString() }),
   replay: (history) => set({ replayStep: history }),
 }));
-
-type StoreKeys = Many<keyof (SBWDStoreState & SBWDStoreHandlers)>;
-
-export const useSBWDStoreSlice = (keys: StoreKeys) => {
-  return useSBWDStore(useSelector(keys));
-};
-
-export const getSBWDStore = () => useSBWDStore.getState();

@@ -1,6 +1,4 @@
-import { create } from 'zustand';
-import { useSelector } from '@/hooks';
-import { Many } from '@/types';
+import { createStoreAndHelper } from '@/utils/create-store-helper';
 
 interface DetailStoreState {
   id: string;
@@ -10,14 +8,12 @@ interface DetailStoreHandlers {
   setId: (id: string) => void;
 }
 
-export const useDetailStore = create<DetailStoreState & DetailStoreHandlers>((set) => ({
+export const {
+  useStore: useDetailStore,
+  useStoreSlice: useDetailStoreSlice,
+  getState: getDetailStore,
+} = createStoreAndHelper<DetailStoreState & DetailStoreHandlers>((set) => ({
   id: '',
 
   setId: (id: string) => set({ id }),
 }));
-
-type StoreKeys = Many<keyof (DetailStoreState & DetailStoreHandlers)>;
-
-export const useDetailStoreSlice = (keys: StoreKeys) => {
-  return useDetailStore(useSelector(keys));
-};

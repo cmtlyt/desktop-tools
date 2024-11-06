@@ -1,7 +1,5 @@
 import { MessageArgsProps } from 'antd';
-import { create } from 'zustand';
-import { useSelector } from '@/hooks';
-import { Many } from '@/types';
+import { createStoreAndHelper } from '@/utils/create-store-helper';
 
 interface LayoutStore {
   messageInfo: MessageArgsProps | null;
@@ -15,7 +13,11 @@ interface LayoutStoreActions {
   setLoading: (loading: boolean) => void;
 }
 
-export const useLayoutStore = create<LayoutStore & LayoutStoreActions>((set) => ({
+export const {
+  useStore: useLayoutStore,
+  useStoreSlice: useLayoutStoreSlice,
+  getState: getLayoutStore,
+} = createStoreAndHelper<LayoutStore & LayoutStoreActions>((set) => ({
   messageInfo: null,
   expandAside: true,
   loading: false,
@@ -24,13 +26,3 @@ export const useLayoutStore = create<LayoutStore & LayoutStoreActions>((set) => 
   setExpandAside: (expandAside) => set({ expandAside }),
   setLoading: (loading) => set({ loading }),
 }));
-
-type StoreKeys = Many<keyof (LayoutStore & LayoutStoreActions)>;
-
-export const useLayoutStoreSlice = (keys: StoreKeys) => {
-  return useLayoutStore(useSelector(keys));
-};
-
-export function getLayoutStore() {
-  return useLayoutStore.getState();
-}

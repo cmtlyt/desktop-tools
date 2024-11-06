@@ -1,7 +1,5 @@
-import { create } from 'zustand';
 import { getRandomString } from '@cmtlyt/base';
-import { useSelector } from '@/hooks';
-import { Many } from '@/types';
+import { createStoreAndHelper } from '@/utils/create-store-helper';
 
 export enum GameStatus {
   RUNNING = 'running',
@@ -25,7 +23,11 @@ interface ELSFKStoreHandlers {
   setGameStatus: (gameStatus: GameStatus) => void;
 }
 
-export const useELSFKStore = create<ELSFKStoreState & ELSFKStoreHandlers>((set) => ({
+export const {
+  useStore: useELSFKStore,
+  useStoreSlice: useELSFKStoreSlice,
+  getState: getELSFKStore,
+} = createStoreAndHelper<ELSFKStoreState & ELSFKStoreHandlers>((set) => ({
   gameId: getRandomString(),
   row: 20,
   col: 10,
@@ -38,11 +40,3 @@ export const useELSFKStore = create<ELSFKStoreState & ELSFKStoreHandlers>((set) 
   updateGameId: () => set({ gameId: getRandomString(), gameStatus: GameStatus.OVER }),
   setGameStatus: (gameStatus) => set({ gameStatus }),
 }));
-
-type StoreKeys = Many<keyof (ELSFKStoreState & ELSFKStoreHandlers)>;
-
-export const useELSFKStoreSlice = (keys: StoreKeys) => {
-  return useELSFKStore(useSelector(keys));
-};
-
-export const getELSFKStore = () => useELSFKStore.getState();

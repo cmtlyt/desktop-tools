@@ -1,6 +1,7 @@
 import { IndexedDBStorage } from '@cmtlyt/storage';
 import { STORAGE_KEY } from '@/constant';
 import { Many } from '@/types';
+import { StateStorage } from 'zustand/middleware';
 
 const storage = new IndexedDBStorage({ dbName: STORAGE_KEY, autoSaveDelay: 0 });
 
@@ -27,3 +28,15 @@ export async function addStorageItem(name: string, value: Many<unknown>, isSingl
   else list.push(...(value as unknown[]));
   return setStorageItem(name, list);
 }
+
+export const stateStorage: StateStorage = {
+  getItem: getStorageItem,
+  async setItem(name, value) {
+    await setStorageItem(name, value);
+    forceSaveStorage();
+  },
+  async removeItem(name) {
+    await removeStorageItem(name);
+    forceSaveStorage();
+  },
+};

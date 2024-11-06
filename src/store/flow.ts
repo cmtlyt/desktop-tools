@@ -1,12 +1,10 @@
-import { create, StoreApi } from 'zustand';
-import { persist, StateStorage, createJSONStorage } from 'zustand/middleware';
 import { produce } from 'immer';
 import { getRandomString } from '@cmtlyt/base';
 import { FLOWS_STORAGE_KEY } from '@/constant';
 import { EditorFlow, Flow } from '@/types/flow';
-import { useSelector } from '@/hooks';
-import { Many } from '@/types';
-import { forceSaveStorage, getStorageItem, removeStorageItem, setStorageItem } from '@/utils';
+import { GetStore } from '@/types/store';
+import { createPersist } from '@/utils/create-persist';
+import { createStoreHelper } from '@/utils/create-store-helper';
 
 interface FlowsStore {
   flows: Flow[];
@@ -18,24 +16,9 @@ interface FlowsStoreActions {
   updateFlow: (id: string, flow: EditorFlow) => void;
 }
 
-const stateStorage: StateStorage = {
-  getItem: getStorageItem,
-  async setItem(name, value) {
-    await setStorageItem(name, value);
-    forceSaveStorage();
-  },
-  async removeItem(name) {
-    await removeStorageItem(name);
-    forceSaveStorage();
-  },
-};
-
 type Store = FlowsStore & FlowsStoreActions;
 
-type SetFunc = StoreApi<Store>['setState'];
-type GetFunc = StoreApi<Store>['getState'];
-
-const getActions: (set: SetFunc, get: GetFunc) => FlowsStoreActions = (set) => {
+const getActions: GetStore<Store, FlowsStoreActions> = (set) => {
   return {
     addFlow: (flow) => {
       set((state) =>
@@ -81,22 +64,11 @@ const getActions: (set: SetFunc, get: GetFunc) => FlowsStoreActions = (set) => {
   };
 };
 
-export const useFlowsStore = create(
-  persist<Store>(
-    (set, get) => ({
-      flows: [] as Flow[],
-      ...getActions(set, get),
-    }),
-    { name: FLOWS_STORAGE_KEY, storage: createJSONStorage(() => stateStorage) },
-  ),
-);
+export const useFlowsStore = createPersist<Store>(FLOWS_STORAGE_KEY, (set, get) => ({
+  flows: [] as Flow[],
+  ...getActions(set, get),
+}));
 
-type StoreKeys = Many<keyof Store>;
+const { useStoreSlice, getState } = createStoreHelper(useFlowsStore);
 
-export const useFlowsStoreSlice = (keys: StoreKeys) => {
-  return useFlowsStore(useSelector(keys));
-};
-
-export const getFlowsStore = () => {
-  return useFlowsStore.getState();
-};
+export { useStoreSlice as useFlowsStoreSlice, getState as getFlowsStore };

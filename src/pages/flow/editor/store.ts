@@ -1,5 +1,4 @@
-import { create } from 'zustand';
-import { useSelector } from '@/hooks';
+import { createStoreAndHelper } from '@/utils/create-store-helper';
 
 interface EditorStoreState {
   id: string;
@@ -11,18 +10,12 @@ interface EditorStoreHandlers {
 
 type Store = EditorStoreState & EditorStoreHandlers;
 
-export const useEditorStore = create<Store>((set) => ({
+export const {
+  useStore: useEditorStore,
+  useStoreSlice: useEditorStoreSlice,
+  getState: getEditorStore,
+} = createStoreAndHelper<Store>((set) => ({
   id: '',
 
   setId: (id: string) => set({ id }),
 }));
-
-type StoreKeys = keyof Store;
-
-export const useEditorStoreSlice = (keys: StoreKeys) => {
-  return useEditorStore(useSelector(keys));
-};
-
-export function getEditorStore() {
-  return useEditorStore.getState();
-}
