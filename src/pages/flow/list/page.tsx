@@ -48,6 +48,7 @@ export function Component() {
                 onDelete={deleteFlowHandler}
                 onClick={() => {
                   setFlow(flow);
+                  logger.click('flow-item-click', { id: flow.id });
                   navigate(`/flow/detail/${flow.id}`);
                 }}
               />

@@ -1,13 +1,13 @@
 import { memo } from 'react';
 import styled from 'styled-components';
 import { useFlowStoreSlice } from '../store';
-import { ButtonTheme, FlexAlign, FlexBox, ShadowFlexBox, Tag, TagProps, TagTheme } from '@/components/base';
-import { DateView } from '@/components/date-view';
+import { ButtonTheme, FlexAlign, FlexBox, Tag, TagProps, TagTheme } from '@/components/base';
 import { AccountType, Flow, FlowCategory, FlowStatus } from '@/types/flow';
 import { HoverExpandBox } from '@/components/hover-expand-box';
 import { ButtonList } from '@/components/button-list';
 import { Price } from '@/components/price';
 import { ACCOUNT_TYPE_LABEL_MAP, FLOW_CATEGORY_LABEL_MAP, FLOW_STATUS_LABEL_MAP } from '@/constant/flow';
+import { ItemDate, ItemTitle, ItemWrapper } from '@/components/list-item';
 
 interface FlowItemProps {
   flow: Flow;
@@ -42,28 +42,6 @@ const FlowCategoryTag = memo(({ children }: { children: FlowCategory }) => {
   const name = FLOW_CATEGORY_LABEL_MAP[children];
   return <FlowTag>{name}</FlowTag>;
 });
-
-const FlowDate = styled(DateView)`
-  display: flex;
-  align-items: center;
-  margin-left: 1rem;
-`;
-
-const FlowTitle = styled.span`
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-const FlowWrapper = styled(ShadowFlexBox)`
-  padding: 0 2rem 0 1rem;
-  margin-bottom: 1rem;
-  height: 4.8rem;
-  line-height: 1;
-  background: #fff;
-  border-radius: 0.8rem;
-`;
 
 interface HandleButtonsProps {
   flow: Flow;
@@ -133,17 +111,17 @@ export const FlowItem = memo((props: FlowItemProps) => {
   const { flow, onClick, onDelete } = props;
 
   return (
-    <FlowWrapper key={flow.id} onClick={onClick}>
+    <ItemWrapper onClick={onClick}>
       <HoverExpandBox rightArea={<HandleButtons flow={flow} onDelete={onDelete} />}>
         <FlexBox $flex="1" $alignItems={FlexAlign.CENTER}>
           <FlowStatusTag>{flow.status}</FlowStatusTag>
           <FlowAccount>{flow.account}</FlowAccount>
           <FlowCategoryTag>{flow.category}</FlowCategoryTag>
           <FlowPrice value={flow.amount} $status={flow.status} showPrefix />
-          <FlowTitle>{flow.title}</FlowTitle>
+          <ItemTitle>{flow.title}</ItemTitle>
         </FlexBox>
-        <FlowDate>{flow.createTime}</FlowDate>
+        <ItemDate>{flow.createTime}</ItemDate>
       </HoverExpandBox>
-    </FlowWrapper>
+    </ItemWrapper>
   );
 });

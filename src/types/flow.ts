@@ -84,9 +84,9 @@ export interface Flow {
   /** 创建人 */
   creator: string;
   /** 创建时间 */
-  createTime: string;
+  createTime: number;
   /** 更新时间 */
-  updateTime: string;
+  updateTime: number;
   /** 资金分发详情 */
   amountDistributions: AmountDistribution[];
 }

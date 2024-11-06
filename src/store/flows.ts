@@ -23,16 +23,16 @@ const getActions: GetStore<Store, FlowsStoreActions> = (set) => {
     addFlow: (flow) => {
       set((state) =>
         produce(state, (draft) => {
-          const saveFlowFlow: Flow = {
+          const saveFlow: Flow = {
             ...flow,
             id: `local-${getRandomString(16)}`,
             creator: 'test',
             account: flow.amountDistributions[0].account,
             amount: String(flow.amountDistributions.reduce((acc, cur) => acc + +cur.amount, 0)),
-            createTime: new Date().toLocaleString(),
-            updateTime: new Date().toLocaleString(),
+            createTime: Date.now(),
+            updateTime: Date.now(),
           };
-          draft.flows.unshift(saveFlowFlow);
+          draft.flows.unshift(saveFlow);
         }),
       );
     },
@@ -46,7 +46,7 @@ const getActions: GetStore<Store, FlowsStoreActions> = (set) => {
             ...flow,
             id: draft.flows[index].id,
             amount: String(flow.amountDistributions.reduce((acc, cur) => acc + +cur.amount, 0)),
-            updateTime: new Date().toLocaleString(),
+            updateTime: Date.now(),
           });
         }),
       );
@@ -69,6 +69,4 @@ export const useFlowsStore = createPersist<Store>(FLOWS_STORAGE_KEY, (set, get) 
   ...getActions(set, get),
 }));
 
-const { useStoreSlice, getState } = createStoreHelper(useFlowsStore);
-
-export { useStoreSlice as useFlowsStoreSlice, getState as getFlowsStore };
+export const { useStoreSlice: useFlowsStoreSlice, getState: getFlowsStore } = createStoreHelper(useFlowsStore);
