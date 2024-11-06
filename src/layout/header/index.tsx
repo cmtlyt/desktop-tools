@@ -8,12 +8,7 @@ import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { Show } from '@/components/show';
 import { useNavigate } from '@/hooks/use-navigate';
-
-interface PageInfo {
-  title?: string;
-  needBackIcon?: boolean;
-  rightArea?: React.ReactNode;
-}
+import { PageInfo } from '@/types/page-info';
 
 const HeaderContent = styled(ShadowFlexBox)`
   height: 5rem;

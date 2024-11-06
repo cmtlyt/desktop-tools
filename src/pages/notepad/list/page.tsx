@@ -12,6 +12,7 @@ import { ButtonList } from '@/components/button-list';
 import { Switch } from '@/components/switch';
 import { Empty } from '@/components/empty';
 import { NotepadItem } from './notepad-item';
+import { PageInfo } from '@/types/page-info';
 
 const NotepadList = styled(FlexBox)`
   padding: var(--page-padding);
@@ -63,7 +64,7 @@ function ListButtonArea() {
   return <ButtonList buttons={[{ text: '新建', to: '/notepad/editor', $presetTheme: ButtonTheme.PRIMARY }]} />;
 }
 
-export const handle = {
+export const handle: PageInfo = {
   title: '笔记列表',
   crumbLabel: '列表',
   rightArea: <ListButtonArea />,

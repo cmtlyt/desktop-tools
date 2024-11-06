@@ -1,5 +1,5 @@
 import { Notepad } from '@/types/notepad';
-import { createStoreAndHelper } from '@/utils/create-store-helper';
+import { createStoreAndHelper } from '@/utils';
 
 interface NotepadStoreState {
   currentNotepad?: Notepad;

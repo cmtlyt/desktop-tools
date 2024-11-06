@@ -1,5 +1,5 @@
 import { GameStatus } from './type';
-import { createStoreAndHelper } from '@/utils/create-store-helper';
+import { createStoreAndHelper } from '@/utils';
 
 interface SLStoreState {
   gameStatus: GameStatus;

@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import { logger } from '@/utils';
-import { ActionSubject, createActionSubscribeHook } from '@/utils/create-action-subscribe-hook';
+import { ActionSubject, createActionSubscribeHook } from '@/utils';
 
 export enum ActionType {
   SAVE = 'save',

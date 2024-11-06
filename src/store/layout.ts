@@ -1,5 +1,5 @@
 import { MessageArgsProps } from 'antd';
-import { createStoreAndHelper } from '@/utils/create-store-helper';
+import { createStoreAndHelper } from '@/utils';
 
 interface LayoutStore {
   messageInfo: MessageArgsProps | null;

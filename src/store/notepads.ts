@@ -3,8 +3,7 @@ import { getRandomString } from '@cmtlyt/base';
 import { NOTEPADS_STORAGE_KEY } from '@/constant';
 import { EditorNotepad, Notepad } from '@/types/notepad';
 import { GetStore } from '@/types/store';
-import { createPersist } from '@/utils/create-persist';
-import { createStoreHelper } from '@/utils/create-store-helper';
+import { createPersist, createStoreHelper } from '@/utils';
 
 interface NotepadsStore {
   notepads: Notepad[];

@@ -1,12 +1,11 @@
 import { Popover } from 'antd';
 import { useMemo, useRef } from 'react';
-import { isPhone } from '@/utils/is-phone';
 import styled from 'styled-components';
 import { To } from 'react-router-dom';
 import { CgMoreR } from 'react-icons/cg';
 import { isUndef, TObject } from '@cmtlyt/base';
 import { Button, FlexBox, FlexDirection } from '../base';
-import { logger } from '@/utils';
+import { logger, isPhone } from '@/utils';
 import { Switch } from '../switch';
 import { Link } from '../link';
 

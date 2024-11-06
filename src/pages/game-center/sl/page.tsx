@@ -20,7 +20,7 @@ import { SL_HISTORY_STORAGE_KEY } from '../constant';
 import { getSLStore } from './store';
 import { HistoryInfo, RightArea } from './right-area';
 import { emitHistoryAction, HistoryActionType } from '../components/history-drawer/subject';
-import { isPhone } from '@/utils/is-phone';
+import { isPhone } from '@/utils';
 import { GameConfigDrawer, GameInfoBox, PhoneController } from './components';
 
 export function Component() {

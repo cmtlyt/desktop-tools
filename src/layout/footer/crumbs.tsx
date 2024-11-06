@@ -5,6 +5,7 @@ import { FlexBox } from '@/components/base';
 import { UIMatchWithHandle } from '@/types';
 import { logger } from '@/utils';
 import { Link } from '@/components/link';
+import { PageInfo } from '@/types/page-info';
 
 const GrayLink = styled(Link)`
   display: flex;
@@ -25,13 +26,8 @@ const CrumbList = styled(FlexBox)`
   font-size: 1.4rem;
 `;
 
-interface PageCrumbInfo {
-  title: string;
-  crumbLabel: string | React.ReactNode;
-}
-
 export function Crumbs() {
-  const matches = useMatches() as UIMatchWithHandle<PageCrumbInfo>[];
+  const matches = useMatches() as UIMatchWithHandle<PageInfo>[];
 
   const crumbs = useMemo(() => {
     return matches

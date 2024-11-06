@@ -1,5 +1,5 @@
 import { getRandomString } from '@cmtlyt/base';
-import { createStoreAndHelper } from '@/utils/create-store-helper';
+import { createStoreAndHelper } from '@/utils';
 
 export enum GameStatus {
   RUNNING = 'running',

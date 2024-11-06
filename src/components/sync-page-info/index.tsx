@@ -3,9 +3,10 @@ import { useMatches } from 'react-router-dom';
 import { PAGE_INFO_KEY } from '@/constant/session-key';
 import { UIMatchWithHandle } from '@/types';
 import { filterForJson } from '@/utils';
+import { PageInfo } from '@/types/page-info';
 
 export function SyncPageInfo() {
-  const matches = useMatches() as UIMatchWithHandle<unknown>[];
+  const matches = useMatches() as UIMatchWithHandle<PageInfo>[];
   const handle = useMemo(() => matches.at(-1)?.handle, [matches]);
 
   useEffect(() => {
@@ -15,7 +16,7 @@ export function SyncPageInfo() {
   return null;
 }
 
-export function getPageInfo() {
+export function getPageInfo(): PageInfo {
   const pageInfo = sessionStorage.getItem(PAGE_INFO_KEY);
   if (!pageInfo) return {};
   return JSON.parse(pageInfo);

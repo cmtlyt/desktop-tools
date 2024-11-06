@@ -89,6 +89,10 @@ export { logger, getPageInfo, getUserFingerprint };
 export * from './filter';
 export * from './storage';
 export * from './array';
+export * from './create-persist';
+export * from './create-store-helper';
+export * from './create-action-subscribe-hook';
+export * from './is-phone';
 
 window.logger = {
   debug: logger.debug,

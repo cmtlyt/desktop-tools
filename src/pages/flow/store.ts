@@ -1,5 +1,5 @@
 import { Flow } from '@/types/flow';
-import { createStoreAndHelper } from '@/utils/create-store-helper';
+import { createStoreAndHelper } from '@/utils';
 
 interface FlowStoreState {
   currentFlow?: Flow;

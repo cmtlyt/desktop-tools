@@ -1,4 +1,5 @@
 import { useLoaderData } from 'react-router-dom';
+import { PageInfo } from '@/types/page-info';
 
 export function Component() {
   const loaderData = useLoaderData() as LoaderData;
@@ -10,7 +11,7 @@ export function Component() {
   );
 }
 
-export const handle = {
+export const handle: PageInfo = {
   title: '编辑笔记',
   crumbLabel: '编辑',
   needBackIcon: true,

@@ -3,8 +3,7 @@ import { getRandomString } from '@cmtlyt/base';
 import { FLOWS_STORAGE_KEY } from '@/constant';
 import { EditorFlow, Flow } from '@/types/flow';
 import { GetStore } from '@/types/store';
-import { createPersist } from '@/utils/create-persist';
-import { createStoreHelper } from '@/utils/create-store-helper';
+import { createPersist, createStoreHelper } from '@/utils';
 
 interface FlowsStore {
   flows: Flow[];

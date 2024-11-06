@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { ActionSubject, createActionSubscribeHook } from '@/utils/create-action-subscribe-hook';
+import { ActionSubject, createActionSubscribeHook } from '@/utils';
 import { logger } from '@/utils';
 
 export enum HistoryActionType {
