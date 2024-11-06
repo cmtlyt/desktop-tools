@@ -1,1 +1,1 @@
-export const PAGE_INFO_KEY = 'cl:current-page-info';
+export const PAGE_INFO_KEY = 'cl:section:current-page-info';

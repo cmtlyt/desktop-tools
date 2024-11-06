@@ -1,3 +1,4 @@
+export * from './local-key';
 export * from './session-key';
 export * from './storage-key';
 export * from './flow';

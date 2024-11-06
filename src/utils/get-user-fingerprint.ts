@@ -9,7 +9,7 @@ load()
   .then((result) => result.visitorId)
   .then((visitorId) => {
     userFingerprint ||= localStorage.getItem(USER_FINGERPRINT_KEY) || '';
-    if (userFingerprint && userFingerprint !== visitorId) {
+    if (userFingerprint !== visitorId) {
       logger.warn('user fingerprint changed', { old: userFingerprint, curr: visitorId });
       localStorage.setItem(USER_FINGERPRINT_KEY, visitorId);
       userFingerprint = visitorId;
