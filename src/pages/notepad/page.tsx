@@ -5,5 +5,5 @@ export function Component() {
 }
 
 export const handle = {
-  title: '记事本',
+  title: '笔记',
 };

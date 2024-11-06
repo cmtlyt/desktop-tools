@@ -1,6 +1,7 @@
 import { TbBrandStackoverflow } from 'react-icons/tb';
 import { MdOutlineManageHistory } from 'react-icons/md';
 import { GiGamepadCross } from 'react-icons/gi';
+import { BiNotepad } from 'react-icons/bi';
 
 export interface AppInfo {
   name: string;
@@ -30,5 +31,11 @@ export const appList: AppInfo[] = [
     path: '/game-center',
     deepMatch: true,
     icon: <GiGamepadCross />,
+  },
+  {
+    name: '笔记',
+    path: '/notepad',
+    deepMatch: true,
+    icon: <BiNotepad />,
   },
 ];
