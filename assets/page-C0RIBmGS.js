@@ -1,1 +1,0 @@
-import{z as n,y as t}from"./index-vpEv5sD-.js";function r(){const e=n();return t.jsxs("div",{children:[e.id?"编辑":"新建","笔记: ",e.id]})}const a={title:"编辑笔记",crumbLabel:"编辑",needBackIcon:!0};async function d({params:e}){return{id:e.id}}export{r as Component,a as handle,d as loader};
