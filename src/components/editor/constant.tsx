@@ -31,7 +31,7 @@ const simpleSandpackConfig: SandpackConfig = {
       dependencies: {},
     },
     {
-      label: 'React + TypeScript',
+      label: 'React + TS',
       name: 'react-ts',
       meta: 'live react-ts',
       sandpackTemplate: 'react-ts',
@@ -51,7 +51,7 @@ const simpleSandpackConfig: SandpackConfig = {
       dependencies: {},
     },
     {
-      label: 'Vue + TypeScript',
+      label: 'Vue + TS',
       name: 'vue-ts',
       meta: 'live vue-ts',
       sandpackTemplate: 'vue-ts',

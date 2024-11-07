@@ -9,7 +9,7 @@
     "git add ."
   ],
   "package.json": ["prettier --cache --write"],
-  "*.{css,scss,html}": [
+  "*.{css,scss}": [
     "prettier --cache --ignore-unknown --write",
     "npm run lint:style",
     "git add ."

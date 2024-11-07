@@ -3,6 +3,7 @@ import { forwardRef, memo } from 'react';
 import { diffSourcePlugin, MDXEditorMethods, toolbarPlugin } from '@mdxeditor/editor';
 import { baseEditorPlugins } from './constant';
 import { MDXEditroStyle, ToolbarContent } from './components';
+import { translation } from './translation';
 
 interface EditorProps {
   content?: string;
@@ -22,6 +23,7 @@ export const Editor = memo(
         markdown={content}
         readOnly={readOnly}
         placeholder="请输入内容"
+        translation={translation}
         plugins={[
           ...baseEditorPlugins,
           diffSourcePlugin({ diffMarkdown: content, viewMode: 'rich-text' }),
