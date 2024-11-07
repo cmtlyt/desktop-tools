@@ -16,7 +16,7 @@ interface LayoutStoreActions {
 export const {
   useStore: useLayoutStore,
   useStoreSlice: useLayoutStoreSlice,
-  getState: getLayoutStore,
+  getStore: getLayoutStore,
 } = createStoreAndHelper<LayoutStore & LayoutStoreActions>((set) => ({
   messageInfo: null,
   expandAside: true,

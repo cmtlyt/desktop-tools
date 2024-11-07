@@ -12,7 +12,7 @@ interface SLStoreHandlers {
 export const {
   useStore: useSLStore,
   useStoreSlice: useSLStoreSlice,
-  getState: getSLStore,
+  getStore: getSLStore,
 } = createStoreAndHelper<SLStoreState & SLStoreHandlers>((set) => ({
   gameStatus: 'paying',
 

@@ -12,7 +12,7 @@ interface NotepadStoreHandlers {
 export const {
   useStore: useNotepadStore,
   useStoreSlice: useNotepadStoreSlice,
-  getState: getNotepadStore,
+  getStore: getNotepadStore,
 } = createStoreAndHelper<NotepadStoreState & NotepadStoreHandlers>((set) => ({
   currentNotepad: void 0,
 

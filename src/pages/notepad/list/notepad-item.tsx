@@ -5,7 +5,8 @@ import { HoverExpandBox } from '@/components/hover-expand-box';
 import { Notepad } from '@/types/notepad';
 import { ButtonList } from '@/components/button-list';
 import { useNotepadStoreSlice } from '../store';
-import { ButtonTheme, FlexAlign } from '@/components/base';
+import { ButtonTheme, FlexAlign, FlexBox } from '@/components/base';
+import { shareNotepad } from '../util';
 
 interface NotepadItemProps {
   notepad: Notepad;
@@ -38,6 +39,13 @@ function HandleButtons(props: HandleButtonsProps) {
           onClick: () => setNotepad(notepad),
         },
         {
+          text: '分享',
+          async onClick(e) {
+            e.stopPropagation();
+            shareNotepad(notepad);
+          },
+        },
+        {
           text: '删除',
           $presetTheme: ButtonTheme.DANGER,
           logInfo: { id },
@@ -57,7 +65,9 @@ export const NotepadItem = memo((props: NotepadItemProps) => {
   return (
     <ItemWrapper onClick={onClick}>
       <HoverExpandBox rightArea={<HandleButtons notepad={notepad} onDelete={onDelete} />}>
-        <ItemTitle>{notepad.title}</ItemTitle>
+        <FlexBox $flex="1" $alignItems={FlexAlign.CENTER}>
+          <ItemTitle>{notepad.title}</ItemTitle>
+        </FlexBox>
         <ItemDate>{notepad.createTime}</ItemDate>
       </HoverExpandBox>
     </ItemWrapper>

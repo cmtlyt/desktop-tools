@@ -26,7 +26,7 @@ interface ELSFKStoreHandlers {
 export const {
   useStore: useELSFKStore,
   useStoreSlice: useELSFKStoreSlice,
-  getState: getELSFKStore,
+  getStore: getELSFKStore,
 } = createStoreAndHelper<ELSFKStoreState & ELSFKStoreHandlers>((set) => ({
   gameId: getRandomString(),
   row: 20,

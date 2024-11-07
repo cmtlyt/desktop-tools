@@ -3,4 +3,5 @@ export interface PageInfo {
   crumbLabel?: string;
   needBackIcon?: boolean;
   rightArea?: React.ReactNode;
+  titleArea?: React.ReactNode;
 }

@@ -10,7 +10,7 @@ import { ExposeInfo } from '@/types/logger';
 import { Button, FlexAlign, FlexBox, FlexDirection, ShadowFlexBox, Tag } from '@/components/base';
 import { DateView } from '@/components/date-view';
 import { getLayoutStore } from '@/store';
-import { useNavigate } from '@/hooks/use-navigate';
+import { useNavigate } from '@/hooks';
 import { Switch } from '@/components/switch';
 import { Empty } from '@/components/empty';
 

@@ -10,7 +10,7 @@ import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { EditorFlow } from '@/types/flow';
 import { ActionType, emitEditorAction, useSubscribeEditorAction } from './subject';
-import { useNavigate } from '@/hooks/use-navigate';
+import { useNavigate } from '@/hooks';
 
 interface LoaderData {
   id: string;

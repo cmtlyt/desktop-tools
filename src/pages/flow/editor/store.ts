@@ -13,7 +13,7 @@ type Store = EditorStoreState & EditorStoreHandlers;
 export const {
   useStore: useEditorStore,
   useStoreSlice: useEditorStoreSlice,
-  getState: getEditorStore,
+  getStore: getEditorStore,
 } = createStoreAndHelper<Store>((set) => ({
   id: '',
 

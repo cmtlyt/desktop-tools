@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { AppearBox } from '@/components/appear-box';
 import { ButtonTheme, FlexBox, FlexDirection } from '@/components/base';
 import { logger } from '@/utils';
-import { useNavigate } from '@/hooks/use-navigate';
+import { useNavigate } from '@/hooks';
 import { useNotepadStoreSlice } from '../store';
 import { getNotepadsStore, useNotepadsStoreSlice } from '@/store';
 import { Notepad } from '@/types/notepad';

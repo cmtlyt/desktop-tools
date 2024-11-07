@@ -11,7 +11,7 @@ interface DetailStoreHandlers {
 export const {
   useStore: useDetailStore,
   useStoreSlice: useDetailStoreSlice,
-  getState: getDetailStore,
+  getStore: getDetailStore,
 } = createStoreAndHelper<DetailStoreState & DetailStoreHandlers>((set) => ({
   id: '',
 

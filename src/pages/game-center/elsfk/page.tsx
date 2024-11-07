@@ -11,7 +11,7 @@ import {
 import { AppearBox } from '@/components/appear-box';
 import { FlexAlign, FlexBox, FlexDirection, FlexJustify } from '@/components/base';
 import { ElementInfo, ELSFKCustomEvent, GameInfo, Position } from './type';
-import { useGlobalEvent } from '@/hooks/use-global-event';
+import { useGlobalEvent } from '@/hooks';
 import { debounce } from '@cmtlyt/base';
 import { Container, Controller, GameWrapper, NextElement, Row, Text, ToolsWrapper } from './components';
 import { GameStatus, getELSFKStore, useELSFKStoreSlice } from './store';

@@ -4,10 +4,9 @@ import styled from 'styled-components';
 import { IoCaretBack } from 'react-icons/io5';
 import { FlexAlign, FlexBox, FlexJustify, ShadowFlexBox } from '@/components/base';
 import { UIMatchWithHandle } from '@/types';
-import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { Show } from '@/components/show';
-import { useNavigate } from '@/hooks/use-navigate';
+import { useNavigate } from '@/hooks';
 import { PageInfo } from '@/types/page-info';
 
 const HeaderContent = styled(ShadowFlexBox)`
@@ -45,23 +44,22 @@ export function Header() {
   const title = lastMatch?.handle?.title;
   const needBackIcon = lastMatch?.handle?.needBackIcon;
   const rightArea = lastMatch?.handle?.rightArea;
+  const titleArea = lastMatch?.handle?.titleArea;
 
   return (
     <HeaderContent $gap="1" $justifyContent={FlexJustify.BETWEEN}>
       <TitleWrapper $alignItems={FlexAlign.CENTER}>
         <Show if={needBackIcon}>
           {() => (
-            <AppearBox onFirstAppear={() => logger.appear('header-back-icon')}>
-              <BackIcon
-                onClick={() => {
-                  logger.click('header-back-icon');
-                  navigate(-1);
-                }}
-              />
-            </AppearBox>
+            <BackIcon
+              onClick={() => {
+                logger.click('header-back-icon');
+                navigate(-1);
+              }}
+            />
           )}
         </Show>
-        <TitleText>{title}</TitleText>
+        <TitleText>{titleArea || title}</TitleText>
       </TitleWrapper>
       <FlexBox $alignItems={FlexAlign.CENTER}>{rightArea}</FlexBox>
     </HeaderContent>

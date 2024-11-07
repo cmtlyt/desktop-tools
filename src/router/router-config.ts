@@ -1,6 +1,5 @@
 import { RouteObject, createHashRouter } from 'react-router-dom';
 import { generateRouteConfig } from './util';
-import { BASENAME } from './constant';
 
 export const routes: RouteObject[] = [
   {
@@ -24,9 +23,10 @@ export const routes: RouteObject[] = [
         generateRouteConfig('', [], '/notepad/list'),
         generateRouteConfig('/notepad/editor/:id?'),
         generateRouteConfig('/notepad/preview/:id'),
+        generateRouteConfig('/notepad/preview/source/:source', [], '/notepad/preview'),
       ]),
     ],
   },
 ];
 
-export const routerConfig = createHashRouter(routes, { basename: BASENAME });
+export const routerConfig = createHashRouter(routes, { basename: '' });

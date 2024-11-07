@@ -12,7 +12,7 @@ interface FlowStoreHandlers {
 export const {
   useStore: useFlowStore,
   useStoreSlice: useFlowStoreSlice,
-  getState: getFlowStore,
+  getStore: getFlowStore,
 } = createStoreAndHelper<FlowStoreState & FlowStoreHandlers>((set) => ({
   currentFlow: void 0,
 

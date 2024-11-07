@@ -9,7 +9,7 @@ import { ButtonList } from '@/components/button-list';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { getFlowsStore, useFlowsStoreSlice } from '@/store';
-import { useNavigate } from '@/hooks/use-navigate';
+import { useNavigate } from '@/hooks';
 import { Switch } from '@/components/switch';
 import { Empty } from '@/components/empty';
 

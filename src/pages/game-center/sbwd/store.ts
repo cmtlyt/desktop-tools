@@ -16,7 +16,7 @@ interface SBWDStoreHandlers {
 export const {
   useStore: useSBWDStore,
   useStoreSlice: useSBWDStoreSlice,
-  getState: getSBWDStore,
+  getStore: getSBWDStore,
 } = createStoreAndHelper<SBWDStoreState & SBWDStoreHandlers>((set) => ({
   speed: 500,
   currentGameId: getRandomString(),

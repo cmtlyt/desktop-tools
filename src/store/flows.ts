@@ -68,4 +68,4 @@ export const useFlowsStore = createPersist<Store>(FLOWS_STORAGE_KEY, (set, get) 
   ...getActions(set, get),
 }));
 
-export const { useStoreSlice: useFlowsStoreSlice, getState: getFlowsStore } = createStoreHelper(useFlowsStore);
+export const { useStoreSlice: useFlowsStoreSlice, getStore: getFlowsStore } = createStoreHelper(useFlowsStore);

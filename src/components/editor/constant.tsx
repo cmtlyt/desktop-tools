@@ -1,0 +1,92 @@
+import {
+  AdmonitionDirectiveDescriptor,
+  codeBlockPlugin,
+  codeMirrorPlugin,
+  directivesPlugin,
+  frontmatterPlugin,
+  headingsPlugin,
+  imagePlugin,
+  linkDialogPlugin,
+  linkPlugin,
+  listsPlugin,
+  markdownShortcutPlugin,
+  quotePlugin,
+  SandpackConfig,
+  sandpackPlugin,
+  tablePlugin,
+  thematicBreakPlugin,
+} from '@mdxeditor/editor';
+
+const simpleSandpackConfig: SandpackConfig = {
+  defaultPreset: 'react',
+  presets: [
+    {
+      label: 'React',
+      name: 'react',
+      meta: 'live react',
+      sandpackTemplate: 'react',
+      sandpackTheme: 'auto',
+      snippetFileName: '/App.js',
+      snippetLanguage: 'jsx',
+      dependencies: {},
+    },
+    {
+      label: 'React + TypeScript',
+      name: 'react-ts',
+      meta: 'live react-ts',
+      sandpackTemplate: 'react-ts',
+      sandpackTheme: 'auto',
+      snippetFileName: '/App.tsx',
+      snippetLanguage: 'tsx',
+      dependencies: {},
+    },
+    {
+      label: 'Vue',
+      name: 'vue',
+      meta: 'live vue',
+      sandpackTemplate: 'vue',
+      sandpackTheme: 'auto',
+      snippetFileName: '/App.vue',
+      snippetLanguage: 'vue',
+      dependencies: {},
+    },
+    {
+      label: 'Vue + TypeScript',
+      name: 'vue-ts',
+      meta: 'live vue-ts',
+      sandpackTemplate: 'vue-ts',
+      sandpackTheme: 'auto',
+      snippetFileName: '/App.vue',
+      snippetLanguage: 'vue',
+      dependencies: {},
+    },
+  ],
+};
+
+const codeMirrorConfig = {
+  codeBlockLanguages: {
+    js: 'JavaScript',
+    css: 'CSS',
+    ts: 'TypeScript',
+    html: 'HTML',
+    json: 'JSON',
+    md: 'Markdown',
+  },
+};
+
+export const baseEditorPlugins = [
+  headingsPlugin(),
+  quotePlugin(),
+  listsPlugin(),
+  thematicBreakPlugin(),
+  linkPlugin(),
+  linkDialogPlugin(),
+  tablePlugin(),
+  markdownShortcutPlugin(),
+  frontmatterPlugin(),
+  imagePlugin(),
+  codeBlockPlugin({ defaultCodeBlockLanguage: 'ts' }),
+  sandpackPlugin({ sandpackConfig: simpleSandpackConfig }),
+  codeMirrorPlugin(codeMirrorConfig),
+  directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] }),
+];

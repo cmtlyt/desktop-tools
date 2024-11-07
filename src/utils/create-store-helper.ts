@@ -4,9 +4,9 @@ import { Many } from '@/types';
 import { GetStore } from '@/types/store';
 
 export function createStoreHelper<T extends object>(useStore: UseBoundStore<StoreApi<T>>) {
-  const getState = () => useStore.getState();
+  const getStore = () => useStore.getState();
   const useStoreSlice = (keys: Many<keyof T>) => useStore(useSelector(keys));
-  return { getState, useStoreSlice };
+  return { getStore, useStoreSlice };
 }
 
 export function createStoreAndHelper<T extends object>(getStore: GetStore<T>) {

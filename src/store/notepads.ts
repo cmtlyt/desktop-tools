@@ -63,4 +63,4 @@ export const useNotepadsStore = createPersist<Store>(NOTEPADS_STORAGE_KEY, (set,
   ...getActions(set, get),
 }));
 
-export const { useStoreSlice: useNotepadsStoreSlice, getState: getNotepadsStore } = createStoreHelper(useNotepadsStore);
+export const { useStoreSlice: useNotepadsStoreSlice, getStore: getNotepadsStore } = createStoreHelper(useNotepadsStore);
