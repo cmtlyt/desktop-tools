@@ -1,1 +1,0 @@
-import{g as r}from"./index-C_F239hU.js";import{ag as o,r as u}from"./index-566Ptau1.js";function g(){const t=o();return u.useCallback((a,e)=>(r().setLoading(!0),typeof a=="number"?t(a):t(a,e)),[t])}export{g as u};
