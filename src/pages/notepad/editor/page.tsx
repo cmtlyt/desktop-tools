@@ -2,7 +2,7 @@ import { useCallback, useRef } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { gzip } from '@cmtlyt/string-zip';
 import { PageInfo } from '@/types/page-info';
-import { EditorRef } from '@/components/editor';
+import type { EditorRef } from '@/components/editor';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { RightArea } from './right-area';

@@ -1,7 +1,8 @@
 import { forwardRef, memo, useEffect, useState, useTransition } from 'react';
 import { unGzip } from '@cmtlyt/string-zip';
-import { Editor, EditorRef } from '@/components/editor';
+import type { EditorRef } from '@/components/editor';
 import { useNotepadStoreSlice } from './store';
+import { LazyEditor } from '@/components/editor/lazy-editor';
 
 interface AutoLoadEditorProps {
   readOnly?: boolean;
@@ -20,6 +21,6 @@ export const AutoLoadEditor = memo(
       });
     }, [currentNotepad]);
 
-    return isPadding ? null : <Editor content={content} readOnly={readOnly} ref={ref} />;
+    return isPadding ? null : <LazyEditor content={content} readOnly={readOnly} ref={ref} />;
   }),
 );

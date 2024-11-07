@@ -35,3 +35,5 @@ export const Editor = memo(
     );
   }),
 );
+
+export default Editor;
