@@ -69,13 +69,23 @@ export const MDXEditroStyle = styled(MDXEditor)`
   font-size: 1.8rem;
   overflow-x: hidden;
 
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+
   .mdxeditor-diff-source-wrapper {
     flex: 1;
+  }
+
+  .sp-wrapper {
+    position: relative;
+    z-index: 0;
   }
 
   .mdxeditor-toolbar {
     box-sizing: border-box;
     height: 5rem;
+    min-height: 5rem;
 
     &:empty {
       display: none;
@@ -106,6 +116,19 @@ export const MDXEditroStyle = styled(MDXEditor)`
   ol {
     margin-block-start: 0.5em;
     margin-block-end: 0.5em;
+  }
+
+  a {
+    color: var(--color-primary);
+  }
+
+  blockquote {
+    margin: 0;
+    margin-block: 0.5em;
+    padding-block: 0.5em;
+    padding-inline: 1em;
+    border-left: 0.4rem solid var(--color-gray-5);
+    color: var(--color-gray-6);
   }
 `;
 

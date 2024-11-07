@@ -1,9 +1,12 @@
+import { logger } from '@/utils';
+
 const translationMap = {
   frontmatterEditor: { title: '编辑前置元数据', key: '键', value: '值', addEntry: '添加项目' },
   dialogControls: { save: '保存', cancel: '取消' },
   uploadImage: {
     dialogTitle: '上传图片',
     uploadInstructions: '从您的设备中上传图片：',
+    addViaUrlInstructionsNoUpload: '从网址新增图片：',
     addViaUrlInstructions: '或从网址新增图片：',
     autoCompletePlaceholder: '选择或粘贴图片',
     alt: '替代文本：',
@@ -85,16 +88,25 @@ const translationMap = {
     changeType: '选择注释区块类型',
     placeholder: '注释区块类型',
   },
-  codeBlock: { language: '代码块语言', selectLanguage: '选择代码块语言' },
+  codeBlock: { language: '代码块语言', selectLanguage: '选择代码块语言', inlineLanguage: '语言' },
   contentArea: { editableMarkdown: '可编辑的 Markdown' },
+  codeblock: { delete: '删除代码块' },
+  image: { delete: '删除图片' },
 };
 
-function getValue(key: string[], defaultValue: string): string {
-  if (!key.length) return defaultValue;
+function getValue(key: string, defaultValue: string): string {
+  const splitKey = key.split('.');
+  if (!splitKey.length) return defaultValue;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let currValue: any = translationMap;
-  while (key.length) currValue = currValue[key.shift()!];
-  return (currValue || '') as unknown as string;
+  try {
+    while (splitKey.length) currValue = currValue[splitKey.shift()!];
+    if (!currValue) logger.error('translation empty', { key, defaultValue });
+  } catch (e) {
+    logger.error('translation error', e, { key, defaultValue });
+    return defaultValue;
+  }
+  return (currValue || defaultValue) as unknown as string;
 }
 
 function replaceValue(value: string, interpolations?: Record<string, string>) {
@@ -102,7 +114,12 @@ function replaceValue(value: string, interpolations?: Record<string, string>) {
   return value.replace(/\{\{([a-zA-Z0-9_]+)\}\}/g, (_, key) => interpolations[key]);
 }
 
+const cache = new Map<string, string>();
+
 export function translation(key: string, defaultValue: string, interpolations?: Record<string, string>) {
-  const tempValue = getValue(key.split('.'), defaultValue);
-  return replaceValue(tempValue, interpolations);
+  if (cache.has(key)) return cache.get(key)!;
+  const tempValue = getValue(key, defaultValue);
+  const value = replaceValue(tempValue, interpolations);
+  cache.set(key, value);
+  return value;
 }

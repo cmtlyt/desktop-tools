@@ -17,6 +17,10 @@ import {
   thematicBreakPlugin,
 } from '@mdxeditor/editor';
 
+const reactSnippetContent = `export default function App() {\n  return <div>Hello world!</div>;\n}`.trim();
+
+const vueSnippetContent = `<template>\n  <div>Hello world!</div>\n</template>`.trim();
+
 const simpleSandpackConfig: SandpackConfig = {
   defaultPreset: 'react',
   presets: [
@@ -28,6 +32,7 @@ const simpleSandpackConfig: SandpackConfig = {
       sandpackTheme: 'auto',
       snippetFileName: '/App.js',
       snippetLanguage: 'jsx',
+      initialSnippetContent: reactSnippetContent,
       dependencies: {},
     },
     {
@@ -38,6 +43,7 @@ const simpleSandpackConfig: SandpackConfig = {
       sandpackTheme: 'auto',
       snippetFileName: '/App.tsx',
       snippetLanguage: 'tsx',
+      initialSnippetContent: reactSnippetContent,
       dependencies: {},
     },
     {
@@ -46,8 +52,9 @@ const simpleSandpackConfig: SandpackConfig = {
       meta: 'live vue',
       sandpackTemplate: 'vue',
       sandpackTheme: 'auto',
-      snippetFileName: '/App.vue',
+      snippetFileName: '/src/App.vue',
       snippetLanguage: 'vue',
+      initialSnippetContent: vueSnippetContent,
       dependencies: {},
     },
     {
@@ -56,8 +63,9 @@ const simpleSandpackConfig: SandpackConfig = {
       meta: 'live vue-ts',
       sandpackTemplate: 'vue-ts',
       sandpackTheme: 'auto',
-      snippetFileName: '/App.vue',
+      snippetFileName: '/src/App.vue',
       snippetLanguage: 'vue',
+      initialSnippetContent: vueSnippetContent,
       dependencies: {},
     },
   ],
