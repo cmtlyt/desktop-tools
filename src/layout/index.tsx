@@ -11,6 +11,7 @@ import { LayoutLoading } from './loading';
 
 const PageWrapper = styled(FlexBox)`
   position: relative;
+  z-index: 1;
   overflow-y: auto;
 `;
 

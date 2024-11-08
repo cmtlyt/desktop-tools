@@ -17,6 +17,7 @@ interface AsideWrapperProps {
 
 const AsideWrapper = styled.aside<AsideWrapperProps>`
   position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: ${({ $width, $expandAside }) => ($expandAside ? $width : '0')};
   transition: grid-template-columns 300ms;

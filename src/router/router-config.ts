@@ -25,6 +25,10 @@ export const routes: RouteObject[] = [
         generateRouteConfig('/notepad/preview/:id'),
         generateRouteConfig('/notepad/preview/source/:source', [], '/notepad/preview'),
       ]),
+      generateRouteConfig('/inline-vscode', [
+        generateRouteConfig('', [], '/inline-vscode/project-list'),
+        generateRouteConfig('/inline-vscode/workspace/:id'),
+      ]),
     ],
   },
 ];

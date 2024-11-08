@@ -6,6 +6,8 @@ import { getLayoutStore, useLayoutStoreSlice } from '@/store';
 import { logger } from '@/utils';
 
 const FooterContent = styled(ShadowFlexBox)`
+  position: relative;
+  z-index: 2;
   padding: 1rem 2rem;
 `;
 

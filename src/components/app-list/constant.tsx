@@ -2,6 +2,7 @@ import { TbBrandStackoverflow } from 'react-icons/tb';
 import { MdOutlineManageHistory } from 'react-icons/md';
 import { GiGamepadCross } from 'react-icons/gi';
 import { BiNotepad } from 'react-icons/bi';
+import { FaLaptopCode } from 'react-icons/fa';
 
 export interface AppInfo {
   name: string;
@@ -37,5 +38,10 @@ export const appList: AppInfo[] = [
     path: '/notepad',
     deepMatch: true,
     icon: <BiNotepad />,
+  },
+  {
+    name: 'Code',
+    path: '/inline-vscode',
+    icon: <FaLaptopCode />,
   },
 ];

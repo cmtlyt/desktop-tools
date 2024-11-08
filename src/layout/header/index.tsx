@@ -10,6 +10,8 @@ import { useNavigate } from '@/hooks';
 import { PageInfo } from '@/types/page-info';
 
 const HeaderContent = styled(ShadowFlexBox)`
+  position: relative;
+  z-index: 2;
   height: 5rem;
   padding: 0 2rem;
   overflow-x: auto;
