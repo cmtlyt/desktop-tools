@@ -23,7 +23,8 @@ export const Aside = memo(function Aside() {
     if (!container) return;
     const watcher = container.fs.watch(DEFAULT_DIRECTORY, { recursive: true, persistent: true }, (event) => {
       if (event !== 'rename') return;
-      getContainerFileSystem().then((fs) => {
+
+      getContainerFileSystem((fs) => {
         setFileSystem(fs);
       });
     });

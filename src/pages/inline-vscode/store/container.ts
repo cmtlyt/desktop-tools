@@ -1,6 +1,7 @@
 import type { WebContainer } from '@webcontainer/api';
 import { createStoreAndHelper } from '@/utils';
 import { DEFAULT_DIRECTORY } from '../constant';
+import { getWorkspaceStore } from './workspace';
 
 interface ContainerStoreState {
   container: WebContainer | null;
@@ -30,6 +31,11 @@ export const {
     const { WebContainer } = await import('@webcontainer/api');
     const container = await WebContainer.boot();
     await container.mount({ [DEFAULT_DIRECTORY]: { directory: {} } });
+    container.on('server-ready', (_port, url) => {
+      const { addServiceUrl, setPreviewUrl } = getWorkspaceStore();
+      addServiceUrl(url);
+      setPreviewUrl(url);
+    });
     set({ container });
   },
 }));

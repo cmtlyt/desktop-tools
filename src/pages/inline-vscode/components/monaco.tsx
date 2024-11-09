@@ -1,8 +1,9 @@
 import * as monaco from 'monaco-editor';
 import { Editor, loader, type Monaco } from '@monaco-editor/react';
-import { useWorkspaceStoreSlice } from '../store/workspace';
+import { getWorkspaceStore, useWorkspaceStoreSlice } from '../store/workspace';
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from 'react';
 import { getModel } from '../utils/monaco';
+import { updateFileContent } from '../utils/file-system';
 
 loader.config({ monaco });
 
@@ -27,9 +28,11 @@ const EditorComp = memo(
     const onKeyDown = (e: monaco.IKeyboardEvent) => {
       if (e.code === 'KeyS' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
+        const { currentFilePath } = getWorkspaceStore();
+        if (!currentFilePath) return;
         const { editor } = editorRef.current;
         const value = editor.getValue();
-        console.debug(value);
+        updateFileContent(currentFilePath, value);
       }
     };
 
