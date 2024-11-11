@@ -1,0 +1,1 @@
+import{g as r}from"./index-BcM3eVF-.js";import{ai as o,r as u}from"./index-DRi9_Ped.js";function g(){const t=o();return u.useCallback((a,e)=>(r().setLoading(!0),typeof a=="number"?t(a):t(a,e)),[t])}export{g as u};
