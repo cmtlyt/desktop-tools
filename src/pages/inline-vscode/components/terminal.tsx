@@ -153,3 +153,5 @@ export const Terminal = memo(
     return <XTermWrapper ref={termWrapperRef} />;
   }),
 );
+
+export default Terminal;

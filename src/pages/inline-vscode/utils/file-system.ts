@@ -1,7 +1,7 @@
+import { debounce } from '@cmtlyt/base';
 import type { DirectoryNode, FileNode, FileSystemTree, SymlinkNode, WebContainer } from '@webcontainer/api';
 import { DEFAULT_DIRECTORY } from '../constant';
 import { getContainerStore } from '../store/container';
-import { debounce } from '@cmtlyt/base';
 
 export async function createFileNode(container: WebContainer, path: string, name: string): Promise<FileNode> {
   const contents = await container.fs.readFile(`${path}/${name}`, 'utf-8');
@@ -53,24 +53,28 @@ export function getFileLanguage(path: string) {
   const ext = path.split('.').pop() || '';
   switch (ext) {
     case 'js':
+      return 'javascript';
     case 'jsx':
-      return 'text/javascript';
+      return 'jsx';
     case 'ts':
+      return 'typescript';
     case 'tsx':
-      return 'text/typescript';
+      return 'tsx';
     case 'css':
-      return 'text/css';
+      return 'css';
     case 'html':
-      return 'text/html';
+      return 'html';
     case 'json':
-      return 'text/json';
+      return 'json';
     case 'md':
-      return 'text/markdown';
+      return 'markdown';
     case 'yml':
     case 'yaml':
-      return 'text/yaml';
+      return 'yaml';
+    case 'vue':
+      return 'vue';
     default:
-      return 'text/plain';
+      return 'plain';
   }
 }
 

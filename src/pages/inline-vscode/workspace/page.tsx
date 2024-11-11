@@ -1,15 +1,19 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, lazy } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { Monaco } from '../components/monaco';
+import styled from 'styled-components';
 import { Preview } from '../components/preview';
 import { Aside } from '../components/aside';
-import { Terminal, TerminalRef } from '../components/terminal';
+import type { TerminalRef } from '../components/terminal';
 import { getContainerStore } from '../store/container';
-import styled from 'styled-components';
 import { Tabbar } from '../components/tabbar';
+
+const Monaco = lazy(() => import('../components/monaco'));
+const Terminal = lazy(() => import('../components/terminal'));
 
 const PanelGroupStyle = styled(PanelGroup)`
   height: 100%;
+  background-color: #252525;
+  color: #fff;
 `;
 
 interface PanelHandle {
@@ -17,7 +21,7 @@ interface PanelHandle {
 }
 
 const PanelHandle = styled(PanelResizeHandle)<PanelHandle>`
-  background-color: var(--color-gray-2);
+  background-color: var(--color-gray-8);
 
   ${({ direction }) => {
     if (direction === 'horizontal') {

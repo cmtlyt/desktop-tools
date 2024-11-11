@@ -1,7 +1,7 @@
-import { FlexBox, FlexDirection } from '@/components/base';
-import styled from 'styled-components';
-import { useWorkspaceStoreSlice } from '../store/workspace';
 import { memo } from 'react';
+import styled from 'styled-components';
+import { FlexBox, FlexDirection } from '@/components/base';
+import { useWorkspaceStoreSlice } from '../store/workspace';
 
 const PreviewFrame = styled.iframe`
   margin: 0;
@@ -19,11 +19,8 @@ const PreviewWrapper = styled(FlexBox)`
 export const Preview = memo(function Preview() {
   const { previewUrl } = useWorkspaceStoreSlice('previewUrl');
 
-  console.debug(previewUrl);
-
   return (
     <PreviewWrapper $direction={FlexDirection.COLUMN}>
-      <input type="text" value={previewUrl} onChange={() => {}} />
       <PreviewFrame src={previewUrl} />
     </PreviewWrapper>
   );
