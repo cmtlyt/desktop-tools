@@ -7,7 +7,7 @@ import { HoverExpandBox } from '@/components/hover-expand-box';
 import { ButtonList } from '@/components/button-list';
 import { Price } from '@/components/price';
 import { ACCOUNT_TYPE_LABEL_MAP, FLOW_CATEGORY_LABEL_MAP, FLOW_STATUS_LABEL_MAP } from '@/constant/flow';
-import { ItemDate, ItemTitle, ItemWrapper } from '@/components/list-item';
+import { ItemDate, ItemTitle, ItemWrapper } from '@/components/list';
 
 interface FlowItemProps {
   flow: Flow;

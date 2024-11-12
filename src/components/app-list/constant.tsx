@@ -3,6 +3,7 @@ import { MdOutlineManageHistory } from 'react-icons/md';
 import { GiGamepadCross } from 'react-icons/gi';
 import { BiNotepad } from 'react-icons/bi';
 // import { FaLaptopCode } from 'react-icons/fa';
+import { BiVideoRecording } from 'react-icons/bi';
 
 export interface AppInfo {
   name: string;
@@ -44,4 +45,10 @@ export const appList: AppInfo[] = [
   //   path: '/inline-vscode',
   //   icon: <FaLaptopCode />,
   // },
+  {
+    name: '录制',
+    path: '/recorder',
+    deepMatch: true,
+    icon: <BiVideoRecording />,
+  },
 ];

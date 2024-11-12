@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { DateView } from '@/components/date-view';
-import { ShadowFlexBox } from '../base';
+import { FlexBox, ShadowFlexBox } from '../base';
+import { ButtonList } from '../button-list';
 
 export const ItemTitle = styled.span`
   display: -webkit-box;
@@ -22,4 +23,13 @@ export const ItemWrapper = styled(ShadowFlexBox)`
   line-height: 1;
   background: #fff;
   border-radius: 0.8rem;
+`;
+
+export const PageListWrapper = styled(FlexBox)`
+  padding: var(--page-padding);
+  flex-direction: column;
+`;
+
+export const RightHandleButtonList = styled(ButtonList)`
+  padding-left: 1rem;
 `;

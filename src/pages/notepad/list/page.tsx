@@ -1,8 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useLoaderData } from 'react-router-dom';
-import styled from 'styled-components';
 import { AppearBox } from '@/components/appear-box';
-import { ButtonTheme, FlexBox, FlexDirection } from '@/components/base';
+import { ButtonTheme } from '@/components/base';
 import { logger } from '@/utils';
 import { useNavigate } from '@/hooks';
 import { useNotepadStoreSlice } from '../store';
@@ -13,10 +12,7 @@ import { Switch } from '@/components/switch';
 import { Empty } from '@/components/empty';
 import { NotepadItem } from './notepad-item';
 import { PageInfo } from '@/types/page-info';
-
-const NotepadList = styled(FlexBox)`
-  padding: var(--page-padding);
-`;
+import { PageListWrapper } from '@/components/list';
 
 function deleteNotepadHandler(id: Notepad['id']) {
   getNotepadsStore().deleteNotepad(id);
@@ -38,7 +34,7 @@ export function Component() {
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('notepad-list')}>
-      <NotepadList $direction={FlexDirection.COLUMN}>
+      <PageListWrapper>
         <Switch if={notepads.length > 0} fullback={<Empty />}>
           {() =>
             notepads.map((notepad) => (
@@ -55,7 +51,7 @@ export function Component() {
             ))
           }
         </Switch>
-      </NotepadList>
+      </PageListWrapper>
     </AppearBox>
   );
 }

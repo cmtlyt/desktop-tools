@@ -29,6 +29,11 @@ export const routes: RouteObject[] = [
         generateRouteConfig('', [], '/inline-vscode/project-list'),
         generateRouteConfig('/inline-vscode/workspace/:id'),
       ]),
+      generateRouteConfig('/recorder', [
+        generateRouteConfig('', [], '/recorder/list'),
+        generateRouteConfig('/recorder/recording'),
+        generateRouteConfig('/recorder/playback/:id'),
+      ]),
     ],
   },
 ];

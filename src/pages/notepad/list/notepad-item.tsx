@@ -1,9 +1,7 @@
 import { memo } from 'react';
-import styled from 'styled-components';
-import { ItemDate, ItemTitle, ItemWrapper } from '@/components/list-item';
+import { ItemDate, ItemTitle, ItemWrapper, RightHandleButtonList } from '@/components/list';
 import { HoverExpandBox } from '@/components/hover-expand-box';
 import { Notepad } from '@/types/notepad';
-import { ButtonList } from '@/components/button-list';
 import { useNotepadStoreSlice } from '../store';
 import { ButtonTheme, FlexAlign, FlexBox } from '@/components/base';
 import { shareNotepad } from '../util';
@@ -19,17 +17,13 @@ interface HandleButtonsProps {
   onDelete?: (id: Notepad['id']) => void;
 }
 
-const HandleButtonList = styled(ButtonList)`
-  padding-left: 1rem;
-`;
-
 function HandleButtons(props: HandleButtonsProps) {
   const { notepad, onDelete } = props;
   const { id } = notepad;
   const { setNotepad } = useNotepadStoreSlice('setNotepad');
 
   return (
-    <HandleButtonList
+    <RightHandleButtonList
       wrapperProps={{ $alignItems: FlexAlign.CENTER }}
       buttons={[
         {
