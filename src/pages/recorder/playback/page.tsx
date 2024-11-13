@@ -17,7 +17,7 @@ export function Component() {
         const playUrl = await getPlayUrl(currentRecord);
         setPlayUrl(playUrl);
       } catch (e) {
-        logger.error('get-play-url', e);
+        logger.error('get-play-url', (e as Error).message);
       }
     })();
   }, [currentRecord]);

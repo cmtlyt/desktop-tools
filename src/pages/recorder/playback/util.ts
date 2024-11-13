@@ -1,5 +1,4 @@
-import { stringToBinary } from '@cmtlyt/base';
-import { unGzip } from '@cmtlyt/string-zip';
+import { chunkBase64StringToBlob } from '@cmtlyt/base';
 import { RecordInfo } from '@/types/records';
 
 export async function getPlayUrl(recordInfo?: RecordInfo) {
@@ -7,7 +6,6 @@ export async function getPlayUrl(recordInfo?: RecordInfo) {
   const { url, content } = recordInfo;
   if (url) return url;
   if (!content) return '';
-  const source = await unGzip(content);
-  const blob = new Blob([stringToBinary(source)]);
+  const blob = chunkBase64StringToBlob(content);
   return URL.createObjectURL(blob);
 }

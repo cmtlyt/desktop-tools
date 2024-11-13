@@ -10,14 +10,14 @@ interface RecordsStore {
 }
 
 interface RecordsStoreActions {
-  addRecords: (notepad: EditorRecordInfo) => void;
+  addRecord: (notepad: EditorRecordInfo) => void;
   deleteRecord: (id: string) => void;
 }
 
 type Store = RecordsStore & RecordsStoreActions;
 
 const getActions: GetStore<Store, RecordsStoreActions> = (set) => ({
-  addRecords: (notepad) => {
+  addRecord: (notepad) => {
     set((state) =>
       produce(state, (draft) => {
         const saveNotepad: RecordInfo = {

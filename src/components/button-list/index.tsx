@@ -86,6 +86,10 @@ const ButtonItemComp = (props: ButtonItem) => {
 export function ButtonList(props: ButtonListProps) {
   const { buttons, wrapperProps, $gap = 1, className } = props;
 
+  const filteredButtons = useMemo(() => {
+    return buttons.filter((item) => !item.hidden);
+  }, [buttons]);
+
   const content = useMemo(
     () => (
       <ButtonListWrapper
@@ -94,12 +98,12 @@ export function ButtonList(props: ButtonListProps) {
         $direction={FlexDirection[isPhone() ? 'COLUMN' : 'ROW']}
         className={className}
       >
-        {buttons.map((item, idx) => (
+        {filteredButtons.map((item, idx) => (
           <ButtonItemComp {...item} key={idx} />
         ))}
       </ButtonListWrapper>
     ),
-    [buttons, $gap, wrapperProps, className],
+    [filteredButtons, $gap, wrapperProps, className],
   );
 
   return (
