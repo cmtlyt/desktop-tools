@@ -4,17 +4,24 @@ import { getLayoutStore } from '@/store';
 import { logger } from '@/utils';
 import { getRecordingInfoStore } from './store';
 import { ActionType, emitRecordingAction } from './subject';
-import { blobToChunkBase64String, cacheByReturn } from '@cmtlyt/base';
+import { blobToChunkBase64String, cacheByReturn, sleep } from '@cmtlyt/base';
+
+// async function mergeAudioTracks(audioTracks: MediaStreamTrack[]) {
+//   const ac = new AudioContext();
+//   const source = ac.createBufferSource();
+//   source.buffer?.copyFromChannel(audioTracks[0]);
+// }
 
 async function getScreenAndAudioStream() {
   try {
-    const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: { channelCount: 2 } });
+    // todo: 合并音频
+    // const audioStream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 2 } });
 
     // 将两个流合并成一个
     const combinedStream = new MediaStream();
     screenStream.getTracks().forEach((track) => combinedStream.addTrack(track));
-    audioStream.getTracks().forEach((track) => combinedStream.addTrack(track));
+    // audioStream.getTracks().forEach((track) => combinedStream.addTrack(track));
 
     return combinedStream;
   } catch (error) {
@@ -85,29 +92,16 @@ const { startRecording, stopRecording, listener } = (() => {
   return { startRecording, stopRecording, listener };
 })();
 
-export function download(blob: Blob) {
-  const { name } = getRecordingInfoStore();
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.style.display = 'none';
-  a.href = url;
-  a.download = `${name}.webm`;
-  a.click();
-  setTimeout(() => {
-    window.URL.revokeObjectURL(url);
-  }, 100);
-}
-
 export async function startRecord() {
   const stream = await getScreenAndAudioStream();
   const { recorder: storeRecorder, setStream, setRecorder } = getRecordingInfoStore();
   if (storeRecorder) return;
   setStream(stream);
   // 倒计时
-  // for (let i = 5; i > 0; i--) {
-  //   getLayoutStore().showMessage({ content: `${i}秒后开始录制` });
-  //   await sleep(1000);
-  // }
+  for (let i = 5; i > 0; i--) {
+    getLayoutStore().showMessage({ content: `${i}秒后开始录制` });
+    await sleep(1000);
+  }
   getLayoutStore().showMessage({ content: '开始录制' });
 
   const recorder = startRecording(stream);

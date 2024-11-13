@@ -3,10 +3,14 @@ import { RightArea } from './right-area';
 import { TitleArea } from './title-area';
 import { ActionType, useSubscribeRecordingAction } from './subject';
 import { getRecordsStore } from '@/store';
-import { getRecordingInfoStore } from './store';
+import { getRecordingInfoStore, useRecordingInfoStoreSlice } from './store';
 import { getResultString } from './util';
+import { useEffect, useRef } from 'react';
 
 export function Component() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { stream } = useRecordingInfoStoreSlice('stream');
+
   useSubscribeRecordingAction(() => {
     const { addRecord } = getRecordsStore();
     const { name, clear } = getRecordingInfoStore();
@@ -17,7 +21,13 @@ export function Component() {
     });
   }, ActionType.RECORD_END);
 
-  return <div>录制中</div>;
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (!stream) return;
+    videoRef.current.srcObject = stream;
+  }, [stream]);
+
+  return <video ref={videoRef} muted autoPlay></video>;
 }
 
 export const handle: PageInfo = {

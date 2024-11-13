@@ -1,4 +1,5 @@
 import { ButtonList } from '@/components/button-list';
+import { download } from './util';
 
 export function RightArea() {
   return (
@@ -6,9 +7,7 @@ export function RightArea() {
       buttons={[
         {
           text: '下载',
-          onClick() {
-            window.logger.todo('下载视频');
-          },
+          onClick: download,
         },
       ]}
     />
