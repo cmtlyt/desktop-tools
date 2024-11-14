@@ -3,6 +3,33 @@ import { getLayoutStore } from '@/store';
 import { logger } from '@/utils';
 import { getRecordingInfoStore } from './store';
 import { ActionType, emitRecordingAction } from './subject';
+import { SpeechRecognition } from '@/types/speech-recognition';
+
+function getSpeechRecognition() {
+  if ('SpeechRecognition' in window) return window.SpeechRecognition as SpeechRecognition;
+  if ('webkitSpeechRecognition' in window) return window.webkitSpeechRecognition as SpeechRecognition;
+  return null;
+}
+
+export function transcriptionOfAudioRecordings() {
+  const SpeechRecognition = getSpeechRecognition();
+  if (!SpeechRecognition) return;
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true; // 持续监听
+  recognition.interimResults = true; // 获取临时结果
+
+  recognition.addEventListener('result', function (event) {
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        console.log(`Final transcript: ${event.results[i][0].transcript}`);
+      } else {
+        console.log(`Interim transcript: ${event.results[i][0].transcript}`);
+      }
+    }
+  });
+
+  recognition.start();
+}
 
 function mergeAudioStream(streams: MediaStream[]) {
   const context = new AudioContext();
@@ -60,11 +87,7 @@ function getRecording(stream: MediaStream) {
 
   if (!mimeType) throw new Error('No supported mime type found');
 
-  const mediaRecorder = new MediaRecorder(stream, {
-    mimeType,
-    videoBitsPerSecond: 2500000,
-    bitsPerSecond: 2500000,
-  });
+  const mediaRecorder = new MediaRecorder(stream, { mimeType });
 
   return mediaRecorder;
 }
