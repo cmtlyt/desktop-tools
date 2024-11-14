@@ -1,16 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
+import { blobToChunkBase64String, cacheByReturn, sleep } from '@cmtlyt/base';
 import { getLayoutStore } from '@/store';
 import { logger } from '@/utils';
 import { getRecordingInfoStore } from './store';
 import { ActionType, emitRecordingAction } from './subject';
-import { blobToChunkBase64String, cacheByReturn, sleep } from '@cmtlyt/base';
-
-// async function mergeAudioTracks(audioTracks: MediaStreamTrack[]) {
-//   const ac = new AudioContext();
-//   const source = ac.createBufferSource();
-//   source.buffer?.copyFromChannel(audioTracks[0]);
-// }
 
 async function getScreenAndAudioStream() {
   try {
@@ -25,7 +17,7 @@ async function getScreenAndAudioStream() {
 
     return combinedStream;
   } catch (error) {
-    logger.error('get-screen-and-audio-stream', error.message);
+    logger.error('get-screen-and-audio-stream', (error as Error).message);
   }
 }
 
@@ -60,7 +52,7 @@ function getRecording(stream: MediaStream) {
 }
 
 const { startRecording, stopRecording, listener } = (() => {
-  let chunks = [];
+  let chunks: Blob[] = [];
 
   const startRecording = (stream: MediaStream) => {
     const recorder = getRecording(stream);
@@ -94,6 +86,7 @@ const { startRecording, stopRecording, listener } = (() => {
 
 export async function startRecord() {
   const stream = await getScreenAndAudioStream();
+  if (!stream) return;
   const { recorder: storeRecorder, setStream, setRecorder } = getRecordingInfoStore();
   if (storeRecorder) return;
   setStream(stream);
@@ -116,6 +109,7 @@ export async function startRecord() {
 
 export async function stopRecord() {
   const { recorder } = getRecordingInfoStore();
+  if (!recorder) return;
   stopRecording(recorder);
 }
 

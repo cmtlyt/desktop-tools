@@ -1,7 +1,7 @@
+import styled from 'styled-components';
 import { ButtonList } from '@/components/button-list';
 import { startRecord, stopRecord } from './util';
 import { useRecordingInfoStoreSlice } from './store';
-import styled from 'styled-components';
 import { ButtonTheme } from '@/components/base';
 
 const TipText = styled.span``;
