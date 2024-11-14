@@ -20,7 +20,7 @@ export function RightArea() {
           onClick: () => stopRecord(),
         },
         {
-          text: '开始录制',
+          text: '保存录制',
           $presetTheme: ButtonTheme.PRIMARY,
           hidden: !!recorder,
           onClick: () => startRecord(),

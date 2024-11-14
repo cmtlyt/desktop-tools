@@ -4,20 +4,38 @@ import { logger } from '@/utils';
 import { getRecordingInfoStore } from './store';
 import { ActionType, emitRecordingAction } from './subject';
 
+function mergeAudioStream(streams: MediaStream[]) {
+  const context = new AudioContext();
+  const destination = context.createMediaStreamDestination();
+  streams.forEach((stream) => {
+    const source = context.createMediaStreamSource(stream);
+    source.connect(destination);
+  });
+  return destination.stream;
+}
+
 async function getScreenAndAudioStream() {
   try {
     const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: { channelCount: 2 } });
-    // todo: 合并音频
-    // const audioStream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 2 } });
+    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 2 } });
+
+    const mergeStream = mergeAudioStream([screenStream, audioStream]);
 
     // 将两个流合并成一个
     const combinedStream = new MediaStream();
-    screenStream.getTracks().forEach((track) => combinedStream.addTrack(track));
-    // audioStream.getTracks().forEach((track) => combinedStream.addTrack(track));
+    screenStream.getVideoTracks().forEach((track) => combinedStream.addTrack(track));
+    mergeStream.getTracks().forEach((track) => combinedStream.addTrack(track));
 
-    return combinedStream;
+    return {
+      stream: combinedStream,
+      stopTraces() {
+        screenStream.getTracks().forEach((track) => track.stop());
+        audioStream.getTracks().forEach((track) => track.stop());
+      },
+    };
   } catch (error) {
     logger.error('get-screen-and-audio-stream', (error as Error).message);
+    return {};
   }
 }
 
@@ -85,7 +103,7 @@ const { startRecording, stopRecording, listener } = (() => {
 })();
 
 export async function startRecord() {
-  const stream = await getScreenAndAudioStream();
+  const { stream, stopTraces } = await getScreenAndAudioStream();
   if (!stream) return;
   const { recorder: storeRecorder, setStream, setRecorder } = getRecordingInfoStore();
   if (storeRecorder) return;
@@ -100,6 +118,7 @@ export async function startRecord() {
   const recorder = startRecording(stream);
 
   listener(recorder, (blob) => {
+    stopTraces?.();
     getRecordingInfoStore().setResult(blob);
     emitRecordingAction({ id: 'recording-end', type: ActionType.RECORD_END });
   });
