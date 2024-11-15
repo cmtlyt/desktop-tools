@@ -1,8 +1,9 @@
-import styled from 'styled-components';
-import { FlexAlign, FlexBox, FlexDirection, FlexJustify } from '../base';
 import { forwardRef, lazy, memo } from 'react';
-import type { EditorRef } from '.';
+import styled from 'styled-components';
 import { Spin } from 'antd';
+import { FlexAlign, FlexBox, FlexDirection, FlexJustify } from '../base';
+import type { EditorRef } from '.';
+import { Show } from '../show';
 
 const Editor = lazy(() => import('@/components/editor'));
 
@@ -38,7 +39,7 @@ export const LazyEditor = memo(
     return (
       <Wrapper $flex="1" $direction={FlexDirection.COLUMN}>
         <EditorWrapper $flex="1" $direction={FlexDirection.COLUMN}>
-          <Editor content={content} readOnly={readOnly} ref={ref} />
+          <Show if={!readOnly || content}>{() => <Editor content={content} readOnly={readOnly} ref={ref} />}</Show>
         </EditorWrapper>
         <LoadingWrapper $flex="1" $alignItems={FlexAlign.CENTER} $justifyContent={FlexJustify.CENTER}>
           <Spin delay={100} size="large">

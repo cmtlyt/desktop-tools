@@ -59,8 +59,8 @@ export async function getFileContentOfString(path: string) {
   const file = await getFileContent(path);
   const reader = new FileReader();
   reader.readAsText(file);
-  return new Promise((resolve, reject) => {
-    reader.onload = () => resolve(reader.result);
+  return new Promise<string>((resolve, reject) => {
+    reader.onload = () => resolve(reader.result as string);
     reader.onerror = () => reject(reader.error);
   });
 }

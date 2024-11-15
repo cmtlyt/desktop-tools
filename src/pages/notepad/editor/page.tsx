@@ -1,10 +1,9 @@
 import { useCallback, useRef } from 'react';
 import { useLoaderData } from 'react-router-dom';
-import { gzip } from '@cmtlyt/string-zip';
 import { PageInfo } from '@/types/page-info';
 import type { EditorRef } from '@/components/editor';
 import { AppearBox } from '@/components/appear-box';
-import { logger } from '@/utils';
+import { logger, opfsSupport } from '@/utils';
 import { RightArea } from './right-area';
 import { ActionType, useSubscribeEditorAction } from './subject';
 import { getLayoutStore, getNotepadsStore } from '@/store';
@@ -12,6 +11,7 @@ import { useGlobalEvent, useNavigate } from '@/hooks';
 import { AutoLoadEditor } from '../auto-load-editor';
 import { TitleArea } from './title-area';
 import { getNotepadEditorStore } from './store';
+import { saveMarkdown } from '../util';
 
 export function Component() {
   const { id } = useLoaderData() as LoaderData;
@@ -22,9 +22,14 @@ export function Component() {
     const content = editorRef.current?.getMarkdown();
     if (!content) return;
     logger.event('notepad-editor-save', { id });
-    const zipContent = await gzip(content);
     const { title } = getNotepadEditorStore();
-    const notepadInfo = { id, title, content: zipContent };
+    const notepadInfo = { id, title, url: '', content: '' };
+    if (opfsSupport()) {
+      const url = await saveMarkdown(title, content);
+      notepadInfo.url = url;
+    } else {
+      notepadInfo.content = content;
+    }
     if (id) getNotepadsStore().updateNotepad(id, notepadInfo);
     else getNotepadsStore().addNotepad(notepadInfo);
     getLayoutStore().showMessage({ content: '保存成功', type: 'success', onClose: () => navigate(-1) });

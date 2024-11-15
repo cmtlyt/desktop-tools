@@ -21,8 +21,11 @@ const getActions: GetStore<Store, NotepadsStoreActions> = (set) => ({
   addNotepad: (notepad) => {
     set((state) =>
       produce(state, (draft) => {
+        const { content, url, ...rest } = notepad;
         const saveNotepad: Notepad = {
-          ...notepad,
+          ...rest,
+          url,
+          content: url ? void 0 : content,
           id: `local-${getRandomString(16)}`,
           creator: 'test',
           createTime: Date.now(),

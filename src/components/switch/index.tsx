@@ -1,5 +1,5 @@
 interface SwitchProps {
-  if: boolean;
+  if?: unknown;
   children: () => React.ReactNode;
   fullback: React.ReactNode;
 }

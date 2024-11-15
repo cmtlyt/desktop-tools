@@ -39,7 +39,7 @@ function LogItem(props: LogItemProps) {
     onClick,
   } = props;
 
-  const { pageInfo } = (info as Record<string, unknown>[]).find((item) => 'pageInfo' in item) || {};
+  const { pageInfo } = (info as Record<string, unknown>[]).find((item) => (item || {}).pageInfo) || {};
 
   return (
     <LogWrapper $gap="1" onClick={onClick}>
