@@ -43,9 +43,9 @@ const getActions: GetStore<Store, RecordsStoreActions> = (set) => ({
   },
 });
 
-export const useRecordsStore = createPersist<Store>(RECORDS_STORAGE_KEY, (set, get) => ({
+export const useRecordsStore = createPersist<Store>(RECORDS_STORAGE_KEY, (set, get, store) => ({
   records: [] as RecordInfo[],
-  ...getActions(set, get),
+  ...getActions(set, get, store),
 }));
 
 export const { useStoreSlice: useRecordsStoreSlice, getStore: getRecordsStore } = createStoreHelper(useRecordsStore);

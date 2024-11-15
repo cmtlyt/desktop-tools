@@ -58,9 +58,9 @@ const getActions: GetStore<Store, NotepadsStoreActions> = (set) => ({
   },
 });
 
-export const useNotepadsStore = createPersist<Store>(NOTEPADS_STORAGE_KEY, (set, get) => ({
+export const useNotepadsStore = createPersist<Store>(NOTEPADS_STORAGE_KEY, (set, get, store) => ({
   notepads: [] as Notepad[],
-  ...getActions(set, get),
+  ...getActions(set, get, store),
 }));
 
 export const { useStoreSlice: useNotepadsStoreSlice, getStore: getNotepadsStore } = createStoreHelper(useNotepadsStore);

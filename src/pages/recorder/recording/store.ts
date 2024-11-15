@@ -4,14 +4,16 @@ interface RecordingInfoStoreState {
   name: string | null;
   stream: MediaStream | null;
   recorder: MediaRecorder | null;
-  result: Blob | null;
+  blob: Blob | null;
+  url: string | null;
 }
 
 interface RecordingInfoStoreHandlers {
   setName: (name?: string) => void;
   setStream: (stream?: MediaStream) => void;
   setRecorder: (recorder?: MediaRecorder) => void;
-  setResult: (result?: Blob) => void;
+  setBlob: (result?: Blob) => void;
+  setUrl: (url?: string) => void;
   clear: () => void;
 }
 
@@ -19,15 +21,17 @@ export const {
   useStore: useRecordingInfoStore,
   useStoreSlice: useRecordingInfoStoreSlice,
   getStore: getRecordingInfoStore,
-} = createStoreAndHelper<RecordingInfoStoreState & RecordingInfoStoreHandlers>((set) => ({
+} = createStoreAndHelper<RecordingInfoStoreState & RecordingInfoStoreHandlers>((set, _get, store) => ({
   name: null,
   stream: null,
   recorder: null,
-  result: null,
+  blob: null,
+  url: null,
 
   setName: (name) => set({ name }),
   setStream: (stream) => set({ stream }),
   setRecorder: (recorder) => set({ recorder }),
-  setResult: (result) => set({ result }),
-  clear: () => set({ name: null, stream: null, recorder: null, result: null }),
+  setBlob: (result) => set({ blob: result }),
+  setUrl: (url) => set({ url }),
+  clear: () => set(store.getInitialState()),
 }));

@@ -93,6 +93,7 @@ export * from './create-persist';
 export * from './create-store-helper';
 export * from './create-action-subscribe-hook';
 export * from './is-phone';
+export * from './opfs';
 
 window.logger = {
   debug: logger.debug,

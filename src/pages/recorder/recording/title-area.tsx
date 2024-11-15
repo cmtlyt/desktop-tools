@@ -11,7 +11,7 @@ const TitleInput = styled.input`
 `;
 
 const titleChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-  getRecordingInfoStore().setName(e.target.value);
+  getRecordingInfoStore().setName(e.target.value.trim());
 };
 
 const titleChangeHandlerDebounced = debounce(titleChangeHandler, 300);

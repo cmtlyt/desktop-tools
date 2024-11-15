@@ -14,13 +14,13 @@ export function RightArea() {
     <ButtonList
       buttons={[
         {
-          text: '停止录制',
+          text: '保存录制',
           $presetTheme: ButtonTheme.DANGER,
           hidden: !recorder,
           onClick: () => stopRecord(),
         },
         {
-          text: '保存录制',
+          text: '开始录制',
           $presetTheme: ButtonTheme.PRIMARY,
           hidden: !!recorder,
           onClick: () => startRecord(),

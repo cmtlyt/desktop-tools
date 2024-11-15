@@ -5,6 +5,9 @@ import { GetStore } from '@/types/store';
 
 export function createPersist<T>(key: string, getStore: GetStore<T>) {
   return create(
-    persist<T>((set, get) => getStore(set, get), { name: key, storage: createJSONStorage(() => stateStorage) }),
+    persist<T>((set, get, store) => getStore(set, get, store), {
+      name: key,
+      storage: createJSONStorage(() => stateStorage),
+    }),
   );
 }

@@ -1,14 +1,20 @@
 import { blobToChunkBase64String, cacheByReturn, sleep } from '@cmtlyt/base';
 import { getLayoutStore } from '@/store';
-import { logger } from '@/utils';
+import { getFileWritable, logger, opfsSupport } from '@/utils';
 import { getRecordingInfoStore } from './store';
 import { ActionType, emitRecordingAction } from './subject';
 import { SpeechRecognition } from '@/types/speech-recognition';
+import { VIDEO_OPFS_PATH } from '@/constant/opfs-key';
 
 function getSpeechRecognition() {
   if ('SpeechRecognition' in window) return window.SpeechRecognition as SpeechRecognition;
   if ('webkitSpeechRecognition' in window) return window.webkitSpeechRecognition as SpeechRecognition;
   return null;
+}
+
+export function getOpfsFilePath(name: string) {
+  if (!name) return '';
+  return `${VIDEO_OPFS_PATH}${name}`;
 }
 
 export function transcriptionOfAudioRecordings() {
@@ -34,10 +40,12 @@ export function transcriptionOfAudioRecordings() {
 function mergeAudioStream(streams: MediaStream[]) {
   const context = new AudioContext();
   const destination = context.createMediaStreamDestination();
-  streams.forEach((stream) => {
-    const source = context.createMediaStreamSource(stream);
-    source.connect(destination);
-  });
+  streams
+    .filter((stream) => stream.getAudioTracks().length)
+    .forEach((stream) => {
+      const source = context.createMediaStreamSource(stream);
+      source.connect(destination);
+    });
   return destination.stream;
 }
 
@@ -94,8 +102,26 @@ function getRecording(stream: MediaStream) {
 
 const { startRecording, stopRecording, listener } = (() => {
   let chunks: Blob[] = [];
+  const applyArray = !opfsSupport();
+  let fileWritable: FileSystemWritableFileStream | null = null;
+  let filePath: string;
 
-  const startRecording = (stream: MediaStream) => {
+  function addChunk(chunk: Blob) {
+    if (applyArray) return chunks.push(chunk);
+    fileWritable!.write(chunk);
+  }
+
+  async function updateWritable() {
+    if (applyArray) return;
+    const name = getRecordingInfoStore().name;
+    if (!name) return;
+    filePath = getOpfsFilePath(`${name}.webm`);
+    fileWritable = await getFileWritable(filePath);
+  }
+
+  const startRecording = async (stream: MediaStream) => {
+    await updateWritable();
+
     const recorder = getRecording(stream);
 
     recorder.start(100);
@@ -103,19 +129,18 @@ const { startRecording, stopRecording, listener } = (() => {
     return recorder;
   };
 
-  const listener = (mediaRecorder: MediaRecorder, onRecordingComplete: (blob: Blob) => void) => {
+  const listener = (mediaRecorder: MediaRecorder, onRecordingComplete: (url: string, blob: Blob) => void) => {
     mediaRecorder.ondataavailable = (e) => {
-      chunks.push(e.data);
+      addChunk(e.data);
     };
 
-    mediaRecorder.onstop = () => {
+    mediaRecorder.onstop = async () => {
       mediaRecorder.stop();
       const blob = new Blob(chunks, { type: getSupportedMimeType() });
       chunks = [];
-      onRecordingComplete(blob);
+      await fileWritable?.close();
+      onRecordingComplete(filePath, blob);
     };
-
-    console.debug(mediaRecorder);
   };
 
   const stopRecording = (mediaRecorder: MediaRecorder) => {
@@ -133,16 +158,17 @@ export async function startRecord() {
   setStream(stream);
   // 倒计时
   for (let i = 5; i > 0; i--) {
-    getLayoutStore().showMessage({ content: `${i}秒后开始录制` });
+    getLayoutStore().showMessage({ content: `${i}秒后开始录制`, duration: 1 });
     await sleep(1000);
   }
   getLayoutStore().showMessage({ content: '开始录制' });
 
-  const recorder = startRecording(stream);
+  const recorder = await startRecording(stream);
 
-  listener(recorder, (blob) => {
+  listener(recorder, (url, blob) => {
     stopTraces?.();
-    getRecordingInfoStore().setResult(blob);
+    if (url) getRecordingInfoStore().setUrl(url);
+    else getRecordingInfoStore().setBlob(blob);
     emitRecordingAction({ id: 'recording-end', type: ActionType.RECORD_END });
   });
 
@@ -156,7 +182,7 @@ export async function stopRecord() {
 }
 
 export async function getResultString() {
-  const { result } = getRecordingInfoStore();
+  const { blob: result } = getRecordingInfoStore();
   if (!result) return '';
   return blobToChunkBase64String(result);
 }

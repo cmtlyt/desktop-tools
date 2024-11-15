@@ -63,9 +63,9 @@ const getActions: GetStore<Store, FlowsStoreActions> = (set) => {
   };
 };
 
-export const useFlowsStore = createPersist<Store>(FLOWS_STORAGE_KEY, (set, get) => ({
+export const useFlowsStore = createPersist<Store>(FLOWS_STORAGE_KEY, (set, get, store) => ({
   flows: [] as Flow[],
-  ...getActions(set, get),
+  ...getActions(set, get, store),
 }));
 
 export const { useStoreSlice: useFlowsStoreSlice, getStore: getFlowsStore } = createStoreHelper(useFlowsStore);

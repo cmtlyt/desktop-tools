@@ -6,6 +6,8 @@ import { getPlayUrl } from './util';
 import { Switch } from '@/components/switch';
 import { Empty } from '@/components/empty';
 import { logger } from '@/utils';
+import { TitleArea } from './title-area';
+import { AppearBox } from '@/components/appear-box';
 
 export function Component() {
   const { currentRecord } = useRecordStoreSlice('currentRecord');
@@ -23,9 +25,11 @@ export function Component() {
   }, [currentRecord]);
 
   return (
-    <Switch if={!!playUrl} fullback={<Empty />}>
-      {() => <video src={playUrl} controls />}
-    </Switch>
+    <AppearBox onFirstAppear={() => logger.appear('playback')}>
+      <Switch if={!!playUrl} fullback={<Empty />}>
+        {() => <video src={playUrl} controls />}
+      </Switch>
+    </AppearBox>
   );
 }
 
@@ -33,4 +37,5 @@ export const handle: PageInfo = {
   title: '回放',
   needBackIcon: true,
   rightArea: <RightArea />,
+  titleArea: <TitleArea />,
 };

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { PageInfo } from '@/types/page-info';
 import { RightArea } from './right-area';
 import { TitleArea } from './title-area';
@@ -5,7 +6,8 @@ import { ActionType, useSubscribeRecordingAction } from './subject';
 import { getRecordsStore } from '@/store';
 import { getRecordingInfoStore, useRecordingInfoStoreSlice } from './store';
 import { getResultString } from './util';
-import { useEffect, useRef } from 'react';
+import { AppearBox } from '@/components/appear-box';
+import { logger } from '@/utils';
 
 export function Component() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -13,12 +15,14 @@ export function Component() {
 
   useSubscribeRecordingAction(() => {
     const { addRecord } = getRecordsStore();
-    const { name, clear } = getRecordingInfoStore();
+    const { name, url, clear } = getRecordingInfoStore();
     if (!name) return;
-    getResultString().then((content) => {
-      clear();
-      addRecord({ name, content });
-    });
+    clear();
+    setTimeout(() => {
+      console.debug(getRecordingInfoStore());
+    }, 1000);
+    if (url) return addRecord({ name, url });
+    getResultString().then((content) => addRecord({ name, content }));
   }, ActionType.RECORD_END);
 
   useEffect(() => {
@@ -27,7 +31,11 @@ export function Component() {
     videoRef.current.srcObject = stream;
   }, [stream]);
 
-  return <video ref={videoRef} muted autoPlay></video>;
+  return (
+    <AppearBox onFirstAppear={() => logger.appear('recording')}>
+      <video ref={videoRef} muted autoPlay></video>
+    </AppearBox>
+  );
 }
 
 export const handle: PageInfo = {
