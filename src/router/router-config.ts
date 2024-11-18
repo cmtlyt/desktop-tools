@@ -18,6 +18,7 @@ export const routes: RouteObject[] = [
         generateRouteConfig('/game-center/sbwd'),
         generateRouteConfig('/game-center/elsfk'),
         generateRouteConfig('/game-center/sl'),
+        generateRouteConfig('/game-center/zgxq'),
       ]),
       generateRouteConfig('/notepad', [
         generateRouteConfig('', [], '/notepad/list'),
