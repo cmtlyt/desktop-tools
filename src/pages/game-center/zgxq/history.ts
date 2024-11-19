@@ -1,6 +1,7 @@
 import { debounce } from '@cmtlyt/base';
 import { getZGXQStore } from './state';
 import { ChessItem, Position } from './type';
+import { getLayoutStore } from '@/store';
 
 interface HistoryChess {
   pos: Position;
@@ -12,12 +13,19 @@ interface HistoryItem {
   to: HistoryChess;
 }
 
+interface SituationInfo {
+  currIdx: number;
+  situation: string;
+}
+
 let currIdx = -1;
+let savedSituation: SituationInfo | null = null;
 const history: HistoryItem[] = [];
 
 export function resetHistory() {
   history.length = 0;
   currIdx = -1;
+  savedSituation = null;
 }
 
 export function addHistory(item: HistoryItem) {
@@ -26,9 +34,9 @@ export function addHistory(item: HistoryItem) {
 }
 
 function updateCheckerboard(item: HistoryItem) {
-  const { setCheckerboard } = getZGXQStore();
+  const { changeCheckerboard } = getZGXQStore();
   const { from, to } = item;
-  setCheckerboard((draft) => {
+  changeCheckerboard((draft) => {
     const { chess: toChess, pos: toPos } = to;
     const { chess: fromChess, pos: fromPos } = from;
     draft[toPos[0]][toPos[1]] = toChess;
@@ -48,3 +56,20 @@ export const undo = debounce(function undo() {
   if (!item) return ++currIdx;
   updateCheckerboard(item);
 }, 30);
+
+export function saveSituation() {
+  const { checkerboard } = getZGXQStore();
+  const { showMessage } = getLayoutStore();
+  savedSituation = { currIdx, situation: JSON.stringify(checkerboard) };
+  showMessage({ content: '已保存当前局势', type: 'success' });
+}
+
+export function resetSituation() {
+  const { showMessage } = getLayoutStore();
+  if (!savedSituation) return showMessage({ content: '没有已保存的局势', type: 'warning' });
+  const { setCheckerboard } = getZGXQStore();
+  const { currIdx: savedIdx, situation } = savedSituation;
+  currIdx = savedIdx;
+  setCheckerboard(JSON.parse(situation));
+  showMessage({ content: '已恢复保存的局势', type: 'success' });
+}

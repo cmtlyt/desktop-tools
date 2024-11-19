@@ -2,15 +2,15 @@ import { Subject } from 'rxjs';
 import { ActionSubject, createActionSubscribeHook } from '@/utils';
 import { logger } from '@/utils';
 
-export enum ZGXQActionType {
+export enum ActionType {
   GAME_OVER = 'game_over',
 }
 
 interface ExtendProps {
-  user: 'red' | 'black';
+  winColor: 'red' | 'black';
 }
 
-type Subject_ = ActionSubject<ZGXQActionType, ExtendProps>;
+type Subject_ = ActionSubject<ActionType, ExtendProps>;
 
 const actionSubject = new Subject<Subject_>();
 

@@ -1,6 +1,6 @@
 import { CheckerboardInfo } from './constant';
 import { addHistory } from './history';
-import { emitZGXQAction, ZGXQActionType } from './subject';
+import { emitZGXQAction, ActionType } from './subject';
 import { CheckerboardData, ChessItem, ChessType, Position, PositionChessItem } from './type';
 
 export function initCheckerboard() {
@@ -281,6 +281,6 @@ export function moveChess(checkerboard: CheckerboardData, chess: PositionChessIt
   checkerboard[targetRow][targetCol] = chessInfo;
   addHistory({ from: { chess, pos }, to: { pos: targetPos, chess: toChess } });
   if (targetChess?.type === ChessType.Jiang) {
-    emitZGXQAction({ id: 'zgxq-game-over', type: ZGXQActionType.GAME_OVER, ext: { user: chess.color } });
+    emitZGXQAction({ id: 'zgxq-game-over', type: ActionType.GAME_OVER, ext: { winColor: chess.color } });
   }
 }

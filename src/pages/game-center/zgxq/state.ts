@@ -1,7 +1,7 @@
+import { produce } from 'immer';
 import { createStoreAndHelper } from '@/utils';
 import { CheckerboardData, PositionChessItem } from './type';
 import { initCheckerboard } from './util';
-import { produce } from 'immer';
 import { resetHistory } from './history';
 
 interface ZGXQState {
@@ -12,7 +12,8 @@ interface ZGXQState {
 }
 
 interface ZAXQHandlers {
-  setCheckerboard(callback: (draft: CheckerboardData) => void): void;
+  changeCheckerboard(callback: (draft: CheckerboardData) => void): void;
+  setCheckerboard(checkerboard: CheckerboardData): void;
   setCurrentChessMovePoints(points: string[] | undefined): void;
   setCurrentChess(chess: PositionChessItem | undefined): void;
   changeUser(): void;
@@ -29,8 +30,11 @@ export const {
   currentChess: void 0,
   currentUser: 'red',
 
-  setCheckerboard(callback) {
+  changeCheckerboard(callback) {
     set({ checkerboard: produce(get().checkerboard, (draft) => callback(draft)) });
+  },
+  setCheckerboard(checkerboard) {
+    set({ checkerboard });
   },
   setCurrentChessMovePoints(points) {
     set({ currentChessMovePoints: points });

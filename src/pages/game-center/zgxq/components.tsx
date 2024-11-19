@@ -318,9 +318,9 @@ function cellClickHandler(info: ChessItem, pos: Position) {
   const store = getZGXQStore();
   const { currentUser } = store;
   if (currentUser !== info.color) return;
-  const { checkerboard, currentChess, setCheckerboard, setCurrentChessMovePoints, setCurrentChess } = store;
+  const { checkerboard, currentChess, changeCheckerboard, setCurrentChessMovePoints, setCurrentChess } = store;
   const [row, cel] = pos;
-  setCheckerboard((draft) => {
+  changeCheckerboard((draft) => {
     if (currentChess) {
       const { pos: oldPos } = currentChess;
       draft[oldPos[0]][oldPos[1]]!.isActive = false;
@@ -334,8 +334,8 @@ function cellClickHandler(info: ChessItem, pos: Position) {
 }
 
 function moveClickHandler(pos: Position) {
-  const { currentChess, setCheckerboard, setCurrentChess, setCurrentChessMovePoints, changeUser } = getZGXQStore();
-  setCheckerboard((draft) => {
+  const { currentChess, changeCheckerboard, setCurrentChess, setCurrentChessMovePoints, changeUser } = getZGXQStore();
+  changeCheckerboard((draft) => {
     moveChess(draft, currentChess!, pos);
   });
   setCurrentChess(void 0);

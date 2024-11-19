@@ -1,5 +1,5 @@
 import { ButtonList } from '@/components/button-list';
-import { redo, undo } from './history';
+import { redo, resetSituation, saveSituation, undo } from './history';
 import { getZGXQStore } from './state';
 
 export function RightArea() {
@@ -8,6 +8,8 @@ export function RightArea() {
       buttons={[
         { text: '后退', noLog: true, onClick: undo },
         { text: '前进', noLog: true, onClick: redo },
+        { text: '保存局势', noLog: true, onClick: saveSituation },
+        { text: '恢复局势', noLog: true, onClick: resetSituation },
         { text: '重开', noLog: true, onClick: getZGXQStore().restart },
       ]}
     />
