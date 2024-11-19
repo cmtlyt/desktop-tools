@@ -14,6 +14,7 @@ interface ButtonItemOtherProps {
   to?: To;
   action?: string;
   logInfo?: TObject<unknown>;
+  noLog?: boolean;
 }
 
 type ButtonItem = Parameters<typeof Button>[0] & ButtonItemOtherProps;
@@ -46,7 +47,7 @@ const MoreIcon = styled(CgMoreR)`
 `;
 
 const ButtonItemComp = (props: ButtonItem) => {
-  const { action, text, to, logInfo, onClick, ...buttonProps } = props;
+  const { action, text, to, logInfo, noLog, onClick, ...buttonProps } = props;
   const clickMore = useRef(false);
 
   const loggerInfo = { text, buttonProps, to, ...logInfo };
@@ -57,9 +58,10 @@ const ButtonItemComp = (props: ButtonItem) => {
       onClick={(e) => {
         if (clickMore.current) {
           clickMore.current = false;
+          if (noLog) return;
           return logger.click('more-button-click');
         }
-        if (!to) logger.click(action || 'button-list-click', loggerInfo);
+        if (!to && !noLog) logger.click(action || 'button-list-click', loggerInfo);
         onClick?.(e);
       }}
     >

@@ -2,7 +2,7 @@ import { memo } from 'react';
 import styled from 'styled-components';
 import { ChessType } from './type';
 
-interface IconProps {
+interface IconProps extends React.HTMLAttributes<HTMLDivElement> {
   type: ChessType;
   color: 'red' | 'black';
   className?: string;
@@ -61,9 +61,9 @@ const IconWrapper = styled.section<WrapperProps>`
 `;
 
 export const Icon = memo(function Icon(props: IconProps) {
-  const { type, color, className } = props;
+  const { type, color, className, ...rest } = props;
   return (
-    <IconWrapper $color={color} className={className}>
+    <IconWrapper $color={color} className={className} {...rest}>
       {getChessLabel(type, color)}
     </IconWrapper>
   );

@@ -1,13 +1,9 @@
-import { useState } from 'react';
 import { PageInfo } from '@/types/page-info';
-import { initCheckerboard } from './util';
 import { FlexAlign, FlexBox, FlexDirection, FlexJustify } from '@/components/base';
-import { Switch } from '@/components/switch';
-import { BoardBg, BoardContent, BoardWrapper, Cell, CellItem, Row } from './components';
+import { BoardBg, BoardWrapper, RenderContent } from './components';
+import { RightArea } from './right-area';
 
 export function Component() {
-  const [checkerboard, _setCheckerboard] = useState(initCheckerboard());
-
   return (
     <FlexBox
       $flex="1"
@@ -17,19 +13,7 @@ export function Component() {
     >
       <BoardWrapper $direction={FlexDirection.COLUMN}>
         <BoardBg />
-        <BoardContent $direction={FlexDirection.COLUMN}>
-          {checkerboard.map((rowInfo, idx) => (
-            <Row key={idx}>
-              {rowInfo.map((item, idx) => (
-                <Cell key={idx} $fastLine={!idx}>
-                  <Switch if={item} fullback={<section />}>
-                    {() => <CellItem {...item!} />}
-                  </Switch>
-                </Cell>
-              ))}
-            </Row>
-          ))}
-        </BoardContent>
+        <RenderContent />
       </BoardWrapper>
     </FlexBox>
   );
@@ -38,4 +22,5 @@ export function Component() {
 export const handle: PageInfo = {
   title: '中国象棋-单人推演模式',
   needBackIcon: true,
+  rightArea: <RightArea />,
 };

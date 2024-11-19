@@ -1,7 +1,12 @@
-import { FlexBox } from '@/components/base';
-import { Icon } from './icon';
+import { memo } from 'react';
 import styled from 'styled-components';
-import { CheckerboardInfo } from './util';
+import { FlexBox, FlexDirection } from '@/components/base';
+import { Icon } from './icon';
+import { getMovePoints, moveChess } from './util';
+import { getZGXQStore, useZGXQStoreSlice } from './state';
+import { CheckerboardData, ChessItem, Position } from './type';
+import { Switch } from '@/components/switch';
+import { CheckerboardInfo } from './constant';
 
 export const BoardWrapper = styled(FlexBox)`
   --cell-size: 7vmin;
@@ -220,18 +225,144 @@ export const Row = styled(FlexBox)`
 `;
 
 interface CellProps {
-  $fastLine: boolean;
+  $actived?: boolean;
 }
 
 export const Cell = styled(FlexBox)<CellProps>`
+  position: relative;
   flex: 1;
   box-sizing: border-box;
   padding: 0.5rem;
   width: 7vmin;
   height: 7vmin;
   font-size: 5vmin;
+
+  ${({ $actived }) => {
+    if (!$actived) return '';
+    return `
+      &::before{
+        content:'';
+        position:absolute;
+        inset: 40%;
+        z-index: 1;
+        border-radius:50%;
+        background: yellowgreen;
+      }
+    `;
+  }}
 `;
 
-export const CellItem = styled(Icon)`
+interface CellItemProps {
+  $actived?: boolean;
+}
+
+export const CellItem = styled(Icon)<CellItemProps>`
   background-color: #fff;
+
+  @keyframes twinkle {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.5;
+    }
+  }
+
+  ${({ $actived }) => {
+    if (!$actived) return '';
+    return `
+      animation: twinkle 500ms infinite alternate;
+    `;
+  }}
 `;
+
+export const RenderContent = memo(() => {
+  const { checkerboard } = useZGXQStoreSlice('checkerboard');
+
+  return (
+    <BoardContent $direction={FlexDirection.COLUMN}>
+      {checkerboard.map((rowInfo, idx) => (
+        <RenderRow key={idx} rowInfo={rowInfo} row={idx} />
+      ))}
+    </BoardContent>
+  );
+});
+
+interface RenderRowProps {
+  row: number;
+  rowInfo: CheckerboardData[number];
+}
+
+export const RenderRow = (props: RenderRowProps) => {
+  const { rowInfo, row } = props;
+  const { currentChessMovePoints } = useZGXQStoreSlice('currentChessMovePoints');
+
+  return (
+    <Row>
+      {rowInfo.map((item, idx) => (
+        <RenderCell key={idx} info={item} row={row} cel={idx} activePoints={currentChessMovePoints} />
+      ))}
+    </Row>
+  );
+};
+
+interface RenderCellProps {
+  row: number;
+  cel: number;
+  info: CheckerboardData[number][number];
+  activePoints?: string[];
+}
+
+function cellClickHandler(info: ChessItem, pos: Position) {
+  const { isActive, type } = info;
+  const store = getZGXQStore();
+  const { currentUser } = store;
+  if (currentUser !== info.color) return;
+  const { checkerboard, currentChess, setCheckerboard, setCurrentChessMovePoints, setCurrentChess } = store;
+  const [row, cel] = pos;
+  setCheckerboard((draft) => {
+    if (currentChess) {
+      const { pos: oldPos } = currentChess;
+      draft[oldPos[0]][oldPos[1]]!.isActive = false;
+    }
+    const cell = draft[row][cel]!;
+    cell.isActive = !isActive;
+  });
+  const movePoints = isActive ? void 0 : getMovePoints(checkerboard, type, { ...info, pos });
+  setCurrentChessMovePoints(movePoints);
+  setCurrentChess(isActive ? void 0 : { ...info, pos });
+}
+
+function moveClickHandler(pos: Position) {
+  const { currentChess, setCheckerboard, setCurrentChess, setCurrentChessMovePoints, changeUser } = getZGXQStore();
+  setCheckerboard((draft) => {
+    moveChess(draft, currentChess!, pos);
+  });
+  setCurrentChess(void 0);
+  setCurrentChessMovePoints(void 0);
+  changeUser();
+}
+
+export function RenderCell(props: RenderCellProps) {
+  const { info, row, cel, activePoints } = props;
+
+  const actived = activePoints?.includes(`${row},${cel}`);
+  const { isActive, ...otherProps } = info || ({} as ChessItem);
+
+  return (
+    <Cell $actived={actived} onClick={() => actived && moveClickHandler([row, cel])}>
+      <Switch if={info} fullback={<section />}>
+        {() => (
+          <CellItem
+            $actived={isActive}
+            {...otherProps}
+            onClick={() => {
+              if (actived) return;
+              cellClickHandler(info!, [row, cel]);
+            }}
+          />
+        )}
+      </Switch>
+    </Cell>
+  );
+}

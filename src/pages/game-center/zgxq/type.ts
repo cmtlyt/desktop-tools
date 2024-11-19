@@ -14,6 +14,10 @@ export interface ChessItem {
   isActive: boolean;
 }
 
+export interface PositionChessItem extends ChessItem {
+  pos: Position;
+}
+
 export type CheckerboardData = Array<Array<ChessItem | null>>;
 
 export type Position = [number, number];
