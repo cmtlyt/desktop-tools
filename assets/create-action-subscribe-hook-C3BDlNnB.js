@@ -1,0 +1,1 @@
+import{r as t}from"./index-D9Ti2l9s.js";function b(c){return function(e,r){const s=t.useMemo(()=>r&&(Array.isArray(r)?r:[r]),[r]);t.useEffect(()=>{const i=c.subscribe(u=>{s&&!s.includes(u.type)||e(u)});return()=>{i.unsubscribe()}},[e,s])}}export{b as c};
