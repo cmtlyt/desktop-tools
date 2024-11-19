@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { IoCaretBack } from 'react-icons/io5';
 import { FlexAlign, FlexBox, FlexJustify, ShadowFlexBox } from '@/components/base';
 import { UIMatchWithHandle } from '@/types';
-import { logger } from '@/utils';
+import { isPhone, logger } from '@/utils';
 import { Show } from '@/components/show';
 import { useNavigate } from '@/hooks';
 import { PageInfo } from '@/types/page-info';
@@ -13,7 +13,7 @@ const HeaderContent = styled(ShadowFlexBox)`
   position: relative;
   z-index: 2;
   height: 5rem;
-  padding: 0 2rem;
+  padding: 0 ${isPhone() ? '1rem' : '2rem'};
   overflow-x: auto;
 
   &::-webkit-scrollbar {
@@ -29,13 +29,18 @@ const BackIcon = styled(IoCaretBack)`
 `;
 
 const TitleText = styled.span`
+  flex: 1;
   font-size: 1.8rem;
   font-weight: 700;
   letter-spacing: 0.04rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const TitleWrapper = styled(FlexBox)`
-  flex-shrink: 0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 export function Header() {

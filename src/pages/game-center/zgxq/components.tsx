@@ -7,10 +7,11 @@ import { getZGXQStore, useZGXQStoreSlice } from './state';
 import { CheckerboardData, ChessItem, Position } from './type';
 import { Switch } from '@/components/switch';
 import { CheckerboardInfo } from './constant';
+import { isPhone } from '@/utils';
 
 export const BoardWrapper = styled(FlexBox)`
-  --cell-size: 7vmin;
-  --base-line-width: 0.2rem;
+  --cell-size: ${isPhone() ? '9vmin' : '7vmin'};
+  --base-line-width: 0.1rem;
   --line-width: var(--base-line-width);
   --line-gap: 0.5rem;
   --base-line-length: 1rem;
@@ -233,9 +234,9 @@ export const Cell = styled(FlexBox)<CellProps>`
   flex: 1;
   box-sizing: border-box;
   padding: 0.5rem;
-  width: 7vmin;
-  height: 7vmin;
-  font-size: 5vmin;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  font-size: calc(var(--cell-size) - 3vmin);
 
   ${({ $actived }) => {
     if (!$actived) return '';

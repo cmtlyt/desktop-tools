@@ -52,7 +52,7 @@ const IconWrapper = styled.section<WrapperProps>`
     content: '';
     inset: 0;
     border-radius: inherit;
-    box-shadow: inset 0 0 0 0.2rem currentColor;
+    box-shadow: inset 0 0 0 var(--line-width, 0.2rem) currentColor;
   }
 
   &::after {
