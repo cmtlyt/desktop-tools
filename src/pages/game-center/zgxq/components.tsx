@@ -10,8 +10,10 @@ import { CheckerboardInfo } from './constant';
 import { isPhone } from '@/utils';
 
 export const BoardContainer = styled(FlexBox)`
+  padding: 4rem 0;
   width: 100%;
   transition: transform 0.3s 0.5s;
+  overflow-x: hidden;
 `;
 
 export const BoardWrapper = memo(styled(FlexBox)`
@@ -28,7 +30,7 @@ export const BoardWrapper = memo(styled(FlexBox)`
 
   &::before,
   &::after {
-    --spacing: 1.76em;
+    --spacing: ${isPhone() ? '2.44em' : '1.76em'};
     padding-left: var(--spacing);
     position: absolute;
     left: 50%;
@@ -41,7 +43,7 @@ export const BoardWrapper = memo(styled(FlexBox)`
   }
 
   &::after {
-    --spacing: 1.35em;
+    --spacing: ${isPhone() ? '2em' : '1.35em'};
     content: '一二三四五六七八九';
     top: unset;
     bottom: 0;
