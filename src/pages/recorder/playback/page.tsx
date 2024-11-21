@@ -26,7 +26,7 @@ export function Component() {
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('playback')}>
-      <Switch if={!!playUrl} fullback={<Empty />}>
+      <Switch when={!!playUrl} fullback={<Empty />}>
         {() => <video src={playUrl} controls />}
       </Switch>
     </AppearBox>

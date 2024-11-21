@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { RecordInfo } from '@/types/records';
-import { ItemDate, ItemTitle, ItemWrapper, RightHandleButtonList } from '@/components/list';
+import { ItemDate, ItemTitle, ItemWrapper, RightHandleButtonList } from '@/components//base/list';
 import { ButtonTheme, FlexAlign, FlexBox } from '@/components/base';
 import { HoverExpandBox } from '@/components/hover-expand-box';
 

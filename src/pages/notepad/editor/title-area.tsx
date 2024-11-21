@@ -27,7 +27,7 @@ export function TitleArea(props: TitleAreaProps) {
 
   return (
     <FlexBox>
-      <Switch if={!readOnly} fullback={<span>{notepad?.title}</span>}>
+      <Switch when={!readOnly} fullback={<span>{notepad?.title}</span>}>
         {() => (
           <TitleInput
             defaultValue={notepad?.title}

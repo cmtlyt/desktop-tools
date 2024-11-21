@@ -76,7 +76,7 @@ export const PhoneController = memo(function PhoneController() {
   };
 
   return (
-    <Show if={showController}>
+    <Show when={showController}>
       {() => (
         <ControllerWrapper $gap="1" onClick={() => setShowController(false)}>
           <IconWrapper onClick={() => eventInfo?.callback?.(PointerEvent.TAP)}>

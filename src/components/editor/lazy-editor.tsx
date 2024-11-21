@@ -39,7 +39,7 @@ export const LazyEditor = memo(
     return (
       <Wrapper $flex="1" $direction={FlexDirection.COLUMN}>
         <EditorWrapper $flex="1" $direction={FlexDirection.COLUMN}>
-          <Show if={!readOnly || content}>{() => <Editor content={content} readOnly={readOnly} ref={ref} />}</Show>
+          <Show when={!readOnly || content}>{() => <Editor content={content} readOnly={readOnly} ref={ref} />}</Show>
         </EditorWrapper>
         <LoadingWrapper $flex="1" $alignItems={FlexAlign.CENTER} $justifyContent={FlexJustify.CENTER}>
           <Spin delay={100} size="large">

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { DateView } from '@/components/date-view';
-import { FlexBox, ShadowFlexBox } from '../base';
-import { ButtonList } from '../button-list';
+import { FlexBox, ShadowFlexBox } from '../flex-box';
+import { ButtonList } from '../../button-list';
 
 export const ItemTitle = styled.span`
   display: -webkit-box;

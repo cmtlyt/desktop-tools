@@ -39,7 +39,7 @@ export function Component() {
   return (
     <AppearBox onFirstAppear={() => logger.appear('flow-list')}>
       <FlowList $direction={FlexDirection.COLUMN}>
-        <Switch if={flows.length > 0} fullback={<Empty />}>
+        <Switch when={flows.length > 0} fullback={<Empty />}>
           {() =>
             flows.map((flow) => (
               <FlowItem

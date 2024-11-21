@@ -28,14 +28,17 @@ export enum FlexJustify {
   AROUND = 'space-around',
 }
 
+type Justify = FlexJustify | 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
+type Align = FlexAlign | 'stretch' | 'flex-start' | 'flex-end' | 'center' | 'baseline';
+
 interface FlexBoxProps {
   $flex?: number | string;
-  $direction?: FlexDirection;
-  $justifyContent?: FlexJustify;
-  $alignItems?: FlexAlign;
-  $wrap?: FlexWrap;
-  $justifyItems?: FlexJustify;
-  $alignContent?: FlexAlign;
+  $direction?: FlexDirection | 'row' | 'column';
+  $justifyContent?: Justify;
+  $alignItems?: Align;
+  $wrap?: FlexWrap | 'nowrap' | 'wrap';
+  $justifyItems?: Justify;
+  $alignContent?: Align;
   $gap?: string | number;
   children?: React.ReactNode;
 }

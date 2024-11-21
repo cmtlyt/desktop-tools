@@ -24,11 +24,6 @@ export const appList: AppInfo[] = [
     icon: <TbBrandStackoverflow />,
   },
   {
-    name: '日志',
-    path: '/log-history',
-    icon: <MdOutlineManageHistory />,
-  },
-  {
     name: '游戏',
     path: '/game-center',
     deepMatch: true,
@@ -50,5 +45,10 @@ export const appList: AppInfo[] = [
     path: '/recorder',
     deepMatch: true,
     icon: <BiVideoRecording />,
+  },
+  {
+    name: '日志',
+    path: '/log-history',
+    icon: <MdOutlineManageHistory />,
   },
 ];

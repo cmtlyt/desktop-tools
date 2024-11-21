@@ -64,7 +64,7 @@ const Directory = memo(function Directory(props: DirectoryProps) {
   return (
     <DirectoryWrapper $direction={FlexDirection.COLUMN}>
       <NodeItem type="directory" name={name} path={path} expand={expand} onClick={() => setExpand(!expand)} />
-      <Show if={expand && keys.length > 0}>
+      <Show when={expand && keys.length > 0}>
         {() => (
           <FileList $justifyContent={FlexJustify.START} $direction={FlexDirection.COLUMN}>
             {keys.map((name) => {
@@ -122,14 +122,14 @@ function NodeItem(props: NodeItemProps) {
         getWorkspaceStore().setCurrentFilePath(`${path}/${name}`);
       }}
     >
-      <Show if={type === 'directory'}>
+      <Show when={type === 'directory'}>
         {() => (
           <ArrowStyles $expand={expand}>
             <IoIosArrowForward />
           </ArrowStyles>
         )}
       </Show>
-      <Switch if={type === 'directory'} fullback={<FaFileAlt />}>
+      <Switch when={type === 'directory'} fullback={<FaFileAlt />}>
         {() => <GoFileDirectoryFill />}
       </Switch>
       <span>{name}</span>

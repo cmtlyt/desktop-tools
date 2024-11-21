@@ -12,7 +12,7 @@ import { Switch } from '@/components/switch';
 import { Empty } from '@/components/empty';
 import { NotepadItem } from './notepad-item';
 import { PageInfo } from '@/types/page-info';
-import { PageListWrapper } from '@/components/list';
+import { PageListWrapper } from '@/components//base/list';
 
 function deleteNotepadHandler(id: Notepad['id']) {
   getNotepadsStore().deleteNotepad(id);
@@ -35,7 +35,7 @@ export function Component() {
   return (
     <AppearBox onFirstAppear={() => logger.appear('notepad-list')}>
       <PageListWrapper>
-        <Switch if={notepads.length > 0} fullback={<Empty />}>
+        <Switch when={notepads.length > 0} fullback={<Empty />}>
           {() =>
             notepads.map((notepad) => (
               <NotepadItem

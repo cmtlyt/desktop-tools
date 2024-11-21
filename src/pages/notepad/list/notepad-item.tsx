@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { ItemDate, ItemTitle, ItemWrapper, RightHandleButtonList } from '@/components/list';
+import { ItemDate, ItemTitle, ItemWrapper, RightHandleButtonList } from '@/components//base/list';
 import { HoverExpandBox } from '@/components/hover-expand-box';
 import { Notepad } from '@/types/notepad';
 import { useNotepadStoreSlice } from '../store';

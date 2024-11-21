@@ -3,10 +3,11 @@ import { useEffect, useRef } from 'react';
 interface AppearBoxProps {
   children?: React.ReactNode;
   onFirstAppear?: () => void;
+  onAppear?: () => void;
 }
 
 export function AppearBox(props: AppearBoxProps) {
-  const { children, onFirstAppear } = props;
+  const { children, onFirstAppear, onAppear } = props;
   const firstAppear = useRef(true);
 
   useEffect(() => {
@@ -15,6 +16,8 @@ export function AppearBox(props: AppearBoxProps) {
     onFirstAppear?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  onAppear?.();
 
   return children;
 }

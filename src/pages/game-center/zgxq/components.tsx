@@ -400,7 +400,7 @@ export function RenderCell(props: RenderCellProps) {
 
   return (
     <Cell $actived={actived} onClick={() => actived && moveClickHandler([row, cel])}>
-      <Switch if={info} fullback={<section />}>
+      <Switch when={info} fullback={<section />}>
         {() => (
           <CellItem
             $actived={isActive}

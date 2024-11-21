@@ -9,7 +9,7 @@ import { useNavigate } from '@/hooks';
 import { logger } from '@/utils';
 import { Empty } from '@/components/empty';
 import { Switch } from '@/components/switch';
-import { PageListWrapper } from '@/components/list';
+import { PageListWrapper } from '@/components//base/list';
 import { AppearBox } from '@/components/appear-box';
 import { RecordItem } from './record-item';
 
@@ -34,7 +34,7 @@ export function Component() {
   return (
     <AppearBox onFirstAppear={() => logger.appear('record-list')}>
       <PageListWrapper>
-        <Switch if={records.length > 0} fullback={<Empty />}>
+        <Switch when={records.length > 0} fullback={<Empty />}>
           {() =>
             records.map((recordItem) => (
               <RecordItem

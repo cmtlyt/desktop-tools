@@ -56,7 +56,7 @@ export function Header() {
   return (
     <HeaderContent $gap="1" $justifyContent={FlexJustify.BETWEEN}>
       <TitleWrapper $alignItems={FlexAlign.CENTER}>
-        <Show if={needBackIcon}>
+        <Show when={needBackIcon}>
           {() => (
             <BackIcon
               onClick={() => {

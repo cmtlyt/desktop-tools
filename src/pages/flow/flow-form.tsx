@@ -152,12 +152,12 @@ export const FlowForm = forwardRef<FlowFormRef, FlowFormProps>(function FlowForm
                       placeholder="请输入金额"
                     />
                     <InputFieldWrapper noStyle name={[name, 'remark']} placeholder="请输入备注" />
-                    <Show if={!readonly && fields.length > 1}>
+                    <Show when={!readonly && fields.length > 1}>
                       {() => <MinusCircleOutlined onClick={() => remove(name)} />}
                     </Show>
                   </FlexBox>
                 ))}
-                <Show if={!readonly}>
+                <Show when={!readonly}>
                   {() => (
                     <FieldWrapper>
                       <Button type="button" onClick={() => add()} $presetTheme={ButtonTheme.INFO}>

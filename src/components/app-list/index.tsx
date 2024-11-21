@@ -100,7 +100,7 @@ export function AppList(props: AppListProps) {
             {...shadowOption}
           >
             <IconWrap $style={app.iconStyle} $alignItems={FlexAlign.CENTER} $justifyContent={FlexJustify.CENTER}>
-              <Switch if={typeof app.icon === 'string'} fullback={app.icon}>
+              <Switch when={typeof app.icon === 'string'} fullback={app.icon}>
                 {() => <span>{app.icon}</span>}
               </Switch>
             </IconWrap>

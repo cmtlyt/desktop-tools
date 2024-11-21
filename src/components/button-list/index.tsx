@@ -105,7 +105,7 @@ const ButtonItemComp = (props: ButtonItem) => {
   }
 
   return (
-    <Switch if={!isUndef(to)} fullback={button()}>
+    <Switch when={!isUndef(to)} fullback={button()}>
       {() => <Link to={to!} children={button()} />}
     </Switch>
   );
@@ -135,7 +135,7 @@ export function ButtonList(props: ButtonListProps) {
   );
 
   return (
-    <Switch if={isPhone() && buttons.length > 1} fullback={content}>
+    <Switch when={isPhone() && buttons.length > 1} fullback={content}>
       {() => (
         <Popover content={content} trigger="click">
           <Button>

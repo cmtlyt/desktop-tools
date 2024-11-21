@@ -26,7 +26,7 @@ export function TitleArea(props: TitleAreaProps) {
 
   return (
     <FlexBox>
-      <Switch if={!readOnly || !!recorder} fullback={<span>{name}</span>}>
+      <Switch when={!readOnly || !!recorder} fullback={<span>{name}</span>}>
         {() => (
           <TitleInput defaultValue={name || ''} placeholder="请输入笔记标题" onChange={titleChangeHandlerDebounced} />
         )}

@@ -4,6 +4,8 @@ import { BoardBg, BoardContainer, BoardWrapper, RenderContent } from './componen
 import { RightArea } from './right-area';
 import { ActionType, useSubscribeZGXQAction } from './subject';
 import { getLayoutStore } from '@/store';
+import { AppearBox } from '@/components/appear-box';
+import { logger } from '@/utils';
 
 export function Component() {
   useSubscribeZGXQAction((action) => {
@@ -15,19 +17,21 @@ export function Component() {
   }, ActionType.GAME_OVER);
 
   return (
-    <FlexBox
-      $flex="1"
-      $direction={FlexDirection.COLUMN}
-      $alignItems={FlexAlign.CENTER}
-      $justifyContent={FlexJustify.CENTER}
-    >
-      <BoardContainer>
-        <BoardWrapper $direction={FlexDirection.COLUMN}>
-          <BoardBg />
-          <RenderContent />
-        </BoardWrapper>
-      </BoardContainer>
-    </FlexBox>
+    <AppearBox onFirstAppear={() => logger.appear('game-zgxq')}>
+      <FlexBox
+        $flex="1"
+        $direction={FlexDirection.COLUMN}
+        $alignItems={FlexAlign.CENTER}
+        $justifyContent={FlexJustify.CENTER}
+      >
+        <BoardContainer>
+          <BoardWrapper $direction={FlexDirection.COLUMN}>
+            <BoardBg />
+            <RenderContent />
+          </BoardWrapper>
+        </BoardContainer>
+      </FlexBox>
+    </AppearBox>
   );
 }
 
