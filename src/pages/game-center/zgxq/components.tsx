@@ -1,6 +1,6 @@
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import styled from 'styled-components';
-import { FlexBox, FlexDirection } from '@/components/base';
+import { FlexAlign, FlexBox, FlexDirection, FlexJustify } from '@/components/base';
 import { Icon } from './icon';
 import { getMovePoints, moveChess } from './util';
 import { getZGXQStore, useZGXQStoreSlice } from './state';
@@ -9,12 +9,29 @@ import { Switch } from '@/components/switch';
 import { CheckerboardInfo } from './constant';
 import { isPhone } from '@/utils';
 
-export const BoardContainer = styled(FlexBox)`
+export const BoardContainer = memo(styled(function BoardContainer(props: { children: React.ReactNode }) {
+  const { currentUser, lockRotate } = useZGXQStoreSlice(['currentUser', 'lockRotate']);
+  const rotateRef = useRef(0);
+
+  if (!lockRotate) rotateRef.current = currentUser === 'red' ? 0 : 180;
+
+  return (
+    <FlexBox
+      $flex="1"
+      $alignItems={FlexAlign.CENTER}
+      $justifyContent={FlexJustify.CENTER}
+      {...props}
+      style={{
+        transform: `rotate(${rotateRef.current}deg)`,
+      }}
+    />
+  );
+})`
   padding: 4rem 0;
   width: 100%;
   transition: transform 0.3s 0.5s;
   overflow-x: hidden;
-`;
+`);
 
 export const BoardWrapper = memo(styled(FlexBox)`
   --cell-size: ${isPhone() ? '9vmin' : '7vmin'};

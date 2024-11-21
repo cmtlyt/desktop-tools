@@ -34,14 +34,21 @@ export function addHistory(item: HistoryItem) {
 }
 
 function updateCheckerboard(item: HistoryItem) {
-  const { changeCheckerboard } = getZGXQStore();
+  const { currentChess, changeCheckerboard, changeUser, setCurrentChessMovePoints, setCurrentChess } = getZGXQStore();
   const { from, to } = item;
   changeCheckerboard((draft) => {
     const { chess: toChess, pos: toPos } = to;
     const { chess: fromChess, pos: fromPos } = from;
     draft[toPos[0]][toPos[1]] = toChess;
     draft[fromPos[0]][fromPos[1]] = fromChess;
+    if (currentChess) {
+      const { pos } = currentChess;
+      draft[pos[0]][pos[1]]!.isActive = false;
+    }
   });
+  changeUser();
+  setCurrentChessMovePoints(void 0);
+  setCurrentChess(void 0);
 }
 
 export const redo = debounce(function redo() {

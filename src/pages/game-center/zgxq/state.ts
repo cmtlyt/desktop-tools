@@ -9,6 +9,7 @@ interface ZGXQState {
   currentUser: 'black' | 'red';
   currentChessMovePoints?: string[];
   currentChess?: PositionChessItem;
+  lockRotate: boolean;
 }
 
 interface ZAXQHandlers {
@@ -18,6 +19,7 @@ interface ZAXQHandlers {
   setCurrentChess(chess: PositionChessItem | undefined): void;
   changeUser(): void;
   restart(): void;
+  setLockRotate(lock: boolean): void;
 }
 
 export const {
@@ -29,6 +31,7 @@ export const {
   currentChessMovePoints: void 0,
   currentChess: void 0,
   currentUser: 'red',
+  lockRotate: false,
 
   changeCheckerboard(callback) {
     set({ checkerboard: produce(get().checkerboard, (draft) => callback(draft)) });
@@ -48,5 +51,8 @@ export const {
   restart() {
     resetHistory();
     set(store.getInitialState());
+  },
+  setLockRotate(lock) {
+    set({ lockRotate: lock });
   },
 }));

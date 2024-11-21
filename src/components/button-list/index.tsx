@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { To } from 'react-router-dom';
 import { CgMoreR } from 'react-icons/cg';
 import { isUndef, TObject } from '@cmtlyt/base';
-import { Button, FlexBox, FlexDirection } from '../base';
+import { Button, ButtonProps, ButtonTheme, FlexBox, FlexDirection } from '../base';
 import { logger, isPhone } from '@/utils';
 import { Switch } from '../switch';
 import { Link } from '../link';
@@ -15,6 +15,10 @@ interface ButtonItemOtherProps {
   action?: string;
   logInfo?: TObject<unknown>;
   noLog?: boolean;
+  checkBtn?: {
+    value: boolean;
+    onChange: (value: boolean) => void;
+  };
 }
 
 type ButtonItem = Parameters<typeof Button>[0] & ButtonItemOtherProps;
@@ -46,22 +50,43 @@ const MoreIcon = styled(CgMoreR)`
   height: 100%;
 `;
 
+const LabelHideInput = styled.label`
+  & > input {
+    margin: 0;
+    padding: 0;
+    width: 0;
+    height: 0;
+    visibility: hidden;
+    overflow: hidden;
+  }
+`;
+
 const ButtonItemComp = (props: ButtonItem) => {
-  const { action, text, to, logInfo, noLog, onClick, ...buttonProps } = props;
+  const { action, text, to, logInfo, noLog, onClick, checkBtn, ...buttonProps } = props;
   const clickMore = useRef(false);
 
-  const loggerInfo = { text, buttonProps, to, ...logInfo };
+  const loggerInfo = { text, buttonProps, to, checked: checkBtn?.value, ...logInfo };
 
-  const button = (
+  const logAction = useMemo(() => {
+    if (noLog) return;
+    if (action) return action;
+    if (to) return 'button-list-link-click';
+    if (checkBtn) return 'button-list-checkbtn-click';
+    return 'button-list-click';
+  }, [action, to, noLog, checkBtn]);
+
+  const button = (customProps?: ButtonProps) => (
     <Button
       {...buttonProps}
+      {...customProps}
       onClick={(e) => {
         if (clickMore.current) {
           clickMore.current = false;
           if (noLog) return;
           return logger.click('more-button-click');
         }
-        if (!to && !noLog) logger.click(action || 'button-list-click', loggerInfo);
+        if (logAction) logger.click(logAction, loggerInfo);
+        checkBtn?.onChange(!checkBtn.value);
         onClick?.(e);
       }}
     >
@@ -69,18 +94,19 @@ const ButtonItemComp = (props: ButtonItem) => {
     </Button>
   );
 
+  if (checkBtn) {
+    const { value } = checkBtn;
+    return (
+      <LabelHideInput>
+        <input type="checkbox" checked={value} onChange={() => {}} />
+        {button({ $presetTheme: ButtonTheme[value ? 'PRIMARY' : 'INFO'] })}
+      </LabelHideInput>
+    );
+  }
+
   return (
-    <Switch if={!isUndef(to)} fullback={button}>
-      {() => (
-        <Link
-          to={to!}
-          children={button}
-          onClick={(e) => {
-            e.stopPropagation();
-            logger.click(action || 'button-list-link-click', loggerInfo);
-          }}
-        />
-      )}
+    <Switch if={!isUndef(to)} fullback={button()}>
+      {() => <Link to={to!} children={button()} />}
     </Switch>
   );
 };
