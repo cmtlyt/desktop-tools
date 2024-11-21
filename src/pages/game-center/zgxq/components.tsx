@@ -9,7 +9,12 @@ import { Switch } from '@/components/switch';
 import { CheckerboardInfo } from './constant';
 import { isPhone } from '@/utils';
 
-export const BoardWrapper = styled(FlexBox)`
+export const BoardContainer = styled(FlexBox)`
+  width: 100%;
+  transition: transform 0.3s 0.5s;
+`;
+
+export const BoardWrapper = memo(styled(FlexBox)`
   --cell-size: ${isPhone() ? '9vmin' : '7vmin'};
   --base-line-width: 0.1rem;
   --line-width: var(--base-line-width);
@@ -20,7 +25,29 @@ export const BoardWrapper = styled(FlexBox)`
   position: relative;
   width: calc(${CheckerboardInfo.width - 1} * var(--cell-size));
   height: calc(${CheckerboardInfo.height - 1} * var(--cell-size));
-`;
+
+  &::before,
+  &::after {
+    --spacing: 1.76em;
+    padding-left: var(--spacing);
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -170%) rotate(180deg);
+    content: '123456789';
+    letter-spacing: var(--spacing);
+    font-size: 3vmin;
+    white-space: nowrap;
+  }
+
+  &::after {
+    --spacing: 1.35em;
+    content: '一二三四五六七八九';
+    top: unset;
+    bottom: 0;
+    transform: translate(-50%, 170%);
+  }
+`);
 
 export const BoardContent = styled(FlexBox)`
   position: absolute;
@@ -52,7 +79,7 @@ export const BoardContent = styled(FlexBox)`
   }
 `;
 
-export const BoardBg = styled.section`
+export const BoardBg = memo(styled.section`
   position: absolute;
   inset: 0;
   background-image: 
@@ -217,7 +244,7 @@ export const BoardBg = styled.section`
     -webkit-box-reflect: below calc(var(--cell-size) * 5 + 0.95rem);
     box-reflect: below calc(var(--cell-size) * 5 + 0.95rem);
   }
-`;
+`);
 
 export const Row = styled(FlexBox)`
   position: relative;
@@ -268,6 +295,8 @@ export const CellItem = styled(Icon)<CellItemProps>`
       opacity: 0.5;
     }
   }
+
+  ${({ color }) => `transform: rotate(${color === 'black' ? '180' : '0'}deg);`}
 
   ${({ $actived }) => {
     if (!$actived) return '';
