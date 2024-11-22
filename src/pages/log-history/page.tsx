@@ -67,8 +67,6 @@ function LogItem(props: LogItemProps) {
 
 const PageWrapper = styled(VirtualList)`
   padding: 1rem;
-  flex: 1;
-  gap: 1rem;
   overflow-y: auto;
 `;
 
@@ -202,7 +200,7 @@ export function Component() {
         <FilterBar filterInfo={filterInfo} includedKinds={includedKinds} onChange={(info) => setFilterInfo(info)} />
         <Switch when={filteredHistory.length > 0} fullback={<Empty />}>
           {() => (
-            <PageWrapper data={filteredHistory}>
+            <PageWrapper data={filteredHistory} wrapperProps={{ $flex: '1', $gap: '1' }}>
               {(item: ExposeInfo, idx: number) => <LogItem {...item} key={idx} onClick={() => setLogDetail(item)} />}
             </PageWrapper>
           )}

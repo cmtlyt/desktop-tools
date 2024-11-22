@@ -70,6 +70,8 @@ interface VirtualListProps {
   direction?: 'column' | 'row';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   children: (item: any, index: number) => React.ReactNode;
+  wrapperProps?: Parameters<typeof FlexBox>[0];
+  className?: string;
 }
 
 interface Context {
@@ -87,7 +89,7 @@ function getPx(fontSize: number, rootFontSize: number) {
 }
 
 export const VirtualList = memo(function VirtualList(props: VirtualListProps) {
-  const { bufferHeight = 0, direction: _direction = 'column', children, data, ...rest } = props;
+  const { bufferHeight = 0, wrapperProps, direction: _direction = 'column', children, data, ...rest } = props;
   const ref = useRef<HTMLDivElement>(null);
   const rootMargin = useFormatFontSize(bufferHeight, getPx);
   const [{ observer, eventKey, itemSize, direction }, setContext] = useState<Context>({
@@ -128,7 +130,7 @@ export const VirtualList = memo(function VirtualList(props: VirtualListProps) {
 
   return (
     <context.Provider value={{ observer, eventKey, itemSize, direction, setContext }}>
-      <FlexBox $direction={direction} {...rest} ref={ref}>
+      <FlexBox $direction={direction} {...rest} {...wrapperProps} ref={ref}>
         {data.map((item, idx) => (
           <VirtualItem key={idx} isFast={idx === 0}>
             {() => children(item, idx)}
