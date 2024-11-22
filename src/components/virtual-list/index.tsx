@@ -1,7 +1,7 @@
 import { createContext, memo, useContext, useEffect, useRef, useState } from 'react';
 import { produce } from 'immer';
 import styled from 'styled-components';
-import { getRandomString, TExclude } from '@cmtlyt/base';
+import { getRandomString } from '@cmtlyt/base';
 import { FlexBox } from '../base';
 import { useFormatFontSize } from '@/hooks';
 
@@ -86,9 +86,7 @@ function getPx(fontSize: number, rootFontSize: number) {
   return `${fontSize * rootFontSize}px`;
 }
 
-export const VirtualList = memo(function VirtualList(
-  props: VirtualListProps & TExclude<Parameters<typeof FlexBox>[0], 'children'>,
-) {
+export const VirtualList = memo(function VirtualList(props: VirtualListProps) {
   const { bufferHeight = 0, direction: _direction = 'column', children, data, ...rest } = props;
   const ref = useRef<HTMLDivElement>(null);
   const rootMargin = useFormatFontSize(bufferHeight, getPx);
@@ -130,7 +128,7 @@ export const VirtualList = memo(function VirtualList(
 
   return (
     <context.Provider value={{ observer, eventKey, itemSize, direction, setContext }}>
-      <FlexBox $direction="column" {...rest} ref={ref}>
+      <FlexBox $direction={direction} {...rest} ref={ref}>
         {data.map((item, idx) => (
           <VirtualItem key={idx} isFast={idx === 0}>
             {() => children(item, idx)}

@@ -202,7 +202,7 @@ export function Component() {
         <FilterBar filterInfo={filterInfo} includedKinds={includedKinds} onChange={(info) => setFilterInfo(info)} />
         <Switch when={filteredHistory.length > 0} fullback={<Empty />}>
           {() => (
-            <PageWrapper data={filteredHistory} $direction={FlexDirection.COLUMN}>
+            <PageWrapper data={filteredHistory}>
               {(item: ExposeInfo, idx: number) => <LogItem {...item} key={idx} onClick={() => setLogDetail(item)} />}
             </PageWrapper>
           )}
