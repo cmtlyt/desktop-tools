@@ -4,14 +4,18 @@ import { isNaN } from '@cmtlyt/base';
 import { getRootSize, useRootFontSize } from './use-root-font-size';
 import { Many } from '@/types';
 
-function getSize<T extends Many<string | number>>(sizes: T, rootFontSize: number) {
+type TransformCallback = (size: number, rootFontSize: number) => string;
+
+function getSize<T extends Many<string | number>>(sizes: T, rootFontSize: number, transform?: TransformCallback) {
+  const getResult = (size: string | number) => (transform ? transform(size as number, rootFontSize) : size);
   const handler = (fontSize: string | number) => {
     if (typeof fontSize === 'string') {
       const numFontSize = parseFloat(fontSize);
-      if (isNaN(numFontSize)) return fontSize;
-      if (String(numFontSize) === fontSize) return `${numFontSize}rem`;
-      return fontSize;
+      if (isNaN(numFontSize)) return getResult(fontSize);
+      if (String(numFontSize) === fontSize) return transform ? getResult(numFontSize) : `${numFontSize}rem`;
+      return getResult(fontSize);
     }
+    if (transform) return getResult(fontSize);
     return `${fontSize / rootFontSize}rem`;
   };
   if (Array.isArray(sizes)) {
@@ -20,17 +24,17 @@ function getSize<T extends Many<string | number>>(sizes: T, rootFontSize: number
   return handler(sizes as string | number) as T extends unknown[] ? string[] : string;
 }
 
-export function useFormatFontSize<T extends Many<string | number>>(fontSize: T) {
+export function useFormatFontSize<T extends Many<string | number>>(fontSize: T, transform?: TransformCallback) {
   const rootFontSize = useRootFontSize();
-  const sizes = useRef(getSize(fontSize, rootFontSize));
+  const sizes = useRef(getSize(fontSize, rootFontSize, transform));
   const [, forceUpdate] = useState<number>(0);
 
   useEffect(() => {
-    const nextSizes = getSize(fontSize, rootFontSize);
+    const nextSizes = getSize(fontSize, rootFontSize, transform);
     if (shallow(sizes.current, nextSizes)) return;
     sizes.current = nextSizes;
     forceUpdate(Math.random());
-  }, [fontSize, rootFontSize]);
+  }, [fontSize, rootFontSize, transform]);
 
   return sizes.current as T extends unknown[] ? string[] : string;
 }

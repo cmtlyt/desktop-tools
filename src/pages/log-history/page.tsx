@@ -13,6 +13,7 @@ import { getLayoutStore } from '@/store';
 import { useNavigate } from '@/hooks';
 import { Switch } from '@/components/switch';
 import { Empty } from '@/components/empty';
+import { VirtualList } from '@/components/virtual-list';
 
 const LogWrapper = styled(ShadowFlexBox)`
   padding: 1rem 1.4rem;
@@ -21,10 +22,23 @@ const LogWrapper = styled(ShadowFlexBox)`
 
 const ActionSpan = styled.span`
   white-space: nowrap;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const DateSpan = styled(DateView)`
   white-space: nowrap;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
+const InfoObj = styled.section`
+  flex: 1;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 interface LogItemProps extends ExposeInfo {
@@ -46,13 +60,15 @@ function LogItem(props: LogItemProps) {
       <Tag>{kind}</Tag>
       <ActionSpan>{String(action)}</ActionSpan>
       <DateSpan date={time} format="yyyy-MM-DD hh:mm:ss" />
-      <div>{JSON.stringify(pageInfo, null, 1)}</div>
+      <InfoObj>{JSON.stringify(pageInfo, null, 1)}</InfoObj>
     </LogWrapper>
   );
 }
 
-const PageWrapper = styled(FlexBox)`
+const PageWrapper = styled(VirtualList)`
   padding: 1rem;
+  flex: 1;
+  gap: 1rem;
   overflow-y: auto;
 `;
 
@@ -184,13 +200,13 @@ export function Component() {
     <AppearBox onFirstAppear={() => logger.appear('log-history')}>
       <FlexBox $direction={FlexDirection.COLUMN} style={{ height: '100%' }}>
         <FilterBar filterInfo={filterInfo} includedKinds={includedKinds} onChange={(info) => setFilterInfo(info)} />
-        <PageWrapper $direction={FlexDirection.COLUMN} $gap="1" $flex="1">
-          <Switch when={filteredHistory.length > 0} fullback={<Empty />}>
-            {() =>
-              filteredHistory.map((item, idx) => <LogItem key={idx} {...item} onClick={() => setLogDetail(item)} />)
-            }
-          </Switch>
-        </PageWrapper>
+        <Switch when={filteredHistory.length > 0} fullback={<Empty />}>
+          {() => (
+            <PageWrapper data={filteredHistory} $direction={FlexDirection.COLUMN}>
+              {(item: ExposeInfo, idx: number) => <LogItem {...item} key={idx} onClick={() => setLogDetail(item)} />}
+            </PageWrapper>
+          )}
+        </Switch>
       </FlexBox>
       <Drawer open={!!logDetail} title="日志详情" width="80rem" onClose={() => setLogDetail(null)}>
         {logDetail && <LogDetail {...logDetail} action={String(logDetail.info[0])} />}
