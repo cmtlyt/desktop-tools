@@ -43,6 +43,15 @@ export async function getFileHandle(path: string, autoCreate = true) {
   return dirHandle.getFileHandle(filePath, { create: autoCreate });
 }
 
+export async function deleteEntry(path?: string) {
+  if (!path) return;
+  checkOpfsUrl(path);
+  const dirPath = path.split('/').slice(0, -1).join('/');
+  const dirHandle = await getDirectoryHandle(dirPath, false);
+  const fileHandle = await getFileHandle(path, false);
+  return dirHandle.removeEntry(fileHandle.name, { recursive: true });
+}
+
 export async function getFileWritable(path: string, keepExistingData = false, autoCreate = true) {
   checkOpfsUrl(path);
   const fileHandle = await getFileHandle(path, autoCreate);

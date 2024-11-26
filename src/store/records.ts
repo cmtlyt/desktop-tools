@@ -2,7 +2,7 @@ import { produce } from 'immer';
 import { getRandomString } from '@cmtlyt/base';
 import { RECORDS_STORAGE_KEY } from '@/constant';
 import { GetStore } from '@/types/store';
-import { createPersist, createStoreHelper } from '@/utils';
+import { createPersist, createStoreHelper, deleteEntry } from '@/utils';
 import { EditorRecordInfo, RecordInfo } from '@/types/records';
 
 interface RecordsStore {
@@ -34,10 +34,10 @@ const getActions: GetStore<Store, RecordsStoreActions> = (set) => ({
   deleteRecord: (id) => {
     set((state) =>
       produce(state, (draft) => {
-        draft.records.splice(
-          draft.records.findIndex((notepad) => notepad.id === id),
-          1,
-        );
+        const recordIdx = draft.records.findIndex((notepad) => notepad.id === id);
+        const record = draft.records[recordIdx];
+        deleteEntry(record.url);
+        draft.records.splice(recordIdx, 1);
       }),
     );
   },
