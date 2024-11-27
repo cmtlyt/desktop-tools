@@ -3,7 +3,7 @@ import { getRandomString } from '@cmtlyt/base';
 import { NOTEPADS_STORAGE_KEY } from '@/constant';
 import { EditorNotepad, Notepad } from '@/types/notepad';
 import { GetStore } from '@/types/store';
-import { createPersist, createStoreHelper } from '@/utils';
+import { createPersist, createStoreHelper, deleteEntry } from '@/utils';
 
 interface NotepadsStore {
   notepads: Notepad[];
@@ -38,10 +38,10 @@ const getActions: GetStore<Store, NotepadsStoreActions> = (set) => ({
   deleteNotepad: (id) => {
     set((state) =>
       produce(state, (draft) => {
-        draft.notepads.splice(
-          draft.notepads.findIndex((notepad) => notepad.id === id),
-          1,
-        );
+        const index = draft.notepads.findIndex((notepad) => notepad.id === id);
+        const notepad = draft.notepads[index];
+        deleteEntry(notepad.url);
+        draft.notepads.splice(index, 1);
       }),
     );
   },
