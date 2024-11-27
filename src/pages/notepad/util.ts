@@ -4,7 +4,7 @@ import { BASENAME } from '@/router';
 import { getLayoutStore } from '@/store';
 import { Notepad } from '@/types/notepad';
 import { getFileContentOfString, getFileWritable, logger } from '@/utils';
-import { NOTEPAD_OPFS_PATH } from '@/constant/opfs-key';
+import { NOTEPAD_OPFS_PATH } from '@/constant';
 
 async function decodeNotepad(notepad: Notepad): Promise<Notepad> {
   const { url } = notepad;

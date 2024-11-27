@@ -4,7 +4,7 @@ import { getFileWritable, logger, opfsSupport } from '@/utils';
 import { getRecordingInfoStore } from './store';
 import { ActionType, emitRecordingAction } from './subject';
 import { SpeechRecognition } from '@/types/speech-recognition';
-import { VIDEO_OPFS_PATH } from '@/constant/opfs-key';
+import { VIDEO_OPFS_PATH } from '@/constant';
 
 function getSpeechRecognition() {
   if ('SpeechRecognition' in window) return window.SpeechRecognition as SpeechRecognition;
