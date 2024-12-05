@@ -1,5 +1,5 @@
 import { getDeviceInfo } from '@cmtlyt/base';
-import { createLogger, Kind } from './logger';
+import { createLogger, Kind } from '@cmtlyt/logger';
 import { getPageInfo } from '@/components/sync-page-info';
 import { isProd, LOGGER_STORAGE_KEY } from '@/constant';
 import { filterForJson } from './filter';

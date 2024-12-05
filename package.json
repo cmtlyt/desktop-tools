@@ -15,6 +15,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@cmtlyt/base": "^0.8.3",
+    "@cmtlyt/logger": "^0.1.1",
     "@cmtlyt/storage": "^0.1.3",
     "@cmtlyt/string-zip": "^0.3.2",
     "@fingerprintjs/fingerprintjs": "^4.5.1",
