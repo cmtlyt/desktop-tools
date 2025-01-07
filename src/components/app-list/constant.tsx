@@ -9,6 +9,7 @@ export interface AppInfo {
   name: string;
   path: string;
   icon: React.ReactNode;
+  hide?: boolean;
   deepMatch?: boolean;
   wrapperStyle?: React.CSSProperties;
   contentStyle?: React.CSSProperties;

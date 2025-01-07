@@ -1,7 +1,7 @@
 import { getDeviceInfo } from '@cmtlyt/base';
 import { createMonitor, Kind } from '@cmtlyt/monitor';
 import { getPageInfo } from '@/components/sync-page-info';
-import { isProd, LOGGER_STORAGE_KEY } from '@/constant';
+import { IS_PROD, LOGGER_STORAGE_KEY } from '@/constant';
 import { filterForJson } from './filter';
 import { addStorageItem, forceSaveStorage } from './storage';
 import { ExposeInfo } from '@/types/logger';
@@ -24,8 +24,9 @@ interface LoggerExtendOptions {
 
 const logger = createMonitor<ExtendKind, LoggerExtendOptions>({
   loggerOptions: {
-    needTrace: !isProd,
+    needTrace: !IS_PROD,
     logConfig: {
+      systemError: { kind: 'systemError', inherit: 'error' },
       system: { kind: 'system', inherit: 'info' },
       click: { kind: 'click', inherit: 'info' },
       event: { kind: 'event', inherit: 'info' },
@@ -35,7 +36,7 @@ const logger = createMonitor<ExtendKind, LoggerExtendOptions>({
       expose: { kind: 'expose', inherit: 'info', needTrace: false },
     },
     // 生产环境下不在控制台输出
-    printFunc: isProd ? () => {} : null,
+    printFunc: IS_PROD ? () => {} : null,
     getPrintFunc(kind) {
       const { printToDebug } = this.store;
       if (printToDebug.includes(kind)) {
@@ -90,7 +91,7 @@ const logger = createMonitor<ExtendKind, LoggerExtendOptions>({
   reportLog(info) {
     const { kind } = info;
     this.store.exposeHandler({ kind, info: info.messages, time: Date.now() });
-    if (isProd) {
+    if (IS_PROD) {
       info.preventDefault();
       // TODO: 线上日志上报
     }

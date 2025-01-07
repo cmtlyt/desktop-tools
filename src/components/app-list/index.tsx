@@ -79,7 +79,7 @@ export function AppList(props: AppListProps) {
   );
 
   const appListFinished = useMemo(() => {
-    return appListHander(appList);
+    return appListHander(appList).filter((item) => !item.hide);
   }, [appListHander]);
 
   return (

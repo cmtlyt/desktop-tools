@@ -8,7 +8,7 @@ interface LayoutStore {
 }
 
 interface LayoutStoreActions {
-  showMessage: (messageInfo: MessageArgsProps) => void;
+  showMessage: (messageInfo: MessageArgsProps | null) => void;
   setExpandAside: (expandAside: boolean) => void;
   setLoading: (loading: boolean) => void;
 }

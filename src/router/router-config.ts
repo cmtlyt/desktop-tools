@@ -1,7 +1,10 @@
 import { RouteObject, createHashRouter } from 'react-router-dom';
 import { generateRouteConfig } from './util';
+import { BASENAME } from './constant';
+import { IS_DESKTOP_APP } from '@/constant';
 
 export const routes: RouteObject[] = [
+  generateRouteConfig('/guide'),
   {
     path: '/',
     lazy: () => import('../layout'),
@@ -30,11 +33,16 @@ export const routes: RouteObject[] = [
         generateRouteConfig('', [], '/inline-vscode/project-list'),
         generateRouteConfig('/inline-vscode/workspace/:id'),
       ]),
-      generateRouteConfig('/recorder', [
-        generateRouteConfig('', [], '/recorder/list'),
-        generateRouteConfig('/recorder/recording'),
-        generateRouteConfig('/recorder/playback/:id'),
-      ]),
+      generateRouteConfig(
+        '/recorder',
+        [
+          generateRouteConfig('', [], '/recorder/list'),
+          generateRouteConfig('/recorder/recording'),
+          generateRouteConfig('/recorder/playback/:id'),
+        ],
+        void 0,
+        { guide: { enable: IS_DESKTOP_APP, toOrigin: `https://cmtlyt.github.io${BASENAME}` } },
+      ),
     ],
   },
 ];

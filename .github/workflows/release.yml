@@ -1,0 +1,42 @@
+name: Release
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Use PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.4.0
+
+      - name: Install
+        run: pnpm i
+      
+      - name: Build:release
+        run: pnpm run build:release
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ github.workspace }}/release/*-setup.exe
+            ${{ github.workspace }}/release/*-setup.dmg
+          fail_on_unmatched_files: true
+          generate_release_notes: true
