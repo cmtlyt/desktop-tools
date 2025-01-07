@@ -3,7 +3,7 @@
   "appId": "top.cmtlyt.desktop-tools",
   "asar": true,
   "asarUnpack": null,
-  "productName": "桌面工具",
+  "productName": "desktop-tools",
   "directories": {
     "output": "release"
   },
