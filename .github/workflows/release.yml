@@ -1,6 +1,7 @@
 name: Release
 
 permissions:
+  id-token: write
   contents: write
 
 on:
@@ -28,7 +29,7 @@ jobs:
 
       - name: Install
         run: pnpm i
-      
+
       - name: Build:release
         run: npx cross-env NODE_OPTIONS=--max-old-space-size=8192 pnpm run build:release
 
@@ -40,3 +41,5 @@ jobs:
             ${{ github.workspace }}/release/*-setup.dmg
           fail_on_unmatched_files: true
           generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
