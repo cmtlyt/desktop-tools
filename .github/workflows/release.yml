@@ -30,7 +30,7 @@ jobs:
         run: pnpm i
       
       - name: Build:release
-        run: pnpm run build:release
+        run: npx cross-env NODE_OPTIONS=--max-old-space-size=8192 pnpm run build:release
 
       - name: Release
         uses: softprops/action-gh-release@v2
