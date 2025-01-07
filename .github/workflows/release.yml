@@ -24,7 +24,7 @@ jobs:
       - name: Use PNPM
         uses: pnpm/action-setup@v4
         with:
-          version: 9.4.0
+          version: 9.14.4
 
       - name: Install
         run: pnpm i
