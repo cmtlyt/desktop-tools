@@ -24,7 +24,7 @@ function redirectToGuidePage(
   return {
     path: `${path}/*`,
     loader: async ({ request }) => {
-      const urlInfo = URL.parse(request.url);
+      const urlInfo = new URL(request.url);
       const currentPath = location.hash.replace(/^#/, '');
       if (!urlInfo) return redirect('/guide');
       const pathname = urlInfo.pathname;
