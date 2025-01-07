@@ -28,6 +28,9 @@ jobs:
 
       - name: Install
         run: pnpm i
+
+      - name: install dmg-license
+        run: pnpm i -D dmg-license
       
       - name: Build:release
         run: pnpm run build:release
