@@ -18,7 +18,8 @@ export default defineConfig({
   files: ['package.json'],
   execute: (config) => {
     execSync('git add .');
-    execSync(`git commit -m "chore: release v${config.state.tagName}"`);
+    console.log(config);
+    execSync(`git commit -m "chore: release v${config.state.tagName}" --no-verify`);
     execSync('git push');
   },
   // 是否需要确认修改, 传入 true 表示需要确认
