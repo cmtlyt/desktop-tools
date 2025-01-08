@@ -17,9 +17,13 @@ export default defineConfig({
   // 配置要修改版本号的文件
   files: ['package.json'],
   execute: (config) => {
-    execSync('git add .');
-    execSync(`git commit -m "chore: release v${config.state.newVersion}" --no-verify`);
-    execSync('git push');
+    try {
+      execSync('git add .');
+      execSync(`git commit -m "chore: release v${config.state.newVersion}" --no-verify`);
+      execSync('git push');
+    } catch (e) {
+      console.log(e);
+    }
   },
   // 是否需要确认修改, 传入 true 表示需要确认
   confirm: false,
