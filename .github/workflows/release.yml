@@ -41,7 +41,6 @@ jobs:
         with:
           files: |
             ${{ github.workspace }}/release/*-setup.exe
-            ${{ github.workspace }}/release/*-setup.dmg
           fail_on_unmatched_files: true
           generate_release_notes: true
         env:
