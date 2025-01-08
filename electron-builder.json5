@@ -13,20 +13,27 @@
   ],
   "mac": {
     "target": [
-      "dmg"
+      {
+        "target": "dmg",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      }
     ],
-    "artifactName": "${productName}-mac-${version}-setup.${ext}"
+    "artifactName": "${productName}-mac-${version}-${arch}-setup.${ext}"
   },
   "win": {
     "target": [
       {
         "target": "nsis",
         "arch": [
-          "x64"
+          "x64",
+          "arm64"
         ]
       }
     ],
-    "artifactName": "${productName}-windows-${version}-setup.${ext}"
+    "artifactName": "${productName}-windows-${version}-${arch}-setup.${ext}"
   },
   "nsis": {
     "oneClick": false,
