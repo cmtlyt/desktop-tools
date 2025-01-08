@@ -1,4 +1,5 @@
 import { defineConfig } from 'bumpp';
+import { execSync } from 'node:child_process';
 
 export default defineConfig({
   // commit 消息模板, %s 会替换为版本号, 传 false 表示不生成 commit
@@ -15,7 +16,11 @@ export default defineConfig({
   noVerify: false,
   // 配置要修改版本号的文件
   files: ['package.json'],
-  execute: 'git add . && git commit -m "chore: release v%s" && git push',
+  execute: (config) => {
+    execSync('git add .');
+    execSync(`git commit -m "chore: release v${config.state.tagName}"`);
+    execSync('git push');
+  },
   // 是否需要确认修改, 传入 true 表示需要确认
   confirm: false,
 });
