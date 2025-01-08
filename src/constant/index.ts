@@ -1,3 +1,5 @@
+import { getUserAgent } from '@cmtlyt/base';
+
 export * from './local-key';
 export * from './session-key';
 export * from './storage-key';
@@ -10,6 +12,7 @@ export const IS_DESKTOP_APP = (() => {
   try {
     return process.env.VITE_DESKTOP_APP === 'true';
   } catch {
-    return import.meta.env.VITE_DESKTOP_APP === 'true';
+    const ua = getUserAgent();
+    return ua.includes('Electron');
   }
 })();
