@@ -20,7 +20,6 @@ export default defineConfig({
     try {
       execSync('git add .');
       execSync(`git commit -m "chore: release v${config.state.newVersion}" --no-verify`);
-      execSync('git push');
     } catch (e) {
       console.log(e);
     }
