@@ -4,10 +4,12 @@ import { GiGamepadCross } from 'react-icons/gi';
 import { BiNotepad } from 'react-icons/bi';
 // import { FaLaptopCode } from 'react-icons/fa';
 import { BiVideoRecording } from 'react-icons/bi';
+import { ToolIcon } from '@/pages/tools/icon';
 
 export interface AppInfo {
   name: string;
   path: string;
+  private?: boolean;
   icon: React.ReactNode;
   hide?: boolean;
   deepMatch?: boolean;
@@ -35,6 +37,12 @@ export const appList: AppInfo[] = [
     path: '/notepad',
     deepMatch: true,
     icon: <BiNotepad />,
+  },
+  {
+    name: '工具',
+    path: '/tools',
+    deepMatch: true,
+    icon: <ToolIcon width={24} height={24} />,
   },
   // {
   //   name: 'Code',
