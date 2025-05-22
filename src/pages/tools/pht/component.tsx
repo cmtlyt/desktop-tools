@@ -84,9 +84,11 @@ export function UploadInput(props: Omit<UploadProps, 'onChange'> & { onChange?: 
 }
 
 const StyledCanvas = styled.canvas`
-  flex: 1;
+  display: none;
+`;
+
+export const PreviewImg = styled.img`
   width: 100%;
-  object-fit: contain;
 `;
 
 interface ComposeOptions {
@@ -99,12 +101,13 @@ interface ComposeOptions {
 export interface ComposeResult {
   oriImageData: ImageData;
   imageData: ImageData;
+  imageUrl: string;
 }
 
 export interface CanvasRef {
   compose: (imgs: string[], options?: ComposeOptions) => Promise<ComposeResult | null>;
   render: (imageData?: ImageData | null) => void;
-  getImageUrl: () => Promise<string | undefined>;
+  getImageUrl: (noCache?: boolean) => Promise<string | undefined>;
   clear: () => void;
 }
 
@@ -160,8 +163,8 @@ function cloneImageData(imageData: ImageData) {
   return new ImageData(new Uint8ClampedArray(Array.from(imageData.data)), imageData.width, imageData.height);
 }
 
-export const ResultCanvas = memo(
-  forwardRef<CanvasRef>(function (_, ref) {
+export const ComposeCanvas = memo(
+  forwardRef<CanvasRef>(function (props, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const canvasCtxRef = useRef<CanvasRenderingContext2D | null | undefined>(null);
     const composeCacheRef = useRef<ComposeCache | null>(null);
@@ -241,6 +244,7 @@ export const ResultCanvas = memo(
           const result: ComposeResult = {
             oriImageData: cloneImageData(imageData),
             imageData: imageData,
+            imageUrl: (await getImageUrl(true)) || '',
           };
           if (filterList.length) result.imageData = await filterImage(imageData, filterList);
           return result;
@@ -255,7 +259,8 @@ export const ResultCanvas = memo(
         });
     };
 
-    const getImageUrl = async () => {
+    const getImageUrl = async (noCache = false) => {
+      if (!noCache && composeCacheRef.current?.result?.imageUrl) return composeCacheRef.current.result.imageUrl;
       return new Promise<string | undefined>((resolve) => {
         if (!canvasRef.current) return;
         canvasRef.current.toBlob(
@@ -271,7 +276,7 @@ export const ResultCanvas = memo(
 
     useImperativeHandle(ref, () => ({ compose, render: renderCanvas, getImageUrl, clear: () => clearCanvas() }));
 
-    return <StyledCanvas ref={canvasRef} />;
+    return <StyledCanvas ref={canvasRef} {...props} />;
   }),
 );
 

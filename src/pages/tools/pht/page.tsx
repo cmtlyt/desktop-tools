@@ -1,29 +1,26 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { debounce } from '@cmtlyt/base';
 import { useKeyGuard } from '@/hooks/use-key-guard';
 import { useNavigate } from '@/hooks';
 import { AppearBox } from '@/components/appear-box';
-import { logger } from '@/utils';
-import { CanvasRef, ImageFilterSelect, ResultCanvas, UploadInput, Wrapper } from './component';
-import { PRIVATE_TOOLS_KEY } from '../constant';
+import { isPhone, logger } from '@/utils';
 import { PageInfo } from '@/types/page-info';
 import { ButtonList } from '@/components/button-list';
+import { Show } from '@/components/show';
+import { CanvasRef, ImageFilterSelect, ComposeCanvas, UploadInput, Wrapper, PreviewImg } from './component';
+import { PRIVATE_TOOLS_KEY } from '../constant';
 import { ActionType, emitPHTAction, useSubscribePHTAction } from './subject';
 
 export function Component() {
+  const navigate = useNavigate();
   const canvasRef = useRef<CanvasRef>(null);
   const urlsRef = useRef<string[]>([]);
-  const [filterList, setFilterList] = useState<string[]>([]);
-  const navigate = useNavigate();
+  const filterListRef = useRef<string[]>([]);
+  const [previewUrl, setPreviewUrl] = useState<string>();
 
   const pass = useKeyGuard(PRIVATE_TOOLS_KEY, () => {
     navigate(-1);
   });
-
-  useEffect(() => {
-    changeHandler(urlsRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterList]);
 
   useSubscribePHTAction(() => {
     canvasRef.current?.getImageUrl().then((url) => {
@@ -35,9 +32,24 @@ export function Component() {
   const changeHandler = useCallback(
     debounce((urls: string[]) => {
       urlsRef.current = urls;
-      canvasRef.current?.compose(urls, { jitterRange: 30, filterList });
+      if (!canvasRef.current) return;
+      canvasRef.current
+        .compose(urls, { jitterRange: 30, filterList: filterListRef.current })
+        .then(() => canvasRef.current!.getImageUrl())
+        .then((url) => {
+          URL.revokeObjectURL(previewUrl || '');
+          setPreviewUrl(url);
+        });
     }, 250),
-    [filterList],
+    [filterListRef, previewUrl],
+  );
+
+  const filterChangeHandler = useCallback(
+    (list: string[]) => {
+      filterListRef.current = list;
+      changeHandler(urlsRef.current);
+    },
+    [changeHandler],
   );
 
   if (!pass) {
@@ -47,9 +59,10 @@ export function Component() {
   return (
     <AppearBox onFirstAppear={() => logger.appear('tool-pht')}>
       <Wrapper $flex="1" $direction="column">
-        <ImageFilterSelect onChange={setFilterList} />
+        <ImageFilterSelect onChange={filterChangeHandler} />
         <UploadInput onChange={changeHandler} />
-        <ResultCanvas ref={canvasRef} />
+        <ComposeCanvas ref={canvasRef} />
+        <Show when={previewUrl}>{() => <PreviewImg src={previewUrl} />}</Show>
       </Wrapper>
     </AppearBox>
   );
@@ -61,6 +74,7 @@ function RightArea() {
       buttons={[
         {
           text: '预览',
+          hidden: isPhone(),
           onClick() {
             emitPHTAction({ id: 'preview-image', type: ActionType.PREVIEW_IMAGE });
           },
