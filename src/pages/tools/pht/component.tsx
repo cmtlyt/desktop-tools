@@ -36,7 +36,7 @@ const StyledDragger = styled(Dragger)`
 
 export function UploadInput(props: Omit<UploadProps, 'onChange'> & { onChange?: (imgs: string[]) => void }) {
   const { onChange, ...rest } = props;
-  const [fileList, setFileList] = useState<UploadProps['fileList']>([]);
+  const [fileList, setFileList] = useState<Required<UploadProps>['fileList']>([]);
 
   const changeHandler: UploadProps['onChange'] = (info) => {
     const { fileList: files } = info;
@@ -47,7 +47,16 @@ export function UploadInput(props: Omit<UploadProps, 'onChange'> & { onChange?: 
 
   const customRequest: UploadProps['customRequest'] = ({ file, onSuccess }) => {
     const url = URL.createObjectURL(file as File);
-    onSuccess?.({ url });
+    onSuccess?.({ url, revoke: () => URL.revokeObjectURL(url) });
+  };
+
+  const removeHandler: UploadProps['onRemove'] = (file) => {
+    const index = fileList.indexOf(file);
+    const newFileList = fileList.slice();
+    const [delFile] = newFileList.splice(index, 1);
+    console.debug(delFile);
+    delFile.response?.revoke?.();
+    setFileList(newFileList);
   };
 
   return (
@@ -58,6 +67,7 @@ export function UploadInput(props: Omit<UploadProps, 'onChange'> & { onChange?: 
       multiple
       accept="image/*"
       onChange={changeHandler}
+      onRemove={removeHandler}
       customRequest={customRequest}
     >
       <FileInputPlaceholder $alignItems="center" $justifyContent="center">
