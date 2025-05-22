@@ -21,6 +21,16 @@ const { Dragger } = Upload;
 const StyledDragger = styled(Dragger)`
   width: 100%;
   height: 4rem;
+
+  .ant-upload-list-picture-card {
+    padding: 1rem 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+
+    .ant-upload-list-item-container {
+      flex-shrink: 0;
+    }
+  }
 `;
 
 export function UploadInput(props: Omit<UploadProps, 'onChange'> & { onChange?: (imgs: string[]) => void }) {
