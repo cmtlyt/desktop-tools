@@ -1,8 +1,9 @@
 import { forwardRef, memo, useImperativeHandle, useRef, useState } from 'react';
-import { Upload, UploadProps } from 'antd';
+import { Select, SelectProps, Upload, UploadProps } from 'antd';
 import styled from 'styled-components';
 import { isNaN } from '@cmtlyt/base';
 import { FlexBox } from '@/components/base';
+import { filterImage, filterOptions } from './utils';
 
 export const Wrapper = styled(FlexBox)`
   padding: var(--page-padding);
@@ -23,8 +24,8 @@ const StyledDragger = styled(Dragger)`
   height: 4rem;
 
   .ant-upload-list-picture-card {
-    padding: 1rem 0;
-    flex-wrap: nowrap;
+    padding: 0.4rem 0;
+    flex-wrap: nowrap !important;
     overflow-x: auto;
 
     .ant-upload-list-item-container {
@@ -76,10 +77,16 @@ interface ComposeOptions {
   replaceColor?: string;
   autoRender?: boolean;
   jitterRange?: number;
+  filterList?: string[];
+}
+
+export interface ComposeResult {
+  oriImageData: ImageData;
+  imageData: ImageData;
 }
 
 export interface CanvasRef {
-  compose: (imgs: string[], options?: ComposeOptions) => Promise<ImageData | null>;
+  compose: (imgs: string[], options?: ComposeOptions) => Promise<ComposeResult | null>;
   render: (imageData?: ImageData | null) => void;
   clear: () => void;
 }
@@ -171,13 +178,21 @@ export const ResultCanvas = memo(
 
           return imageInfo;
         })
-        .then((imageInfo) => {
+        .then(async (imageInfo) => {
           if (!imageInfo) return null;
-          const { autoRender = true } = options;
+          const { filterList = [] } = options;
           const imageData = ctx.createImageData(imageInfo.width, imageInfo.height, { colorSpace: 'srgb' });
           imageData.data.set(imageInfo.data);
+          const result: ComposeResult = { oriImageData: imageData, imageData: imageData };
+          if (filterList.length) result.imageData = await filterImage(imageData, filterList);
+          return result;
+        })
+        .then((result) => {
+          if (!result) return null;
+          const { autoRender = true } = options;
+          const { imageData } = result;
           if (autoRender) renderCanvas(imageData);
-          return imageData;
+          return result;
         });
     };
 
@@ -186,3 +201,26 @@ export const ResultCanvas = memo(
     return <StyledCanvas ref={canvasRef} />;
   }),
 );
+
+const StyledSelect = styled(Select)`
+  padding: 0 0 0.6rem;
+  width: 100%;
+`;
+
+export const ImageFilterSelect = memo(function (props: { onChange?: (value: string[]) => void }) {
+  const { onChange } = props;
+
+  const changeHandler: SelectProps['onChange'] = (value) => {
+    onChange?.(value);
+  };
+
+  return (
+    <StyledSelect
+      mode="multiple"
+      allowClear
+      placeholder="请选择滤镜"
+      onChange={changeHandler}
+      options={filterOptions}
+    />
+  );
+});

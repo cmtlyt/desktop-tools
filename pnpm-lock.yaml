@@ -74,6 +74,9 @@ importers:
       leafer-ui:
         specifier: ^1.1.0
         version: 1.1.0
+      lena.js:
+        specifier: ^0.9.0
+        version: 0.9.0
       monaco-editor:
         specifier: ^0.52.2
         version: 0.52.2
@@ -3265,6 +3268,9 @@ packages:
 
   leafer-ui@1.1.0:
     resolution: {integrity: sha512-nyPa9yUYWGIwTWlSwqHD0iUC4DWMN5+BeXwuGqA0JP/PYqah7Tzb7Qt3+V8OxbkOMRcxaTtawg0/n4nWEnO0VA==}
+
+  lena.js@0.9.0:
+    resolution: {integrity: sha512-Roay9wbbNiQMVNNEBFWWZ0Tpo39lXR6R1V2DMzW+gefCfaXw7crhSRDiqmAMj+KV0pynhh0nhGvIu1zNKYd6iA==}
 
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
@@ -8851,6 +8857,8 @@ snapshots:
       '@leafer/interface': 1.1.0
       '@leafer/partner': 1.1.0
       '@leafer/web': 1.1.0
+
+  lena.js@0.9.0: {}
 
   levn@0.4.1:
     dependencies:
