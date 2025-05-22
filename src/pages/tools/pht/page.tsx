@@ -6,6 +6,9 @@ import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { CanvasRef, ImageFilterSelect, ResultCanvas, UploadInput, Wrapper } from './component';
 import { PRIVATE_TOOLS_KEY } from '../constant';
+import { PageInfo } from '@/types/page-info';
+import { ButtonList } from '@/components/button-list';
+import { ActionType, emitPHTAction, useSubscribePHTAction } from './subject';
 
 export function Component() {
   const canvasRef = useRef<CanvasRef>(null);
@@ -21,6 +24,12 @@ export function Component() {
     changeHandler(urlsRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterList]);
+
+  useSubscribePHTAction(() => {
+    canvasRef.current?.getImageUrl().then((url) => {
+      window.open(url);
+    });
+  }, [ActionType.PREVIEW_IMAGE]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const changeHandler = useCallback(
@@ -46,7 +55,23 @@ export function Component() {
   );
 }
 
-export const handle = {
+function RightArea() {
+  return (
+    <ButtonList
+      buttons={[
+        {
+          text: '预览',
+          onClick() {
+            emitPHTAction({ id: 'preview-image', type: ActionType.PREVIEW_IMAGE });
+          },
+        },
+      ]}
+    />
+  );
+}
+
+export const handle: PageInfo = {
   title: '拼好图',
   needBackIcon: true,
+  rightArea: <RightArea />,
 };

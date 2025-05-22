@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { isNaN } from '@cmtlyt/base';
 import { FlexBox } from '@/components/base';
 import { filterImage, filterOptions } from './utils';
+import { logger } from '@/utils';
 
 export const Wrapper = styled(FlexBox)`
   padding: var(--page-padding);
@@ -34,6 +35,10 @@ const StyledDragger = styled(Dragger)`
   }
 `;
 
+const DraggerWrapper = styled.section`
+  height: 15rem;
+`;
+
 export function UploadInput(props: Omit<UploadProps, 'onChange'> & { onChange?: (imgs: string[]) => void }) {
   const { onChange, ...rest } = props;
   const [fileList, setFileList] = useState<Required<UploadProps>['fileList']>([]);
@@ -41,7 +46,7 @@ export function UploadInput(props: Omit<UploadProps, 'onChange'> & { onChange?: 
   const changeHandler: UploadProps['onChange'] = (info) => {
     const { fileList: files } = info;
     setFileList(files);
-    const urls = files.map((item) => item.response?.url).filter(Boolean);
+    const urls = files.map((item) => (item.url = item.response?.url)).filter(Boolean);
     onChange?.(urls);
   };
 
@@ -59,20 +64,22 @@ export function UploadInput(props: Omit<UploadProps, 'onChange'> & { onChange?: 
   };
 
   return (
-    <StyledDragger
-      {...rest}
-      fileList={fileList}
-      listType="picture-card"
-      multiple
-      accept="image/*"
-      onChange={changeHandler}
-      onRemove={removeHandler}
-      customRequest={customRequest}
-    >
-      <FileInputPlaceholder $alignItems="center" $justifyContent="center">
-        请选择图片
-      </FileInputPlaceholder>
-    </StyledDragger>
+    <DraggerWrapper>
+      <StyledDragger
+        {...rest}
+        fileList={fileList}
+        listType="picture-card"
+        multiple
+        accept="image/*"
+        onChange={changeHandler}
+        onRemove={removeHandler}
+        customRequest={customRequest}
+      >
+        <FileInputPlaceholder $alignItems="center" $justifyContent="center">
+          请选择图片
+        </FileInputPlaceholder>
+      </StyledDragger>
+    </DraggerWrapper>
   );
 }
 
@@ -97,6 +104,7 @@ export interface ComposeResult {
 export interface CanvasRef {
   compose: (imgs: string[], options?: ComposeOptions) => Promise<ComposeResult | null>;
   render: (imageData?: ImageData | null) => void;
+  getImageUrl: () => Promise<string | undefined>;
   clear: () => void;
 }
 
@@ -122,16 +130,47 @@ function colorMatch(
   return rgb.every((item, idx) => Math.abs(item - target[idx]) < jitterRange);
 }
 
+interface ComposeCache {
+  result: ComposeResult | null;
+  imgs: string[];
+  options: ComposeOptions;
+}
+
+async function applyCache(
+  info: ComposeCache | null,
+  newInfo: Pick<ComposeCache, 'imgs' | 'options'>,
+): Promise<ComposeResult | null> {
+  if (!info) return null;
+  if (info.imgs.join(',') !== newInfo.imgs.join(',')) return null;
+  if (info.options.filterList?.join(',') === newInfo.options.filterList?.join(',')) return info.result;
+
+  /// 滤镜不同
+  info.options.filterList = newInfo.options.filterList;
+  if (!info.result) return null;
+  const newImageData = cloneImageData(info.result.oriImageData);
+  if (!info.options.filterList) {
+    info.result.imageData = newImageData;
+    return info.result;
+  }
+  info.result.imageData = await filterImage(newImageData, info.options.filterList);
+  return info.result;
+}
+
+function cloneImageData(imageData: ImageData) {
+  return new ImageData(new Uint8ClampedArray(Array.from(imageData.data)), imageData.width, imageData.height);
+}
+
 export const ResultCanvas = memo(
   forwardRef<CanvasRef>(function (_, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const canvasCtxRef = useRef<CanvasRenderingContext2D | null | undefined>(null);
+    const composeCacheRef = useRef<ComposeCache | null>(null);
 
     const renderCanvas = (imageData?: ImageData | null) => {
       if (!canvasRef.current || !imageData) return;
       const ctx = (canvasCtxRef.current ||= canvasRef.current.getContext('2d'));
       if (!ctx) return;
-      clearCanvas();
+      clearCanvas(ctx);
       canvasRef.current.width = imageData.width;
       canvasRef.current.height = imageData.height;
       ctx.putImageData(imageData, 0, 0);
@@ -148,6 +187,13 @@ export const ResultCanvas = memo(
       if (!imgs.length) {
         clearCanvas();
         return null;
+      }
+      const cache = await applyCache(composeCacheRef.current, { imgs, options });
+      if (cache) {
+        const { imageData } = cache;
+        logger.appear('pht.compose.appear-cache');
+        renderCanvas(imageData);
+        return cache;
       }
       const $renderCanvas = document.createElement('canvas');
       const ctx = $renderCanvas.getContext('2d');
@@ -192,11 +238,15 @@ export const ResultCanvas = memo(
           const { filterList = [] } = options;
           const imageData = ctx.createImageData(imageInfo.width, imageInfo.height, { colorSpace: 'srgb' });
           imageData.data.set(imageInfo.data);
-          const result: ComposeResult = { oriImageData: imageData, imageData: imageData };
+          const result: ComposeResult = {
+            oriImageData: cloneImageData(imageData),
+            imageData: imageData,
+          };
           if (filterList.length) result.imageData = await filterImage(imageData, filterList);
           return result;
         })
         .then((result) => {
+          composeCacheRef.current = { result, imgs, options };
           if (!result) return null;
           const { autoRender = true } = options;
           const { imageData } = result;
@@ -205,7 +255,21 @@ export const ResultCanvas = memo(
         });
     };
 
-    useImperativeHandle(ref, () => ({ compose, render: renderCanvas, clear: () => clearCanvas() }));
+    const getImageUrl = async () => {
+      return new Promise<string | undefined>((resolve) => {
+        if (!canvasRef.current) return;
+        canvasRef.current.toBlob(
+          (res) => {
+            if (!res) return resolve(void 0);
+            resolve(URL.createObjectURL(res));
+          },
+          'image/webp',
+          1,
+        );
+      });
+    };
+
+    useImperativeHandle(ref, () => ({ compose, render: renderCanvas, getImageUrl, clear: () => clearCanvas() }));
 
     return <StyledCanvas ref={canvasRef} />;
   }),
