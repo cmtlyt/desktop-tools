@@ -1,0 +1,1 @@
+import{R as n}from"./index-m0fknXHx.js";function o(t){return t&&n.isValidElement(t)&&t.type===n.Fragment}const a=(t,e,r)=>n.isValidElement(t)?n.cloneElement(t,typeof r=="function"?r(t.props||{}):r):e;function u(t,e){return a(t,t,e)}export{u as c,o as i};
