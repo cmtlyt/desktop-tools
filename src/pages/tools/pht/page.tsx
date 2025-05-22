@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { debounce } from '@cmtlyt/base';
 import { useKeyGuard } from '@/hooks/use-key-guard';
 import { useNavigate } from '@/hooks';
 import { AppearBox } from '@/components/appear-box';
@@ -18,9 +19,9 @@ export function Component() {
     return null;
   }
 
-  const changeHandler = (urls: string[]) => {
+  const changeHandler = debounce((urls: string[]) => {
     canvasRef.current?.compose(urls, { jitterRange: 30 });
-  };
+  }, 250);
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('tool-pht')}>

@@ -1,17 +1,11 @@
-import { FlexBox } from '@/components/base';
-import { Show } from '@/components/show';
-import { isNaN } from '@cmtlyt/base';
-import React, { forwardRef, memo, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, memo, useImperativeHandle, useRef, useState } from 'react';
+import { Upload, UploadProps } from 'antd';
 import styled from 'styled-components';
+import { isNaN } from '@cmtlyt/base';
+import { FlexBox } from '@/components/base';
 
 export const Wrapper = styled(FlexBox)`
   padding: var(--page-padding);
-`;
-
-const FileInput = styled.input`
-  position: absolute;
-  inset: 0;
-  opacity: 0;
 `;
 
 const FileInputPlaceholder = styled(FlexBox)`
@@ -20,59 +14,45 @@ const FileInputPlaceholder = styled(FlexBox)`
   background: var(--color-bg-1);
   border-radius: var(--radius-base);
   cursor: pointer;
-  outline: 0.1rem dotted black;
-  font-size: 2rem;
-
-  &:hover {
-    outline: 0.1rem dotted var(--color-active);
-  }
 `;
 
-const FileInputWrapper = styled(FlexBox)`
-  box-sizing: border-box;
-  position: relative;
-  padding: 1rem;
+const { Dragger } = Upload;
+
+const StyledDragger = styled(Dragger)`
   width: 100%;
-  min-height: 12rem;
+  height: 4rem;
 `;
 
-const PreviewImg = styled.img`
-  flex-shrink: 0;
-  width: 10rem;
-  height: 10rem;
-  object-fit: contain;
-`;
-
-export function UploadInput(
-  props: Omit<React.HTMLProps<HTMLInputElement>, 'onChange'> & { onChange?: (imgs: string[]) => void },
-) {
+export function UploadInput(props: Omit<UploadProps, 'onChange'> & { onChange?: (imgs: string[]) => void }) {
   const { onChange, ...rest } = props;
-  const [previewImage, setPreviewImage] = useState<string[]>([]);
+  const [fileList, setFileList] = useState<UploadProps['fileList']>([]);
 
-  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = e.target;
-    if (!files) return;
-    const urls = Array.from(files).map((item) => {
-      return URL.createObjectURL(item);
-    });
-    setPreviewImage(urls);
+  const changeHandler: UploadProps['onChange'] = (info) => {
+    const { fileList: files } = info;
+    setFileList(files);
+    const urls = files.map((item) => item.response?.url).filter(Boolean);
     onChange?.(urls);
   };
 
+  const customRequest: UploadProps['customRequest'] = ({ file, onSuccess }) => {
+    const url = URL.createObjectURL(file as File);
+    onSuccess?.({ url });
+  };
+
   return (
-    <FileInputWrapper $wrap="wrap">
-      <FileInput type="file" multiple accept="image/*" {...rest} onChange={changeHandler} />
-      <Show when={!previewImage.length}>
-        {() => (
-          <FileInputPlaceholder $alignItems="center" $justifyContent="center">
-            请选择图片
-          </FileInputPlaceholder>
-        )}
-      </Show>
-      {previewImage.map((item) => (
-        <PreviewImg key={item} src={item} alt="" />
-      ))}
-    </FileInputWrapper>
+    <StyledDragger
+      {...rest}
+      fileList={fileList}
+      listType="picture-card"
+      multiple
+      accept="image/*"
+      onChange={changeHandler}
+      customRequest={customRequest}
+    >
+      <FileInputPlaceholder $alignItems="center" $justifyContent="center">
+        请选择图片
+      </FileInputPlaceholder>
+    </StyledDragger>
   );
 }
 
@@ -118,19 +98,30 @@ function colorMatch(
 export const ResultCanvas = memo(
   forwardRef<CanvasRef>(function (_, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasCtxRef = useRef<CanvasRenderingContext2D | null | undefined>(null);
 
     const renderCanvas = (imageData?: ImageData | null) => {
       if (!canvasRef.current || !imageData) return;
-      const ctx = canvasRef.current.getContext('2d');
+      const ctx = (canvasCtxRef.current ||= canvasRef.current.getContext('2d'));
       if (!ctx) return;
-      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      clearCanvas();
       canvasRef.current.width = imageData.width;
       canvasRef.current.height = imageData.height;
       ctx.putImageData(imageData, 0, 0);
     };
 
+    const clearCanvas = (ctx?: CanvasRenderingContext2D | null) => {
+      ctx ||= canvasCtxRef.current ||= canvasRef.current?.getContext('2d');
+      if (!ctx) return;
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    };
+
     const compose: CanvasRef['compose'] = async (imgs, options = {}) => {
-      if (!canvasRef.current || !imgs.length) return null;
+      if (!canvasRef.current) return null;
+      if (!imgs.length) {
+        clearCanvas();
+        return null;
+      }
       const $renderCanvas = document.createElement('canvas');
       const ctx = $renderCanvas.getContext('2d');
       if (!ctx) return null;
@@ -157,7 +148,7 @@ export const ResultCanvas = memo(
             $renderCanvas.height = item.height;
             ctx.drawImage(item, 0, 0);
             const imageData = ctx.getImageData(0, 0, item.width, item.height);
-            ctx.clearRect(0, 0, item.width, item.height);
+            clearCanvas(ctx);
             const { data } = imageData;
             for (let i = 0; i < data.length; i += 4) {
               const sourceColor = [data[i], data[i + 1], data[i + 2], data[i + 3]] as const;
