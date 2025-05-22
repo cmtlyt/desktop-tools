@@ -151,6 +151,7 @@ async function applyCache(
   info.options.filterList = newInfo.options.filterList;
   if (!info.result) return null;
   const newImageData = cloneImageData(info.result.oriImageData);
+  info.result.imageUrl = '';
   if (!info.options.filterList) {
     info.result.imageData = newImageData;
     return info.result;
@@ -244,17 +245,18 @@ export const ComposeCanvas = memo(
           const result: ComposeResult = {
             oriImageData: cloneImageData(imageData),
             imageData: imageData,
-            imageUrl: (await getImageUrl(true)) || '',
+            imageUrl: '',
           };
           if (filterList.length) result.imageData = await filterImage(imageData, filterList);
           return result;
         })
-        .then((result) => {
+        .then(async (result) => {
           composeCacheRef.current = { result, imgs, options };
           if (!result) return null;
           const { autoRender = true } = options;
           const { imageData } = result;
           if (autoRender) renderCanvas(imageData);
+          result.imageUrl = (await getImageUrl()) || '';
           return result;
         });
     };
