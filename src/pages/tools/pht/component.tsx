@@ -54,7 +54,6 @@ export function UploadInput(props: Omit<UploadProps, 'onChange'> & { onChange?: 
     const index = fileList.indexOf(file);
     const newFileList = fileList.slice();
     const [delFile] = newFileList.splice(index, 1);
-    console.debug(delFile);
     delFile.response?.revoke?.();
     setFileList(newFileList);
   };

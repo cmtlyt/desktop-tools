@@ -12,7 +12,6 @@ export function RightArea() {
           checkBtn: {
             value: lockRotate,
             onChange: (e) => {
-              console.debug(e);
               getZGXQStore().setLockRotate(e);
             },
           },
