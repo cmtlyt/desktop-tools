@@ -71,6 +71,7 @@ interface ComposeOptions {
 export interface CanvasRef {
   compose: (imgs: string[], options?: ComposeOptions) => Promise<ImageData | null>;
   render: (imageData?: ImageData | null) => void;
+  clear: () => void;
 }
 
 function parseColor(color: string) {
@@ -170,7 +171,7 @@ export const ResultCanvas = memo(
         });
     };
 
-    useImperativeHandle(ref, () => ({ compose, render: renderCanvas }));
+    useImperativeHandle(ref, () => ({ compose, render: renderCanvas, clear: () => clearCanvas() }));
 
     return <StyledCanvas ref={canvasRef} />;
   }),
