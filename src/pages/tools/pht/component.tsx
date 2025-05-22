@@ -229,7 +229,14 @@ export const ComposeCanvas = memo(
           const { r, g, b } = parseColor(replaceColor);
           const targetColor = [r, g, b] as const;
           const { width, height } = images[0];
-          const imageInfo = { width, height, data: new Array(width * height * 4) };
+          const imageInfo = {
+            width,
+            height,
+            data: Array.from({ length: width * height * 4 }, (_, idx) => {
+              const flag = idx % 4;
+              return flag === 3 ? 255 : targetColor[flag];
+            }),
+          };
 
           images.forEach((item) => {
             $renderCanvas.width = item.width;
@@ -240,8 +247,6 @@ export const ComposeCanvas = memo(
             const { data } = imageData;
             for (let i = 0; i < data.length; i += 4) {
               const sourceColor = [data[i], data[i + 1], data[i + 2], data[i + 3]] as const;
-              targetColor.forEach((item, idx) => (imageInfo.data[i + idx] = item));
-              imageInfo.data[i + 3] = 255;
               if (!colorMatch(sourceColor.slice(0, 3) as [number, number, number], targetColor, jitterRange)) {
                 sourceColor.forEach((item, idx) => (imageInfo.data[i + idx] = item));
               }
