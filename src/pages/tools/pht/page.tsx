@@ -7,7 +7,16 @@ import { isPhone, logger } from '@/utils';
 import { PageInfo } from '@/types/page-info';
 import { ButtonList } from '@/components/button-list';
 import { Show } from '@/components/show';
-import { CanvasRef, ImageFilterSelect, ComposeCanvas, UploadInput, Wrapper, PreviewImg } from './component';
+import {
+  CanvasRef,
+  ImageFilterSelect,
+  ComposeCanvas,
+  UploadInput,
+  Wrapper,
+  PreviewImg,
+  ComposeOptionInput,
+  ComposeOptionInputRef,
+} from './component';
 import { PRIVATE_TOOLS_KEY } from '../constant';
 import { ActionType, emitPHTAction, useSubscribePHTAction } from './subject';
 
@@ -16,6 +25,7 @@ export function Component() {
   const canvasRef = useRef<CanvasRef>(null);
   const urlsRef = useRef<string[]>([]);
   const filterListRef = useRef<string[]>([]);
+  const optionRef = useRef<ComposeOptionInputRef>(null);
   const [previewUrl, setPreviewUrl] = useState<string>();
 
   const pass = useKeyGuard(PRIVATE_TOOLS_KEY, () => {
@@ -30,11 +40,15 @@ export function Component() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const changeHandler = useCallback(
-    debounce((urls: string[]) => {
+    debounce((urls?: string[]) => {
+      if (!urls?.length) {
+        if (!urlsRef.current.length) return;
+        urls = urlsRef.current;
+      }
       urlsRef.current = urls;
       if (!canvasRef.current) return;
       canvasRef.current
-        .compose(urls, { jitterRange: 30, filterList: filterListRef.current })
+        .compose(urls, { filterList: filterListRef.current, ...optionRef.current?.getValue() })
         .then(() => canvasRef.current!.getImageUrl())
         .then((url) => {
           URL.revokeObjectURL(previewUrl || '');
@@ -47,10 +61,14 @@ export function Component() {
   const filterChangeHandler = useCallback(
     (list: string[]) => {
       filterListRef.current = list;
-      changeHandler(urlsRef.current);
+      changeHandler();
     },
     [changeHandler],
   );
+
+  const optionChangehandler = useCallback(() => {
+    changeHandler();
+  }, [changeHandler]);
 
   if (!pass) {
     return null;
@@ -59,6 +77,7 @@ export function Component() {
   return (
     <AppearBox onFirstAppear={() => logger.appear('tool-pht')}>
       <Wrapper $flex="1" $direction="column">
+        <ComposeOptionInput ref={optionRef} onChange={optionChangehandler} />
         <ImageFilterSelect onChange={filterChangeHandler} />
         <UploadInput onChange={changeHandler} />
         <ComposeCanvas ref={canvasRef} />

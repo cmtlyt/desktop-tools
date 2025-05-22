@@ -1,5 +1,14 @@
 import { forwardRef, memo, useImperativeHandle, useRef, useState } from 'react';
-import { Select, SelectProps, Upload, UploadProps } from 'antd';
+import {
+  ColorPicker,
+  ColorPickerProps,
+  InputNumber,
+  InputNumberProps,
+  Select,
+  SelectProps,
+  Upload,
+  UploadProps,
+} from 'antd';
 import styled from 'styled-components';
 import { isNaN } from '@cmtlyt/base';
 import { FlexBox } from '@/components/base';
@@ -145,6 +154,8 @@ async function applyCache(
 ): Promise<ComposeResult | null> {
   if (!info) return null;
   if (info.imgs.join(',') !== newInfo.imgs.join(',')) return null;
+  if (info.options.replaceColor !== newInfo.options.replaceColor) return null;
+  if (info.options.jitterRange !== newInfo.options.jitterRange) return null;
   if (info.options.filterList?.join(',') === newInfo.options.filterList?.join(',')) return info.result;
 
   /// 滤镜不同
@@ -229,6 +240,8 @@ export const ComposeCanvas = memo(
             const { data } = imageData;
             for (let i = 0; i < data.length; i += 4) {
               const sourceColor = [data[i], data[i + 1], data[i + 2], data[i + 3]] as const;
+              targetColor.forEach((item, idx) => (imageInfo.data[i + idx] = item));
+              imageInfo.data[i + 3] = 255;
               if (!colorMatch(sourceColor.slice(0, 3) as [number, number, number], targetColor, jitterRange)) {
                 sourceColor.forEach((item, idx) => (imageInfo.data[i + idx] = item));
               }
@@ -304,3 +317,65 @@ export const ImageFilterSelect = memo(function (props: { onChange?: (value: stri
     />
   );
 });
+
+interface ComposeOption {
+  jitterRange: number;
+  replaceColor: string;
+  [key: string]: unknown;
+}
+
+interface ComposeOptionInputProps {
+  onChange?: (value: ComposeOption) => void;
+}
+
+export interface ComposeOptionInputRef {
+  getValue: () => ComposeOption;
+}
+
+const StyledInputNumber = styled(InputNumber)`
+  flex: 1;
+  margin-right: 0.8rem;
+`;
+
+const ComposeOptionInputWrapper = styled(FlexBox)`
+  padding-bottom: 0.8rem;
+`;
+
+export const ComposeOptionInput = memo(
+  forwardRef<ComposeOptionInputRef, ComposeOptionInputProps>(function (props, ref) {
+    const { onChange } = props;
+
+    const info = useRef<ComposeOption>({
+      jitterRange: 10,
+      replaceColor: '#000000',
+    });
+
+    const jitterRangeHandler: InputNumberProps['onChange'] = (value) => {
+      info.current.jitterRange = Number(value?.valueOf() || 10);
+      onChange?.(info.current);
+    };
+
+    const replaceColorHandler: ColorPickerProps['onChange'] = (value) => {
+      info.current.replaceColor = value.toHexString();
+      onChange?.(info.current);
+    };
+
+    useImperativeHandle(ref, () => ({
+      getValue: () => info.current,
+    }));
+
+    return (
+      <ComposeOptionInputWrapper>
+        <StyledInputNumber
+          min={0}
+          max={255}
+          keyboard
+          changeOnWheel
+          defaultValue={info.current.jitterRange}
+          onChange={jitterRangeHandler}
+        />{' '}
+        <ColorPicker defaultValue={info.current.replaceColor} onChange={replaceColorHandler} />
+      </ComposeOptionInputWrapper>
+    );
+  }),
+);
