@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { lazy, useCallback, useRef } from 'react';
 import { debounce } from '@cmtlyt/base';
 import { useKeyGuard } from '@/hooks/use-key-guard';
 import { useNavigate } from '@/hooks';
@@ -19,8 +19,11 @@ import {
 import { PRIVATE_TOOLS_KEY } from '../constant';
 import { ActionType, emitPHTAction, useSubscribePHTAction } from './subject';
 import { useComposeHandler } from './hooks';
+import { getPHTStore, usePHTStoreSlice } from './store';
 
-export function Component() {
+const FullbackComponent = lazy(() => import('./fullback/page'));
+
+function Page() {
   const navigate = useNavigate();
   const urlsRef = useRef<string[]>([]);
   const filterListRef = useRef<string[]>([]);
@@ -75,10 +78,28 @@ export function Component() {
   );
 }
 
+export function Component() {
+  const { fullback } = usePHTStoreSlice('fullback');
+  if (fullback) {
+    return <FullbackComponent />;
+  }
+  return <Page />;
+}
+
 function RightArea() {
+  const { fullback } = usePHTStoreSlice('fullback');
+
   return (
     <ButtonList
       buttons={[
+        ...(fullback
+          ? []
+          : [
+              {
+                text: '降级',
+                onClick: () => getPHTStore().setFullback(true),
+              },
+            ]),
         {
           text: '预览',
           hidden: isPhone(),
