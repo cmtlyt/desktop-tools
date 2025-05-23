@@ -1,5 +1,3 @@
-import { onceFunc } from '@cmtlyt/base';
-
 export const filterOptions: Record<'label' | 'value', string>[] = [
   { label: '反色', value: 'invert' },
   { label: '大高斯模糊', value: 'bigGaussian' },
@@ -28,10 +26,3 @@ export const filterOptions: Record<'label' | 'value', string>[] = [
   { label: 'Sobel纵向边缘检测', value: 'sobelVertical' },
   { label: '阈值化', value: 'thresholding' },
 ];
-
-const getLenaJS = onceFunc(async () => import('lena.js'));
-
-export async function filterImage(imageData: ImageData, filterList: string[]) {
-  const LenaJS = await getLenaJS();
-  return filterList.reduce((preData, filter) => LenaJS[filter]?.(preData) || preData, imageData);
-}

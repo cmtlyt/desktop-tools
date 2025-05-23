@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
+import { Spin } from 'antd';
 import { debounce } from '@cmtlyt/base';
 import { useKeyGuard } from '@/hooks/use-key-guard';
 import { useNavigate } from '@/hooks';
@@ -8,9 +9,7 @@ import { PageInfo } from '@/types/page-info';
 import { ButtonList } from '@/components/button-list';
 import { Show } from '@/components/show';
 import {
-  CanvasRef,
   ImageFilterSelect,
-  ComposeCanvas,
   UploadInput,
   Wrapper,
   PreviewImg,
@@ -19,43 +18,30 @@ import {
 } from './component';
 import { PRIVATE_TOOLS_KEY } from '../constant';
 import { ActionType, emitPHTAction, useSubscribePHTAction } from './subject';
+import { useComposeHandler } from './hooks';
 
 export function Component() {
   const navigate = useNavigate();
-  const canvasRef = useRef<CanvasRef>(null);
   const urlsRef = useRef<string[]>([]);
   const filterListRef = useRef<string[]>([]);
   const optionRef = useRef<ComposeOptionInputRef>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>();
+  const { loading, imageUrl, compose } = useComposeHandler();
 
   const pass = useKeyGuard(PRIVATE_TOOLS_KEY, () => {
     navigate(-1);
   });
 
   useSubscribePHTAction(() => {
-    canvasRef.current?.getImageUrl().then((url) => {
-      window.open(url);
-    });
+    window.open(imageUrl);
   }, [ActionType.PREVIEW_IMAGE]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const changeHandler = useCallback(
     debounce((urls?: string[]) => {
-      if (!urls?.length) {
-        if (!urlsRef.current.length) return;
-        urls = urlsRef.current;
-      }
-      urlsRef.current = urls;
-      if (!canvasRef.current) return;
-      canvasRef.current
-        .compose(urls, { filterList: filterListRef.current, ...optionRef.current?.getValue() })
-        .then(() => canvasRef.current!.getImageUrl())
-        .then((url) => {
-          URL.revokeObjectURL(previewUrl || '');
-          setPreviewUrl(url);
-        });
-    }, 250),
-    [filterListRef, previewUrl],
+      urlsRef.current = urls ||= [];
+      compose(urls, { filterList: filterListRef.current, ...optionRef.current?.getValue() });
+    }, 500),
+    [filterListRef, compose],
   );
 
   const filterChangeHandler = useCallback(
@@ -80,8 +66,9 @@ export function Component() {
         <ComposeOptionInput ref={optionRef} onChange={optionChangehandler} />
         <ImageFilterSelect onChange={filterChangeHandler} />
         <UploadInput onChange={changeHandler} />
-        <ComposeCanvas ref={canvasRef} />
-        <Show when={previewUrl}>{() => <PreviewImg src={previewUrl} />}</Show>
+        <Spin spinning={loading} delay={100} size="large" tip="处理中..." style={{ minHeight: '30rem' }}>
+          <Show when={imageUrl}>{() => <PreviewImg src={imageUrl} />}</Show>
+        </Spin>
       </Wrapper>
     </AppearBox>
   );

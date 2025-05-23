@@ -1,4 +1,4 @@
-import { getDeviceInfo } from '@cmtlyt/base';
+import { getDeviceInfo, noop } from '@cmtlyt/base';
 import { createMonitor, Kind } from '@cmtlyt/monitor';
 import { getPageInfo } from '@/components/sync-page-info';
 import { IS_PROD, LOGGER_STORAGE_KEY } from '@/constant';
@@ -15,6 +15,7 @@ interface LoggerExtendOptions {
     exposeCache: ExposeInfo[];
     needExposeKind: AllKind[];
     printToDebug: AllKind[];
+    ignorePrint: AllKind[];
     getLoggerBaseInfo: () => Record<string, unknown>;
     messagesHandler: (oriMsgs: unknown[]) => void;
     exposeHandler: (info: ExposeInfo) => void;
@@ -36,9 +37,10 @@ const logger = createMonitor<ExtendKind, LoggerExtendOptions>({
       expose: { kind: 'expose', inherit: 'info', needTrace: false },
     },
     // 生产环境下不在控制台输出
-    printFunc: IS_PROD ? () => {} : null,
+    printFunc: IS_PROD ? noop : null,
     getPrintFunc(kind) {
-      const { printToDebug } = this.store;
+      const { printToDebug, ignorePrint } = this.store;
+      if (ignorePrint.includes(kind)) return noop;
       if (printToDebug.includes(kind)) {
         return (...args) => console.debug(...args);
       }
@@ -49,6 +51,7 @@ const logger = createMonitor<ExtendKind, LoggerExtendOptions>({
     exposeCache: [],
     needExposeKind: ['click', 'appear', 'error', 'event', 'expose', 'system'],
     printToDebug: ['click', 'appear', 'debug', 'event', 'system'],
+    ignorePrint: ['appear', 'system'],
     getLoggerBaseInfo() {
       return { pageInfo: getPageInfo(), userFingerprint: getUserFingerprint(), deviceInfo: getDeviceInfo() };
     },
