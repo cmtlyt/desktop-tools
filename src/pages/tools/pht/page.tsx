@@ -1,4 +1,4 @@
-import { lazy, useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { debounce } from '@cmtlyt/base';
 import { useKeyGuard } from '@/hooks/use-key-guard';
 import { useNavigate } from '@/hooks';
@@ -19,9 +19,8 @@ import {
 import { PRIVATE_TOOLS_KEY } from '../constant';
 import { ActionType, emitPHTAction, useSubscribePHTAction } from './subject';
 import { useComposeHandler } from './hooks';
+import { Component as FullbackComponent } from './fullback/page';
 import { getPHTStore, usePHTStoreSlice } from './store';
-
-const FullbackComponent = lazy(() => import('./fullback/page'));
 
 function Page() {
   const navigate = useNavigate();

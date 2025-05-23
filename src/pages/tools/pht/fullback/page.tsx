@@ -76,5 +76,3 @@ export function Component() {
     </AppearBox>
   );
 }
-
-export default Component;
