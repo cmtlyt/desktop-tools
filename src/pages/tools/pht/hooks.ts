@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { noop, onceFunc, sleep, tryCall, withResolvers } from '@cmtlyt/base';
 import { useWebWorker, WorkerHandler } from '@/hooks/use-web-worker';
 import { logger } from '@/utils';
@@ -49,9 +49,25 @@ export function useComposeHandler() {
   );
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
+
+  useEffect(() => {
+    const errorHandler = (e: ErrorEvent) => {
+      setError(e.message);
+      setLoading(false);
+    };
+
+    workerHandler.addEventListener('error', errorHandler);
+
+    return () => {
+      workerHandler.removeEventListener('error', errorHandler);
+    };
+  });
 
   const compose: ComposeHandler['compose'] = useCallback(
     async (imgs, options = {}) => {
+      setError('');
+
       if (!canvasRef.current || !imgs.length) {
         setImageUrl('');
         return;
@@ -111,5 +127,5 @@ export function useComposeHandler() {
     [imageUrl, workerHandler],
   );
 
-  return { loading, imageUrl, compose };
+  return { loading, imageUrl, error, compose };
 }

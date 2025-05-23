@@ -6,6 +6,7 @@ import {
   InputNumberProps,
   Select,
   SelectProps,
+  Spin,
   Upload,
   UploadProps,
 } from 'antd';
@@ -178,3 +179,11 @@ export const ComposeOptionInput = memo(
     );
   }),
 );
+
+export const StyledSpin = styled(Spin)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 30rem;
+`;

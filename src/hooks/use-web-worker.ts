@@ -18,7 +18,9 @@ function createHandler(worker: MutableRefObject<Worker | null>) {
 
         return promise;
       },
-    },
+    } as {
+      action: (type: string, data?: Record<string, unknown>, transfer?: Transferable[]) => Promise<unknown>;
+    } & Worker,
     {
       get(target, prop, receive) {
         if (prop in target) {
