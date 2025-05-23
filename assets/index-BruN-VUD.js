@@ -1,1 +1,0 @@
-import{r as c}from"./index-Bl_K51Ya.js";function n(f){const{children:s,onFirstAppear:r,onAppear:e}=f,t=c.useRef(!0);return c.useEffect(()=>{t.current&&(t.current=!1,r==null||r())},[]),e==null||e(),s}export{n as A};
