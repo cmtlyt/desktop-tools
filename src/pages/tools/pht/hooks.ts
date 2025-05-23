@@ -62,7 +62,7 @@ export function useComposeHandler() {
     return () => {
       workerHandler.removeEventListener('error', errorHandler);
     };
-  });
+  }, [workerHandler]);
 
   const compose: ComposeHandler['compose'] = useCallback(
     async (imgs, options = {}) => {

@@ -26,7 +26,12 @@ function createHandler(worker: MutableRefObject<Worker | null>) {
         if (prop in target) {
           return Reflect.get(target, prop, receive);
         }
-        return Reflect.get(worker.current || {}, prop, worker.current);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const value = (worker.current as any)[prop];
+        if (typeof value === 'function') {
+          return value.bind(worker.current);
+        }
+        return value;
       },
     },
   );
