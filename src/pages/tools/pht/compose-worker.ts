@@ -155,6 +155,8 @@ function initHandler(option: OptionMap['init']) {
 self.addEventListener('message', async ({ data }: MessageEvent<MessageData>) => {
   const { action, option } = data;
 
+  console.debug(data);
+
   switch (action) {
     case 'init': {
       initHandler(option as OptionMap['init']);

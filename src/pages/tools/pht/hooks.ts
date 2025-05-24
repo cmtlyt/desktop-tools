@@ -2,8 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { noop, onceFunc, sleep, tryCall, withResolvers } from '@cmtlyt/base';
 import { useWebWorker, WorkerHandler } from '@/hooks/use-web-worker';
 import { logger } from '@/utils';
-
-const workerUrl = new URL('./compose-worker.ts', import.meta.url);
+import workerUrl from './compose-worker?worker&url';
 
 interface ComposeOptions {
   replaceColor?: string;
@@ -92,6 +91,7 @@ export function useComposeHandler() {
           cacheInfo.dirty = true;
           cacheInfo.images = imgs;
           cacheInfo.jitterRange = jitterRange;
+          cacheInfo.replaceColor = replaceColor;
           return workerHandler.action('compose', { imgs, options });
         })
         .then(() => {

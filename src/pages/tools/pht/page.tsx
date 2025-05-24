@@ -40,7 +40,7 @@ function Page() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const changeHandler = useCallback(
     debounce((urls?: string[]) => {
-      urlsRef.current = urls ||= [];
+      urlsRef.current = urls ||= urlsRef.current;
       compose(urls, { filterList: filterListRef.current, ...optionRef.current?.getValue() });
     }, 500),
     [filterListRef, compose],

@@ -39,7 +39,7 @@ function createHandler(worker: MutableRefObject<Worker | null>) {
 
 export type WorkerHandler = ReturnType<typeof createHandler>;
 
-export function useWebWorker(url: URL, init?: (workerHandler: WorkerHandler) => void) {
+export function useWebWorker(url: URL | string, init?: (workerHandler: WorkerHandler) => void) {
   const worker = useRef<Worker | null>(null);
 
   const workerHandler = useMemo(() => createHandler(worker), []);
