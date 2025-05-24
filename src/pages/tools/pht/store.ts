@@ -1,4 +1,4 @@
-import { createStoreAndHelper, isPhone } from '@/utils';
+import { createStoreAndHelper } from '@/utils';
 
 interface Store {
   fullback: boolean;
@@ -13,7 +13,7 @@ export const {
   useStoreSlice: usePHTStoreSlice,
   getStore: getPHTStore,
 } = createStoreAndHelper<Store & StoreActions>((set) => ({
-  fullback: isPhone(),
+  fullback: false,
 
   setFullback(fullback) {
     set({ fullback });
