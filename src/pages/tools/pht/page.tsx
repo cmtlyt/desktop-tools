@@ -43,7 +43,7 @@ function Page() {
       urlsRef.current = urls ||= urlsRef.current;
       compose(urls, { filterList: filterListRef.current, ...optionRef.current?.getValue() });
     }, 500),
-    [filterListRef, compose],
+    [compose],
   );
 
   const filterChangeHandler = useCallback(
