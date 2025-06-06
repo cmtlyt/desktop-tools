@@ -1,8 +1,9 @@
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { isUndef } from '@cmtlyt/base';
 import styled from 'styled-components';
-import { FlexAlign, FlexBox } from '../base';
 import { useFormatFontSize } from '@/hooks';
+import { useForceUpdate } from '@/hooks';
+import { FlexAlign, FlexBox } from '../base';
 import { Show } from '../show';
 
 interface PriceProps {
@@ -42,7 +43,7 @@ export const Price = memo(function Price(props: PriceProps) {
     className,
   } = props;
   const [integer, decimal] = String(value).split('.');
-  const [, forceUpdate] = useState<number>();
+  const forceUpdate = useForceUpdate();
 
   const [_symbolSize, _fontSize, _decimalSize] = useFormatFontSize([symbolSize, fontSize, decimalSize]);
 
@@ -54,7 +55,7 @@ export const Price = memo(function Price(props: PriceProps) {
       $alignItems={FlexAlign.BASELINE}
       onClick={(e) => {
         e.stopPropagation();
-        forceUpdate(Math.random());
+        forceUpdate();
       }}
     >
       <Show when={showPrefix}>

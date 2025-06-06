@@ -42,7 +42,7 @@ export const appList: AppInfo[] = [
     name: '工具',
     path: '/tools',
     deepMatch: true,
-    icon: <ToolIcon width={24} height={24} />,
+    icon: <ToolIcon width="80%" height="80%" />,
   },
   // {
   //   name: 'Code',

@@ -25,6 +25,7 @@ interface LoggerExtendOptions {
 
 const logger = createMonitor<ExtendKind, LoggerExtendOptions>({
   loggerOptions: {
+    noOutput: true,
     needTrace: !IS_PROD,
     logConfig: {
       systemError: { kind: 'systemError', inherit: 'error' },

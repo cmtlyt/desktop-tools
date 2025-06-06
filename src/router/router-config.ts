@@ -23,7 +23,11 @@ export const routes: RouteObject[] = [
         generateRouteConfig('/game-center/sl'),
         generateRouteConfig('/game-center/zgxq'),
       ]),
-      generateRouteConfig('/tools', [generateRouteConfig('', [], '/tools/list'), generateRouteConfig('/tools/pht')]),
+      generateRouteConfig('/tools', [
+        generateRouteConfig('', [], '/tools/list'),
+        generateRouteConfig('/tools/pht'),
+        generateRouteConfig('/tools/dyylpt'),
+      ]),
       generateRouteConfig('/notepad', [
         generateRouteConfig('', [], '/notepad/list'),
         generateRouteConfig('/notepad/editor/:id?'),

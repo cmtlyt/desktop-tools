@@ -1,15 +1,14 @@
 import { useCallback, useRef } from 'react';
 import { debounce } from '@cmtlyt/base';
-import { useKeyGuard } from '@/hooks/use-key-guard';
-import { useNavigate } from '@/hooks';
+import { useNavigate, useKeyGuard } from '@/hooks';
 import { AppearBox } from '@/components/appear-box';
 import { isPhone, logger } from '@/utils';
 import { PageInfo } from '@/types/page-info';
-import { ButtonList } from '@/components/button-list';
 import { Show } from '@/components/show';
+import { ImageUpload } from '@/components/image-upload';
+import { RightHandleButtonList } from '@/components/base/list';
 import {
   ImageFilterSelect,
-  UploadInput,
   Wrapper,
   PreviewImg,
   ComposeOptionInput,
@@ -67,7 +66,7 @@ function Page() {
       <Wrapper $flex="1" $direction="column">
         <ComposeOptionInput ref={optionRef} onChange={optionChangehandler} />
         <ImageFilterSelect onChange={filterChangeHandler} />
-        <UploadInput onChange={changeHandler} />
+        <ImageUpload onChange={changeHandler} />
         <StyledSpin spinning={loading} delay={100} size="large" tip="处理中...">
           <Show when={imageUrl && !error}>{() => <PreviewImg src={imageUrl} />}</Show>
           <Show when={error}>{() => <span style={{ color: 'red' }}>{error}</span>}</Show>
@@ -89,7 +88,7 @@ function RightArea() {
   const { fullback } = usePHTStoreSlice('fullback');
 
   return (
-    <ButtonList
+    <RightHandleButtonList
       buttons={[
         ...(fullback
           ? []

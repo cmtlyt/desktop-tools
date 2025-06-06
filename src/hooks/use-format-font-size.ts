@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { shallow } from 'zustand/shallow';
 import { isNaN } from '@cmtlyt/base';
 import { getRootSize, useRootFontSize } from './use-root-font-size';
 import { Many } from '@/types';
+import { useForceUpdate } from './use-force-update';
 
 type TransformCallback = (size: number, rootFontSize: number) => string;
 
@@ -27,14 +28,14 @@ function getSize<T extends Many<string | number>>(sizes: T, rootFontSize: number
 export function useFormatFontSize<T extends Many<string | number>>(fontSize: T, transform?: TransformCallback) {
   const rootFontSize = useRootFontSize();
   const sizes = useRef(getSize(fontSize, rootFontSize, transform));
-  const [, forceUpdate] = useState<number>(0);
+  const forceUpdate = useForceUpdate();
 
   useEffect(() => {
     const nextSizes = getSize(fontSize, rootFontSize, transform);
     if (shallow(sizes.current, nextSizes)) return;
     sizes.current = nextSizes;
-    forceUpdate(Math.random());
-  }, [fontSize, rootFontSize, transform]);
+    forceUpdate();
+  }, [fontSize, rootFontSize, forceUpdate, transform]);
 
   return sizes.current as T extends unknown[] ? string[] : string;
 }

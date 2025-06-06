@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { noop, onceFunc, sleep, tryCall, withResolvers } from '@cmtlyt/base';
-import { useWebWorker, WorkerHandler } from '@/hooks/use-web-worker';
+import { useWebWorker, WorkerHandler } from '@/hooks';
 import { logger } from '@/utils';
 import workerUrl from './compose-worker?worker&url';
 

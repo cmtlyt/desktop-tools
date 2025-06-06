@@ -1,18 +1,11 @@
 import { useCallback, useRef, useState } from 'react';
 import { debounce } from '@cmtlyt/base';
-import { useKeyGuard } from '@/hooks/use-key-guard';
-import { useNavigate } from '@/hooks';
+import { useKeyGuard, useNavigate } from '@/hooks';
 import { AppearBox } from '@/components/appear-box';
 import { logger } from '@/utils';
 import { Show } from '@/components/show';
-import {
-  ImageFilterSelect,
-  UploadInput,
-  Wrapper,
-  PreviewImg,
-  ComposeOptionInput,
-  ComposeOptionInputRef,
-} from '../component';
+import { ImageUpload } from '@/components/image-upload';
+import { ImageFilterSelect, Wrapper, PreviewImg, ComposeOptionInput, ComposeOptionInputRef } from '../component';
 import { CanvasRef, ComposeCanvas } from './components';
 import { PRIVATE_TOOLS_KEY } from '../../constant';
 
@@ -69,7 +62,7 @@ export function Component() {
       <Wrapper $flex="1" $direction="column">
         <ComposeOptionInput ref={optionRef} onChange={optionChangehandler} />
         <ImageFilterSelect onChange={filterChangeHandler} />
-        <UploadInput onChange={changeHandler} />
+        <ImageUpload onChange={changeHandler} />
         <ComposeCanvas ref={canvasRef} />
         <Show when={previewUrl}>{() => <PreviewImg src={previewUrl} />}</Show>
       </Wrapper>

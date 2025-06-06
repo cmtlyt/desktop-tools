@@ -1,6 +1,5 @@
 import { onceFunc } from '@cmtlyt/base';
-
-export type Action = 'init' | 'compose' | 'drawImage' | 'filter';
+import { WorkerMessageEvent } from '@/hooks';
 
 interface OptionMap {
   init: {
@@ -16,13 +15,7 @@ interface OptionMap {
   };
 }
 
-interface MessageData<T extends Action = Action> {
-  action: T;
-
-  option: OptionMap[T];
-
-  [key: string]: unknown;
-}
+export type Action = keyof OptionMap;
 
 interface ComposeOptions {
   jitterRange?: number;
@@ -152,10 +145,8 @@ function initHandler(option: OptionMap['init']) {
   runningCtx.ctx = ctx;
 }
 
-self.addEventListener('message', async ({ data }: MessageEvent<MessageData>) => {
+self.addEventListener('message', async ({ data }: WorkerMessageEvent<OptionMap>) => {
   const { action, option } = data;
-
-  console.debug(data);
 
   switch (action) {
     case 'init': {

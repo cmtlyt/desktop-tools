@@ -1,7 +1,29 @@
 import { MutableRefObject, useEffect, useMemo, useRef } from 'react';
 import { withResolvers } from '@cmtlyt/base';
 
-function createHandler(worker: MutableRefObject<Worker | null>) {
+export interface MessageData<O extends object, A extends keyof O = keyof O> {
+  action: A;
+
+  option: O[A];
+
+  [key: string]: unknown;
+}
+
+export type WorkerMessageEvent<O extends object, A extends keyof O = keyof O> = MessageEvent<MessageData<O, A>>;
+
+// @ts-expect-error any
+type DataType<T extends keyof O | (string & {}), O> = O[T] extends undefined ? Record<string, unknown> : O[T];
+
+export type WorkerHandler<O extends object = object> = {
+  action: <T extends keyof O | (string & {})>(
+    type: T,
+    data?: Omit<DataType<T, O>, 'result'>,
+    transfer?: Transferable[],
+    // @ts-expect-error any
+  ) => Promise<Awaited<DataType<T, O>['result']>>;
+} & Worker;
+
+function createHandler<O extends object>(worker: MutableRefObject<Worker | null>): WorkerHandler<O> {
   return new Proxy(
     {
       async action(type: string, data?: Record<string, unknown>, transfer: Transferable[] = []) {
@@ -18,9 +40,7 @@ function createHandler(worker: MutableRefObject<Worker | null>) {
 
         return promise;
       },
-    } as {
-      action: (type: string, data?: Record<string, unknown>, transfer?: Transferable[]) => Promise<unknown>;
-    } & Worker,
+    } as WorkerHandler<O>,
     {
       get(target, prop, receive) {
         if (prop in target) {
@@ -37,9 +57,10 @@ function createHandler(worker: MutableRefObject<Worker | null>) {
   );
 }
 
-export type WorkerHandler = ReturnType<typeof createHandler>;
-
-export function useWebWorker(url: URL | string, init?: (workerHandler: WorkerHandler) => void) {
+export function useWebWorker<O extends object>(
+  url: URL | string,
+  init?: (workerHandler: WorkerHandler<O>) => void,
+): WorkerHandler<O> {
   const worker = useRef<Worker | null>(null);
 
   const workerHandler = useMemo(() => createHandler(worker), []);
