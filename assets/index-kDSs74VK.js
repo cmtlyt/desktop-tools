@@ -1,1 +1,0 @@
-import{j as s}from"./index-DwZ3VcdL.js";import{D as a}from"./index-BlV_hajW.js";function i(r){const{...t}=r;return s.jsx(a,{width:"40rem",styles:{body:{padding:"var(--page-padding)"}},...t})}export{i as D};
