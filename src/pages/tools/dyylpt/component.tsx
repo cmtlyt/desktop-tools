@@ -176,7 +176,8 @@ interface FormItemProps {
 
 const FormItemInputBox = styled(FlexBox)`
   input {
-    flex: 1;
+    padding-inline: 1rem;
+    width: 100%;
     border: 1px solid #ccc;
     border-radius: 1rem;
   }
@@ -379,6 +380,8 @@ const SizeForm = styled(FlexBox)`
   padding-bottom: 1.5rem;
 
   input {
+    padding-inline: 1rem;
+    width: 100%;
     height: 2em;
     border: 1px solid #ccc;
     border-radius: 1rem;
@@ -396,15 +399,17 @@ interface SizeChangeFormProps {
 }
 
 const SizeChangeForm = memo(({ applyDomSize }: SizeChangeFormProps) => {
-  const { saveSize } = useDYYLStoreSlice('saveSize');
+  const { saveSize, printMod } = useDYYLStoreSlice(['saveSize', 'printMod']);
   const [lockAspectRatio, setLockAspectRatio] = useState(true);
 
   const onSizeChange = useCallback(
-    (pos: 'width' | 'height', value: string) => {
+    (pos: 'width' | 'height' | 'scale', value: string) => {
       const { saveSize, setSaveSize } = getDYYLStore();
       const { ...tempSize } = saveSize;
 
-      if (lockAspectRatio) {
+      if (pos === 'scale') {
+        tempSize.scale = Number(value);
+      } else if (lockAspectRatio) {
         /// 宽高锁定
         const ratio = saveSize.aspectRatio;
         if (pos === 'width') {
@@ -431,20 +436,44 @@ const SizeChangeForm = memo(({ applyDomSize }: SizeChangeFormProps) => {
   }, []);
 
   return (
-    <SizeForm $gap="0.5rem" $alignItems="center">
-      <input type="number" value={saveSize.width} onChange={(e) => onSizeChange('width', e.target.value)} />
-      <input type="number" value={saveSize.height} onChange={(e) => onSizeChange('height', e.target.value)} />
-      <OperationBox $alignItems="center" $gap="0.5rem" onClick={onLockChange}>
-        <Switch when={lockAspectRatio} fullback={<IoLockOpen />}>
-          {() => <IoLockClosed />}
+    <SizeForm $direction="column" $gap="0.5rem">
+      <Select
+        value={printMod}
+        options={[
+          { label: 'snapdom', value: 'snapdom' },
+          { label: 'domToImage', value: 'domToImage' },
+        ]}
+        onChange={(value) => getDYYLStore().setPrintMod(value)}
+      />
+      <FlexBox $gap="0.5rem" $alignItems="center">
+        <Switch
+          when={printMod === 'domToImage'}
+          fullback={
+            <>
+              <span>scale:</span>
+              <input type="number" value={saveSize.scale} onChange={(e) => onSizeChange('scale', e.target.value)} />
+            </>
+          }
+        >
+          {() => (
+            <>
+              <input type="number" value={saveSize.width} onChange={(e) => onSizeChange('width', e.target.value)} />
+              <input type="number" value={saveSize.height} onChange={(e) => onSizeChange('height', e.target.value)} />
+              <OperationBox $alignItems="center" $gap="0.5rem" onClick={onLockChange}>
+                <Switch when={lockAspectRatio} fullback={<IoLockOpen />}>
+                  {() => <IoLockClosed />}
+                </Switch>
+                <IoMdSync
+                  onClick={() => {
+                    applyDomSize();
+                    getLayoutStore().showMessage({ type: 'success', content: '同步成功', duration: 1 });
+                  }}
+                />
+              </OperationBox>
+            </>
+          )}
         </Switch>
-        <IoMdSync
-          onClick={() => {
-            applyDomSize();
-            getLayoutStore().showMessage({ type: 'success', content: '同步成功', duration: 1 });
-          }}
-        />
-      </OperationBox>
+      </FlexBox>
     </SizeForm>
   );
 });

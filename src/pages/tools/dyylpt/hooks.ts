@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import domToImage from 'dom-to-image';
 import { saveAs } from 'file-saver';
-import { noop } from '@cmtlyt/base';
+import { noop, withResolvers } from '@cmtlyt/base';
 import { logger } from '@/utils';
 import { useWebWorker } from '@/hooks';
 import { OptionMap } from './resize-worker';
@@ -50,6 +49,42 @@ export function useBoundingClientRect($dom: HTMLElement | null) {
   return [size, applyDomRect.current] as const;
 }
 
+const modCache = {} as {
+  snapdom: typeof import('@zumer/snapdom').snapdom;
+  domToImage: typeof import('dom-to-image').default;
+};
+
+async function getMod<T extends 'snapdom' | 'domToImage'>(mtype: T): Promise<(typeof modCache)[T]> {
+  if (mtype === 'snapdom') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (modCache.snapdom ||= (await import('@zumer/snapdom')).snapdom) as unknown as any;
+  } else if (mtype === 'domToImage') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (modCache.domToImage ||= (await import('dom-to-image')).default) as unknown as any;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return null as any;
+}
+
+async function getImageUrl($dom: HTMLElement | null, mtype: 'snapdom' | 'domToImage' = 'snapdom') {
+  if (!$dom) return Promise.resolve('');
+  if (mtype === 'snapdom') {
+    const {
+      saveSize: { scale },
+    } = getDYYLStore();
+
+    return (await getMod(mtype))($dom, { scale: window.devicePixelRatio * scale })
+      .then((result) => result.toCanvas())
+      .then((canvas) => {
+        const { promise, resolve } = withResolvers<string>();
+        canvas.toBlob((blob) => resolve(URL.createObjectURL(blob!)), 'image/webp', 1);
+        return promise;
+      });
+  } else if (mtype === 'domToImage') {
+    return (await getMod(mtype)).toBlob($dom).then((blob) => URL.createObjectURL(blob));
+  }
+}
+
 export function useDownload() {
   const workerHandler = useWebWorker<OptionMap>(workerUrl);
 
@@ -57,22 +92,27 @@ export function useDownload() {
     async ($dom: HTMLElement | null) => {
       if (!$dom) return;
 
-      const { saveSize } = getDYYLStore();
-      const rest = $dom.getBoundingClientRect();
+      let needResize = false;
+      const { printMod: transUrlMod } = getDYYLStore();
+      let width = 0;
+      let height = 0;
+      let rest = {} as DOMRect;
 
-      let { width, height } = saveSize;
-      width ||= rest.width;
-      height ||= rest.height;
+      if (transUrlMod !== 'snapdom') {
+        const { saveSize } = getDYYLStore();
+        rest = $dom.getBoundingClientRect();
 
-      // const cloneDom = $dom.cloneNode(true) as HTMLElement;
-      // $dom.parentElement?.appendChild(cloneDom);
+        width = saveSize.width || rest.width;
+        height = saveSize.height || rest.height;
 
-      const needResize = width !== rest.width || height !== rest.height;
+        needResize = width !== rest.width || height !== rest.height;
+      }
 
-      return domToImage
-        .toBlob($dom)
-        .then((blob) => {
-          const url = URL.createObjectURL(blob);
+      logger.appear('dyylpt.download', { mod: transUrlMod });
+
+      return getImageUrl($dom, transUrlMod)
+        .then((url) => {
+          if (!url) return;
           if (!needResize) return url;
           logger.appear('dyylpt.resize-download', { ow: rest.width, oh: rest.height, nw: width, nh: height });
           return workerHandler.action('resize', { url, width, height }).then((res) => {
@@ -82,7 +122,7 @@ export function useDownload() {
         })
         .then((url) => {
           if (!url) return;
-          saveAs(url, `${new Date().toLocaleString()}.png`);
+          saveAs(url, `${new Date().toLocaleString()}.${transUrlMod === 'snapdom' ? 'webp' : 'png'}`);
           URL.revokeObjectURL(url);
         });
     },

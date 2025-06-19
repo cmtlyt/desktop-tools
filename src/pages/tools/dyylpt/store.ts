@@ -8,13 +8,15 @@ export interface ImageInfo {
 interface Store {
   images: ImageInfo[];
   showForm: boolean;
-  saveSize: { width: number; height: number; aspectRatio: number };
+  printMod: 'snapdom' | 'domToImage';
+  saveSize: { width: number; height: number; aspectRatio: number; scale: number };
 }
 
 interface StoreActions {
-  setImages(images: ImageInfo[]): void;
-  setShowForm(showForm: boolean): void;
-  setSaveSize(saveSize: { width?: number; height?: number; aspectRatio?: number }): void;
+  setImages(images: Store['images']): void;
+  setShowForm(showForm: Store['showForm']): void;
+  setPrintMod(printMod: Store['printMod']): void;
+  setSaveSize(saveSize: Partial<Store['saveSize']>): void;
 }
 
 export const {
@@ -24,9 +26,11 @@ export const {
 } = createStoreAndHelper<Store & StoreActions>((set, get) => ({
   images: [],
   showForm: false,
-  saveSize: { width: 0, height: 0, aspectRatio: 1 },
+  printMod: 'snapdom',
+  saveSize: { width: 0, height: 0, aspectRatio: 1, scale: 2 },
 
   setImages: (images) => set({ images }),
   setShowForm: (showForm) => set({ showForm }),
+  setPrintMod: (printMod) => set({ printMod }),
   setSaveSize: (saveSize) => set({ saveSize: { ...get().saveSize, ...saveSize } }),
 }));
