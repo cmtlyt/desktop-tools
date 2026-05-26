@@ -20,7 +20,7 @@ function Page() {
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('tool-edgemeplease')}>
-      <PageWrapper>
+      <PageWrapper $bg={engine.progressColor}>
         <Show when={status === 'setup'}>
           {() => (
             <GameSetup onStart={engine.startGame} />
@@ -38,6 +38,7 @@ function Page() {
               barText={engine.barText}
               speedText={engine.speedText}
               finishType={engine.finishType}
+              progressColor={engine.progressColor}
               onCum={engine.doCum}
               onReset={engine.resetGame}
             />

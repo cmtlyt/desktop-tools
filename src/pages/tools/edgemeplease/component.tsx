@@ -4,16 +4,17 @@ import { Show } from '@/components/show';
 import { useEdgeStoreSlice, getEdgeStore } from './store';
 
 /* ===== 布局 ===== */
-export const PageWrapper = styled.div`
+export const PageWrapper = styled.div<{ $bg?: string }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100%;
   padding: 24px;
-  background: #000;
+  background: ${(props) => props.$bg === 'red' ? '#330000' : props.$bg === 'green' ? '#003300' : '#000'};
   color: #fff;
   font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
   font-size: 18px;
+  transition: background 0.3s;
 `;
 
 /* ===== 设置界面 ===== */
@@ -339,6 +340,7 @@ interface GameScreenProps {
   barText: string;
   speedText: string;
   finishType: 'cum' | 'edge' | null;
+  progressColor: string;
   onCum: () => void;
   onReset: () => void;
 }
@@ -353,6 +355,7 @@ export function GameScreen({
   barText,
   speedText,
   finishType,
+  progressColor,
   onCum,
   onReset,
 }: GameScreenProps) {
