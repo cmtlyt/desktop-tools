@@ -27,6 +27,7 @@ export const routes: RouteObject[] = [
         generateRouteConfig('', [], '/tools/list'),
         generateRouteConfig('/tools/pht'),
         generateRouteConfig('/tools/dyylpt'),
+        generateRouteConfig('/tools/edgemeplease'),
       ]),
       generateRouteConfig('/notepad', [
         generateRouteConfig('', [], '/notepad/list'),
