@@ -267,7 +267,7 @@ export const SelectRow = memo(function SelectRow({ label, options, ...rest }: Se
 
 /* ===== 游戏设置界面 ===== */
 export function GameSetup({ onStart }: { onStart: () => void }) {
-  const setup = useEdgeStoreSlice('setup');
+  const { setup } = useEdgeStoreSlice('setup');
 
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = field === 'duration' ? Number(e.target.value) : Number(e.target.value);
@@ -351,6 +351,7 @@ export function GameScreen({
   edgeWidth,
   cumWidth,
   barText,
+  speedText,
   finishType,
   onCum,
   onReset,

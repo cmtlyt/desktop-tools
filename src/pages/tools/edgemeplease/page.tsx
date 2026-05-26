@@ -13,7 +13,7 @@ function Page() {
   const pass = useKeyGuard(PRIVATE_TOOLS_KEY, () => {
     navigate(-1);
   });
-  const status = useEdgeStoreSlice('status');
+  const { status } = useEdgeStoreSlice('status');
   const engine = useGameEngine();
 
   if (!pass) return null;

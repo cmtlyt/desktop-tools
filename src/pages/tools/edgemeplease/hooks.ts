@@ -100,8 +100,9 @@ function isGo(phase: PhaseType): boolean {
 }
 
 export function useGameEngine() {
+  // subscribe to store changes so the hook re-renders when setup/status changes
   useEdgeStoreSlice('setup');
-  const status = useEdgeStoreSlice('status');
+  useEdgeStoreSlice('status');
   const { setStatus } = getEdgeStore();
 
   // --- Refs (hook order must be stable) ---
