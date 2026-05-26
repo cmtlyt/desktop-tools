@@ -5,8 +5,8 @@ import { useEdgeStoreSlice, getEdgeStore } from './store';
 interface MsgEntry {
   text: string;
   duration: number;  // 秒
-  fps?: number;      // 第3项：闪烁频率（原版 Go 才有）
-  type?: string;     // finsh 消息：'red' | 'green'
+  fps?: number;      // 第3项：闪烁频率
+  type?: string;     // finish 消息：'red' | 'green'
 }
 
 const MESSAGES: Record<string, MsgEntry[]> = {
@@ -86,17 +86,17 @@ export function useGameEngine() {
   const [barText, setBarText] = useState('');
   const [speedText, setSpeedText] = useState('');
   const [finishType, setFinishType] = useState<'cum' | 'edge' | null>(null);
-  const [progressColor, setProgressColor] = useState(''); // '' | 'red' | 'green'
+  const [wrapperClass, setWrapperClass] = useState(''); // '' | 'go' | 'stop' | 'finish' | 'cancel'
 
   const g = useRef<{
     running: boolean;
-    targetDuration: number;   // 秒（原版 targetDuration）
-    baseMultiplier: number;   // mode[0]
-    pauseMultiplier: number;  // mode[1]
-    cumFactor: number;        // 用户选择的 cumOption
-    controlStroke: string;    // 是否允许闪烁
-    pass: number;             // 第几轮（原版 pass）
-    startTime: number;        // 游戏开始时间戳
+    targetDuration: number;
+    baseMultiplier: number;
+    pauseMultiplier: number;
+    cumFactor: number;
+    controlStroke: string;
+    pass: number;
+    startTime: number;
     timerId: ReturnType<typeof setTimeout> | null;
     flashIntervalId: ReturnType<typeof setInterval> | null;
   }>({
@@ -124,9 +124,11 @@ export function useGameEngine() {
     setShowFlash(false);
   }
 
+  /* ===== 原版 updateFlash ===== */
   function updateFlash(fps: number | undefined) {
     const ref = g.current;
     if (ref.flashIntervalId) { clearInterval(ref.flashIntervalId); ref.flashIntervalId = null; }
+    // 原版：controlStroke 为 false 时不闪烁
     if (fps === undefined || ref.controlStroke === 'false') {
       setShowFlash(false);
       return;
@@ -135,13 +137,42 @@ export function useGameEngine() {
     const timeout = 1000 / fps / 2 * ref.baseMultiplier;
     let i = 0;
     setShowFlash(true);
+    setFlashOn(i % 2 === 0);
     ref.flashIntervalId = setInterval(() => {
       setFlashOn(i % 2 === 0);
       i++;
     }, timeout);
   }
 
-  // ===== 开始游戏 =====
+  /* ===== 原版 showProgressAndGoOn ===== */
+  function showProgressAndGoOn(timeout: number, callback: () => void, bar: 'jerkbar' | 'cumbar') {
+    const ref = g.current;
+    if (!ref.running) return;
+    const start = Date.now();
+
+    function continueProgress() {
+      if (!ref.running) return;
+      const current = Date.now() - start;
+      const percent = Math.min((current / timeout) * 100, 100);
+
+      // 原版：$('#progress .' + bar + ' div.bar').css('width', percent + '%');
+      if (bar === 'jerkbar') {
+        setEdgeWidth(percent);
+      } else {
+        setCumWidth(percent);
+      }
+
+      if (current > timeout) {
+        callback(); // 原版：直接调 callback
+      } else {
+        ref.timerId = setTimeout(continueProgress, 100); // 原版：100ms
+      }
+    }
+
+    continueProgress();
+  }
+
+  /* ===== 开始游戏 ===== */
   const startGame = useCallback(() => {
     const s = getEdgeStore().setup;
     const [baseMultiplier, pauseMultiplier] = MODES[s.difficulty] ?? MODES[2];
@@ -170,21 +201,21 @@ export function useGameEngine() {
     setCumWidth(0);
     setBarText('');
     setSpeedText('');
-    setProgressColor('');
+    setWrapperClass('');
 
-    // 原版：var startTime = new Date().getTime(); var pass = 0; goOn();
+    // 原版：var pass = 0; goOn();
     goOn();
   }, [setStatus, setRuntime]);
 
-  // ===== goOn — 完全复刻原版逻辑 =====
+  /* ===== goOn — 完全按原版结构 ===== */
   function goOn() {
     const ref = g.current;
     if (!ref.running) return;
 
     ref.pass++;
-    const duration = (Date.now() - ref.startTime) / 1000;  // 秒
+    const duration = (Date.now() - ref.startTime) / 1000; // 已过秒数
 
-    // 速度调整（原版）
+    // 原版速度调整
     let multiplier = ref.baseMultiplier;
     if (duration > ref.targetDuration / 4 * 3) {
       multiplier = multiplier / 4;
@@ -196,122 +227,98 @@ export function useGameEngine() {
       setSpeedText('');
     }
 
-    // 阶段类型
+    // 原版：var passType = pass % 2 != 0 ? 'go' : 'stop';
     const passType = ref.pass % 2 !== 0 ? 'go' : 'stop';
     if (passType === 'stop') {
       multiplier = multiplier * ref.pauseMultiplier;
     }
 
-    // 判断是否结束（原版：只有 Stop 且时间到才结束）
+    // 原版：if (duration < targetDuration || passType == 'go')
     if (duration < ref.targetDuration || passType === 'go') {
       // === 继续游戏 ===
       const ourMessages = ref.pass === 1 ? MESSAGES.first : MESSAGES[passType];
       const msg = pickMsg(ourMessages);
 
-      // 设置 CSS class（原版：$mw.removeClass('go').removeClass('stop').addClass(passType)）
-      if (passType === 'go') {
-        setProgressColor('');
-        setShowCumZone(false);
-      } else {
-        setProgressColor('red');    // Stop 模式红色背景
-        setShowCumZone(false);
-      }
+      // 原版：$mw.removeClass('go').removeClass('stop').addClass(passType);
+      setWrapperClass(passType);
 
+      // 原版：showImage(passType); — 跳过，我们没有背景图
+
+      // 原版：$('#message').html(randomMessage[0]);
       setMessage(msg.text);
       setBarText(passType === 'go' ? 'Go 🔥' : '停 ✋');
+
+      // 原版：updateFlash(randomMessage[2]);
       updateFlash(msg.fps);
 
-      // 进度条：原版始终用 jerkbar
+      // 原版：showProgressAndGoOn(randomMessage[1] * 1000 * multiplier, goOn, 'jerkbar');
       const timeout = msg.duration * 1000 * multiplier;
-      showProgress(timeout, 'jerkbar');
+      showProgressAndGoOn(timeout, goOn, 'jerkbar');
     } else {
       // === 时间到！结束 ===
       beginFinish();
     }
   }
 
-  // ===== showProgress — 原版 showProgressAndGoOn =====
-  function showProgress(timeout: number, bar: 'jerkbar' | 'cumbar') {
-    const ref = g.current;
-    if (!ref.running) return;
-
-    const start = Date.now();
-
-    function continueProgress() {
-      if (!ref.running) return;
-      const current = Date.now() - start;
-      const percent = Math.min((current / timeout) * 100, 100);
-
-      if (bar === 'jerkbar') {
-        setEdgeWidth(percent);
-        setCumWidth(0);
-      } else {
-        setCumWidth(percent);
-        setEdgeWidth(0);
-      }
-
-      if (current > timeout) {
-        // 原版：callback()（goOn 或 end）
-        if (bar === 'cumbar') {
-          // finish cum 结束后调用 end
-          endGame();
-        } else {
-          goOn();
-        }
-      } else {
-        ref.timerId = setTimeout(continueProgress, 100);  // 原版：100ms
-      }
-    }
-
-    continueProgress();
-  }
-
-  // ===== 结束阶段 — 原版 goOn 的 else 分支 =====
+  /* ===== beginFinish — 原版 goOn 的 else 分支 ===== */
   function beginFinish() {
     const ref = g.current;
     if (!ref.running) return;
 
+    // 原版：var ourMessages = messages['finish'];
     const ourMessages = MESSAGES.finish;
     let msg = pickMsg(ourMessages);
 
-    // 随机 "outcum"（原版）
+    // 原版随机 outcum
     if (Math.random() >= ref.cumFactor) {
-      msg = ourMessages[0];  // 第一条 red（不能射）
+      msg = ourMessages[0]; // 第一条是 red
     }
 
+    // 原版：$('#message').html(randomMessage[0]); — 这条原版在最后统一设置
+    // 但我们在每个分支里设置消息
+
+    // 原版：if (cumFactor == '0')
     if (ref.cumFactor === 0) {
-      // cumFactor 为 0 → 不能射，直接显示结束文案，无进度条
+      // 原版：不显示进度条，直接显示结束文案
+      setWrapperClass('');
       setMessage('时间到了！你不能射精。再试一次吧！');
       setBarText('');
       setShowCumZone(false);
-      setProgressColor('red');
+      setFinishType('edge');
       clearTimers();
       setStatus('finished');
       return;
     }
 
+    // 原版：else if (randomMessage[2] != 'red')
     if (msg.type !== 'red') {
       // === 可以射精 ===
       setFinishType('cum');
-      setShowCumZone(true);
-      setBarText('射精！');
+
+      // 原版：$mw.removeClass('stop').addClass('finish');
+      setWrapperClass('finish');
+
+      // 原版：showProgressAndGoOn(randomMessage[1] * 1000, end, 'cumbar');
       setMessage(msg.text);
-      setProgressColor('green');
+      setBarText('射精！');
       updateFlash(msg.fps);
-      showProgress(msg.duration * 1000, 'cumbar');
+      showProgressAndGoOn(msg.duration * 1000, endGame, 'cumbar');
     } else {
       // === 不能射精 ===
       setFinishType('edge');
-      setShowCumZone(false);
-      setBarText('不能射！');
+
+      // 原版：$mw.removeClass('go').removeClass('stop').addClass('cancel');
+      setWrapperClass('cancel');
+
+      // 原版：showProgressAndGoOn(randomMessage[1] * 1000, function() { location.reload(); }, 'jerkbar');
       setMessage(msg.text);
-      setProgressColor('red');
+      setBarText('不能射！');
       updateFlash(undefined);
-      showProgress(msg.duration * 1000, 'jerkbar');
+      showProgressAndGoOn(msg.duration * 1000, endGame, 'jerkbar');
     }
   }
 
-  // ===== end — 原版 end 函数 =====
+  /* ===== end — 原版 end 函数 ===== */
   function endGame() {
     const ref = g.current;
     if (!ref.running) return;
@@ -319,16 +326,15 @@ export function useGameEngine() {
     clearTimers();
     setMessage('游戏结束！下次加油！');
     setBarText('');
-    setProgressColor('');
+    setFinishType('edge'); // 确保 finish 按钮消失
+    setWrapperClass('');
     setStatus('finished');
   }
 
-  // ===== 射精按钮（这个原版没有，是 UI 加的，不影响核心逻辑） =====
   const doCum = useCallback(() => {
-    // 按钮仅供 UI 反馈，核心进度条逻辑已经在 run
+    // UI 按钮（原版无此功能，不影响核心逻辑）
   }, []);
 
-  // ===== 重置 =====
   const resetGame = useCallback(() => {
     const ref = g.current;
     ref.running = false;
@@ -336,12 +342,11 @@ export function useGameEngine() {
     setEdgeWidth(0);
     setCumWidth(0);
     setFinishType(null);
-    setProgressColor('');
+    setWrapperClass('');
     setStatus('setup');
     getEdgeStore().reset();
   }, [setStatus]);
 
-  // ===== 清理 =====
   useEffect(() => {
     return () => {
       g.current.running = false;
@@ -359,7 +364,7 @@ export function useGameEngine() {
     barText,
     speedText,
     finishType,
-    progressColor,
+    wrapperClass,
     startGame,
     doCum,
     resetGame,

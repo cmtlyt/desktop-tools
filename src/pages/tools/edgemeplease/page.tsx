@@ -1,12 +1,9 @@
-import { useNavigate, useKeyGuard } from '@/hooks';
-import { PageInfo } from '@/types/page-info';
-import { Show } from '@/components/show';
-import { AppearBox } from '@/components/appear-box';
-import { logger } from '@/utils';
-import { PRIVATE_TOOLS_KEY } from '../constant';
-import { useEdgeStoreSlice } from './store';
+import { useNavigate } from 'react-router-dom';
+import { AppearBox, useKeyGuard, Show } from '@pzui/react';
+import { useEdgeStoreSlice, PRIVATE_TOOLS_KEY, logger } from '../..';
+
+import { PageWrapper, GameScreen, GameSetup } from './component';
 import { useGameEngine } from './hooks';
-import { PageWrapper, GameSetup, GameScreen } from './component';
 
 function Page() {
   const navigate = useNavigate();
@@ -20,7 +17,7 @@ function Page() {
 
   return (
     <AppearBox onFirstAppear={() => logger.appear('tool-edgemeplease')}>
-      <PageWrapper $bg={engine.progressColor}>
+      <PageWrapper $wc={engine.wrapperClass}>
         <Show when={status === 'setup'}>
           {() => (
             <GameSetup onStart={engine.startGame} />
@@ -38,7 +35,7 @@ function Page() {
               barText={engine.barText}
               speedText={engine.speedText}
               finishType={engine.finishType}
-              progressColor={engine.progressColor}
+              wrapperClass={engine.wrapperClass}
               onCum={engine.doCum}
               onReset={engine.resetGame}
             />
@@ -49,11 +46,4 @@ function Page() {
   );
 }
 
-export function Component() {
-  return <Page />;
-}
-
-export const handle: PageInfo = {
-  title: '边缘控制',
-  needBackIcon: true,
-};
+export default Page;
