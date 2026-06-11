@@ -1,7 +1,6 @@
-import React from 'react';
+import { Show } from '@/components/show';
 import styled, { keyframes } from 'styled-components';
-
-import { Show } from '@pzui/react';
+import { getEdgeStore } from './store';
 
 /* ===== 设置表单 ===== */
 export const SetupForm = styled.div`
@@ -48,7 +47,9 @@ export const StartButton = styled.button`
   font-weight: 700;
   cursor: pointer;
   letter-spacing: 2px;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
   &:hover {
     transform: scale(1.04);
     box-shadow: 0 4px 20px rgba(233, 69, 96, 0.5);
@@ -66,10 +67,13 @@ export const PageWrapper = styled.div<{ $wc?: string }>`
   min-height: 100%;
   padding: 24px;
   background: ${(props) =>
-    props.$wc === 'finish' ? '#003300' :
-    props.$wc === 'cancel' ? '#330000' :
-    props.$wc === 'stop' ? '#330000' :
-    '#000'};
+    props.$wc === 'finish'
+      ? '#003300'
+      : props.$wc === 'cancel'
+        ? '#330000'
+        : props.$wc === 'stop'
+          ? '#330000'
+          : '#000'};
   color: #fff;
   font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
   font-size: 18px;
@@ -233,7 +237,6 @@ export function GameScreen({
   barText,
   speedText,
   finishType,
-  wrapperClass,
   onCum,
   onReset,
 }: GameScreenProps) {
@@ -265,11 +268,7 @@ export function GameScreen({
       </Show>
       <Show when={finishType !== null}>
         {() => (
-          <StartButton
-            type="button"
-            onClick={onReset}
-            style={{ marginTop: 12, maxWidth: 300, background: '#555' }}
-          >
+          <StartButton type="button" onClick={onReset} style={{ marginTop: 12, maxWidth: 300, background: '#555' }}>
             重新开始
           </StartButton>
         )}
@@ -290,10 +289,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
     <SetupForm>
       <FormGroup>
         <Label>游戏时长</Label>
-        <Select
-          value={store.setup.duration}
-          onChange={(e) => store.setSetup('duration', Number(e.target.value))}
-        >
+        <Select value={store.setup.duration} onChange={(e) => store.setSetup({ duration: Number(e.target.value) })}>
           <option value={3}>3 分钟</option>
           <option value={5}>5 分钟</option>
           <option value={10}>10 分钟</option>
@@ -304,10 +300,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
       </FormGroup>
       <FormGroup>
         <Label>难度</Label>
-        <Select
-          value={store.setup.difficulty}
-          onChange={(e) => store.setSetup('difficulty', Number(e.target.value))}
-        >
+        <Select value={store.setup.difficulty} onChange={(e) => store.setSetup({ difficulty: Number(e.target.value) })}>
           <option value={0}>新手</option>
           <option value={1}>简单</option>
           <option value={2}>普通</option>
@@ -317,10 +310,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
       </FormGroup>
       <FormGroup>
         <Label>射精概率</Label>
-        <Select
-          value={store.setup.cumOption}
-          onChange={(e) => store.setSetup('cumOption', Number(e.target.value))}
-        >
+        <Select value={store.setup.cumOption} onChange={(e) => store.setSetup({ cumOption: Number(e.target.value) })}>
           <option value={0}>禁止射精</option>
           <option value={0.25}>25%</option>
           <option value={0.5}>50%</option>
@@ -333,11 +323,4 @@ export function GameSetup({ onStart }: GameSetupProps) {
       </StartButton>
     </SetupForm>
   );
-}
-
-const store = getEdgeStore();
-
-export function EdgeMePlease() {
-  // empty — 不再需要这个 wrapper
-  return null;
 }

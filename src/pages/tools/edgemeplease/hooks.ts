@@ -4,15 +4,13 @@ import { useEdgeStoreSlice, getEdgeStore } from './store';
 /* ===== 消息系统（完全复刻原版） ===== */
 interface MsgEntry {
   text: string;
-  duration: number;  // 秒
-  fps?: number;      // 第3项：闪烁频率
-  type?: string;     // finish 消息：'red' | 'green'
+  duration: number; // 秒
+  fps?: number; // 第3项：闪烁频率
+  type?: string; // finish 消息：'red' | 'green'
 }
 
 const MESSAGES: Record<string, MsgEntry[]> = {
-  first: [
-    { text: '快速达到边缘吧！', duration: 45, fps: 2 },
-  ],
+  first: [{ text: '快速达到边缘吧！', duration: 45, fps: 2 }],
   go: [
     { text: '现在你可以打飞机了！', duration: 30, fps: 2 },
     { text: '现在用你最快的速度去撸！', duration: 15, fps: 4 },
@@ -53,7 +51,12 @@ const MESSAGES: Record<string, MsgEntry[]> = {
     { text: '不要射！别碰它了！', duration: 25 },
   ],
   finish: [
-    { text: '停下！不好意思，这次你不能射了哦！再试一次，也许会有好运呢...现在把你的手从鸡巴上拿开，直到进度条走完为止。', duration: 45, type: 'red', fps: 2 },
+    {
+      text: '停下！不好意思，这次你不能射了哦！再试一次，也许会有好运呢...现在把你的手从鸡巴上拿开，直到进度条走完为止。',
+      duration: 45,
+      type: 'red',
+      fps: 2,
+    },
     { text: '射吧！现在就射！', duration: 15, type: 'green', fps: 4 },
     { text: '射吧！别浪费时间了 ;)', duration: 60, type: 'green', fps: 1.5 },
     { text: '现在射精！来让这次成为你射的最多的一次。', duration: 25, type: 'green', fps: 2 },
@@ -74,7 +77,7 @@ const MODES: Record<number, [number, number]> = {
 
 /* ===== 游戏引擎 ===== */
 export function useGameEngine() {
-  const { setup } = useEdgeStoreSlice('setup');
+  const { setup: _ } = useEdgeStoreSlice('setup');
   const { setStatus, setRuntime } = getEdgeStore();
 
   const [message, setMessage] = useState('');
@@ -118,8 +121,14 @@ export function useGameEngine() {
 
   function clearTimers() {
     const ref = g.current;
-    if (ref.timerId) { clearTimeout(ref.timerId); ref.timerId = null; }
-    if (ref.flashIntervalId) { clearInterval(ref.flashIntervalId); ref.flashIntervalId = null; }
+    if (ref.timerId) {
+      clearTimeout(ref.timerId);
+      ref.timerId = null;
+    }
+    if (ref.flashIntervalId) {
+      clearInterval(ref.flashIntervalId);
+      ref.flashIntervalId = null;
+    }
     setFlashOn(false);
     setShowFlash(false);
   }
@@ -127,14 +136,17 @@ export function useGameEngine() {
   /* ===== 原版 updateFlash ===== */
   function updateFlash(fps: number | undefined) {
     const ref = g.current;
-    if (ref.flashIntervalId) { clearInterval(ref.flashIntervalId); ref.flashIntervalId = null; }
+    if (ref.flashIntervalId) {
+      clearInterval(ref.flashIntervalId);
+      ref.flashIntervalId = null;
+    }
     // 原版：controlStroke 为 false 时不闪烁
     if (fps === undefined || ref.controlStroke === 'false') {
       setShowFlash(false);
       return;
     }
     // 原版：1000 / fps / 2 * baseMultiplier
-    const timeout = 1000 / fps / 2 * ref.baseMultiplier;
+    const timeout = (1000 / fps / 2) * ref.baseMultiplier;
     let i = 0;
     setShowFlash(true);
     setFlashOn(i % 2 === 0);
@@ -217,7 +229,7 @@ export function useGameEngine() {
 
     // 原版速度调整
     let multiplier = ref.baseMultiplier;
-    if (duration > ref.targetDuration / 4 * 3) {
+    if (duration > (ref.targetDuration / 4) * 3) {
       multiplier = multiplier / 4;
       setSpeedText('⚡⚡⚡ 飞奔中！');
     } else if (duration > ref.targetDuration / 2) {
