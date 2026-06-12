@@ -1,1 +1,0 @@
-import{aO as f,r as e,l,m as y}from"./index-DJrG1xPe.js";function p(o,s=()=>{}){const{has:a,keys:u}=f(["has","keys"]),[n,c]=e.useState(!1),t=e.useRef(s);return e.useEffect(()=>{t.current=s},[s]),e.useEffect(()=>{const r=a(o);c(r),r||(l.error("非法访问"),y().showMessage({type:"error",content:"非法访问, 系统将会记录本次访问",duration:2,onClose:t.current}))},[u]),n}export{p as u};
