@@ -4,6 +4,7 @@ import { ELSFKIcon } from '../elsfk/icon';
 import { SLIcon } from '../sl/icon';
 import { Icon as ZGXQIcon } from '../zgxq/icon';
 import { ChessType } from '../zgxq/type';
+import { MJIcon } from '../majiang/icon';
 
 export const gameList: AppInfo[] = [
   {
@@ -25,5 +26,10 @@ export const gameList: AppInfo[] = [
     name: '中国象棋',
     path: './zgxq',
     icon: <ZGXQIcon type={ChessType.Jiang} color="black" />,
+  },
+  {
+    name: '乐清麻将',
+    path: './majiang',
+    icon: <MJIcon />,
   },
 ];

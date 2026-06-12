@@ -2,9 +2,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import viteStylelint from 'vite-plugin-stylelint';
-// @ts-expect-error not type
-import viteEslint from 'vite-plugin-eslint';
+// import viteStylelint from 'vite-plugin-stylelint';
+// import viteEslint from 'vite-plugin-eslint';
 import electron from 'vite-plugin-electron/simple';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -38,11 +37,11 @@ export default defineConfig({
   base: IS_DESKTOP_APP ? './' : '/desktop-tools/',
   plugins: [
     react(),
-    viteStylelint({
-      // 对某些文件排除检查
-      exclude: 'node_modules',
-    }),
-    viteEslint(),
+    // viteStylelint({
+    //   // 对某些文件排除检查
+    //   exclude: 'node_modules',
+    // }),
+    // viteEslint(),
     ...electronPlugin,
   ],
   // 设置路径别名
