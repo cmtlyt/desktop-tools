@@ -1,1 +1,0 @@
-import{j as s}from"./index-Bt_SosG2.js";import{D as a}from"./index-PAsQHKGa.js";function i(r){const{...t}=r;return s.jsx(a,{width:"40rem",styles:{body:{padding:"var(--page-padding)"}},...t})}export{i as D};
