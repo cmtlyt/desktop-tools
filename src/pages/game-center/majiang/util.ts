@@ -1,6 +1,17 @@
 import {
-  Tile, Suit, HonorValue, Wind, Player, GameState, MeldType,
-  WinDecomposition, ScoreDetail, ActionType, PendingAction, PatternRule, ScoreContext,
+  Tile,
+  Suit,
+  HonorValue,
+  Wind,
+  Player,
+  GameState,
+  MeldType,
+  WinDecomposition,
+  ScoreDetail,
+  ActionType,
+  PendingAction,
+  PatternRule,
+  ScoreContext,
   DiscardValidationRule,
 } from './type';
 import { DEFAULT_PATTERN_RULES, sortPatternRulesInPlace } from './score-config';
@@ -47,8 +58,13 @@ export function createAllTiles(): Tile[] {
     }
   }
   const honors: HonorValue[] = [
-    HonorValue.East, HonorValue.South, HonorValue.West, HonorValue.North,
-    HonorValue.Zhong, HonorValue.Fa, HonorValue.Bai,
+    HonorValue.East,
+    HonorValue.South,
+    HonorValue.West,
+    HonorValue.North,
+    HonorValue.Zhong,
+    HonorValue.Fa,
+    HonorValue.Bai,
   ];
   for (const value of honors) {
     for (let copy = 0; copy < 4; copy++) {
@@ -102,12 +118,20 @@ export function isSameTileValue(tileA: Tile, tileB: Tile): boolean {
 // ============================================================
 
 const SUIT_ORDER: Record<Suit, number> = {
-  [Suit.Wan]: 0, [Suit.Tong]: 1, [Suit.Tiao]: 2, [Suit.Feng]: 3,
+  [Suit.Wan]: 0,
+  [Suit.Tong]: 1,
+  [Suit.Tiao]: 2,
+  [Suit.Feng]: 3,
 };
 
 const HONOR_ORDER: Record<HonorValue, number> = {
-  [HonorValue.East]: 0, [HonorValue.South]: 1, [HonorValue.West]: 2,
-  [HonorValue.North]: 3, [HonorValue.Zhong]: 4, [HonorValue.Fa]: 5, [HonorValue.Bai]: 6,
+  [HonorValue.East]: 0,
+  [HonorValue.South]: 1,
+  [HonorValue.West]: 2,
+  [HonorValue.North]: 3,
+  [HonorValue.Zhong]: 4,
+  [HonorValue.Fa]: 5,
+  [HonorValue.Bai]: 6,
 };
 
 function tileOrderKey(tile: Tile): number {
@@ -138,9 +162,7 @@ export function initGame(dealerIndex: number, dealerStreakCount: number): GameSt
   const diceTotal = dice1[0] + dice1[1] + dice2[0] + dice2[1];
 
   // 首局随机庄家，后续使用传入的 dealerIndex
-  const actualDealerIndex = dealerStreakCount === 0 && dealerIndex === 0
-    ? Math.floor(Math.random() * 4)
-    : dealerIndex;
+  const actualDealerIndex = dealerStreakCount === 0 && dealerIndex === 0 ? Math.floor(Math.random() * 4) : dealerIndex;
 
   // 风位根据庄家位置动态分配：庄家=东，下家=南，对家=西，上家=北
   const players: Player[] = Array.from({ length: 4 }, (_, i) => {
@@ -281,13 +303,13 @@ export function discardTile(player: Player, tile: Tile): void {
     player.lastDrawnTile = null;
     return;
   }
-  
+
   // 出的是手牌中的牌
   const index = player.hand.findIndex((t) => t.id === tile.id);
   if (index === -1) return;
   player.hand.splice(index, 1);
   player.discards.push(tile);
-  
+
   // 出牌后，将摸的牌加入手牌并排序
   if (player.lastDrawnTile) {
     player.hand.push(player.lastDrawnTile);
@@ -332,7 +354,12 @@ export function performChow(player: Player, discardTile: Tile, selectedTiles: Ti
 }
 
 /** 明杠 */
-export function performExposedKong(player: Player, discardTile: Tile, fromPlayerIndex: number, wall: Tile[]): Tile | null {
+export function performExposedKong(
+  player: Player,
+  discardTile: Tile,
+  fromPlayerIndex: number,
+  wall: Tile[],
+): Tile | null {
   const matching = player.hand.filter((t) => isSameTileValue(t, discardTile));
   const removed = matching.slice(0, 3);
   for (const tile of removed) {
@@ -371,9 +398,7 @@ export function performConcealedKong(player: Player, tile: Tile, wall: Tile[]): 
 
 /** 补杠(碰变杠) */
 export function performAddedKong(player: Player, tile: Tile, wall: Tile[]): Tile | null {
-  const pongIndex = player.melds.findIndex(
-    (m) => m.type === MeldType.Pong && isSameTileValue(m.tiles[0], tile),
-  );
+  const pongIndex = player.melds.findIndex((m) => m.type === MeldType.Pong && isSameTileValue(m.tiles[0], tile));
   if (pongIndex === -1) return null;
   const handIdx = player.hand.findIndex((t) => isSameTileValue(t, tile));
   if (handIdx === -1) return null;
@@ -391,11 +416,7 @@ export function performAddedKong(player: Player, tile: Tile, wall: Tile[]): Tile
 // ============================================================
 
 /** 检测玩家对一张弃牌可做的操作 */
-export function detectActions(
-  state: GameState,
-  discardTile: Tile,
-  discardPlayerIndex: number,
-): PendingAction[] {
+export function detectActions(state: GameState, discardTile: Tile, discardPlayerIndex: number): PendingAction[] {
   const pending: PendingAction[] = [];
 
   for (let i = 0; i < 4; i++) {
@@ -409,25 +430,20 @@ export function detectActions(
       actions.push(ActionType.Win);
     }
 
-    // 财神牌不允许吃碰杠（只能胡）
-    const isDiscardJoker = isJokerTile(discardTile, state.jokerTile);
-
-    // 碰检测（财神牌跳过）
-    if (!isDiscardJoker) {
-      const pongMatches = player.hand.filter((t) => isSameTileValue(t, discardTile));
-      if (pongMatches.length >= 2) {
-        actions.push(ActionType.Pong);
-      }
-
-      // 杠检测（财神牌跳过）
-      if (pongMatches.length >= 3) {
-        actions.push(ActionType.Kong);
-      }
+    // 碰检测
+    const pongMatches = player.hand.filter((t) => isSameTileValue(t, discardTile));
+    if (pongMatches.length >= 2) {
+      actions.push(ActionType.Pong);
     }
 
-    // 吃检测(仅上家，财神牌跳过)
-    if (!isDiscardJoker && i === (discardPlayerIndex + 1) % 4 && discardTile.suit !== Suit.Feng) {
-      const chowOptions = getChowOptions(player, discardTile);
+    // 杠检测
+    if (pongMatches.length >= 3) {
+      actions.push(ActionType.Kong);
+    }
+
+    // 吃检测(仅上家)
+    if (i === (discardPlayerIndex + 1) % 4 && discardTile.suit !== Suit.Feng) {
+      const chowOptions = getChowOptions(player, discardTile, state);
       if (chowOptions.length > 0) {
         actions.push(ActionType.Chow);
         options[ActionType.Chow] = chowOptions;
@@ -448,12 +464,10 @@ export function detectSelfActions(state: GameState, playerIndex: number, drawnTi
   const actions: ActionType[] = [];
 
   // 将摸牌区的牌也纳入手牌一起检测（暗杠/补杠/胡牌都需要）
-  const effectiveHand = player.lastDrawnTile
-    ? [...player.hand, player.lastDrawnTile]
-    : player.hand;
+  const effectiveHand = player.lastDrawnTile ? [...player.hand, player.lastDrawnTile] : player.hand;
 
   // 自摸胡
-  if (canWin(player, state.jokerTile)) {
+  if (canWin(player, state.jokerTile, effectiveHand)) {
     actions.push(ActionType.Win);
   }
 
@@ -484,10 +498,14 @@ export function detectSelfActions(state: GameState, playerIndex: number, drawnTi
   return actions;
 }
 
-function getChowOptions(player: Player, tile: Tile): Tile[][] {
+function getChowOptions(player: Player, tile: Tile, state: GameState): Tile[][] {
   if (tile.suit === Suit.Feng) return [];
   const value = tile.value as number;
-  const sameSuit = player.hand.filter((t) => t.suit === tile.suit && typeof t.value === 'number');
+
+  // 吃牌需要排除财神
+  const sameSuit = player.hand.filter(
+    (t) => t.suit === tile.suit && typeof t.value === 'number' && !isJokerTile(t, state.jokerTile),
+  );
   const options: Tile[][] = [];
 
   // tile 作为最小: 需要 value+1, value+2
@@ -498,18 +516,20 @@ function getChowOptions(player: Player, tile: Tile): Tile[][] {
   // tile 作为中间: 需要 value-1, value+1
   const low2 = sameSuit.find((t) => t.value === value - 1);
   const high2 = sameSuit.find((t) => t.value === value + 1);
-  if (low2 && high2 && low2.id !== mid1?.id && high2.id !== high1?.id) options.push([low2, high2]);
-  else if (low2 && high2) options.push([low2, high2]);
+  if (low2 && high2) options.push([low2, high2]);
 
   // tile 作为最大: 需要 value-2, value-1
   const low3 = sameSuit.find((t) => t.value === value - 2);
-  const mid3 = sameSuit.find((t) => t.value === value - 1 && t.id !== low2?.id);
+  const mid3 = sameSuit.find((t) => t.value === value - 1);
   if (low3 && mid3) options.push([low3, mid3]);
 
   // 去重
   const seen = new Set<string>();
   return options.filter((opt) => {
-    const key = opt.map((t) => `${t.suit}-${t.value}`).sort().join('|');
+    const key = opt
+      .map((t) => `${t.suit}-${t.value}`)
+      .sort()
+      .join('|');
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -540,9 +560,7 @@ function getTileValueCounts(tiles: Tile[]): Map<string, number> {
 /** 碰碰胡: 全刻/碰, 无顺子 */
 export function isPongPong(player: Player, decomposition: WinDecomposition): boolean {
   const allMelds = [...player.melds, ...decomposition.melds];
-  return allMelds.every(
-    (m) => m.type !== MeldType.Sequence,
-  );
+  return allMelds.every((m) => m.type !== MeldType.Sequence);
 }
 
 /** 混一色: 只有一种数牌花色 + 风牌 */
@@ -603,7 +621,8 @@ export function calculateScore(
   const player = state.players[winnerIndex];
   const jokerTile = state.jokerTile;
 
-  const handJokerCount = player.hand.filter((tile) => isJokerTile(tile, jokerTile)).length +
+  const handJokerCount =
+    player.hand.filter((tile) => isJokerTile(tile, jokerTile)).length +
     decomposition.pair.filter((tile) => isJokerTile(tile, jokerTile)).length +
     decomposition.melds.flatMap((meld) => meld.tiles).filter((tile) => isJokerTile(tile, jokerTile)).length;
   const isHard = handJokerCount === 0;
@@ -647,14 +666,21 @@ export function calculateScore(
   const dealerStreakTai = scoreItems.find((item) => item.id === 'dealer_streak')?.tai ?? 0;
   const dealerBonusTai = scoreItems.find((item) => item.id === 'dealer_bonus')?.tai ?? 0;
 
-  const rawTotal = baseTai + patternTai + flowerTai + kongBloomTai + robKongTai +
-    windTai + faTai + jokerTai + dealerStreakTai + dealerBonusTai;
+  const rawTotal =
+    baseTai +
+    patternTai +
+    flowerTai +
+    kongBloomTai +
+    robKongTai +
+    windTai +
+    faTai +
+    jokerTai +
+    dealerStreakTai +
+    dealerBonusTai;
   const roundedTotal = Math.ceil(rawTotal);
   const finalTotal = roundedTotal >= 6 ? roundedTotal * 2 : roundedTotal;
 
-  const details = scoreItems
-    .sort((itemA, itemB) => itemB.tai - itemA.tai)
-    .flatMap((item) => item.details);
+  const details = scoreItems.sort((itemA, itemB) => itemB.tai - itemA.tai).flatMap((item) => item.details);
 
   if (roundedTotal >= 6) details.push(`高台翻倍(${roundedTotal}→${finalTotal})`);
 
@@ -743,10 +769,14 @@ export function getTileShortLabel(tile: Tile): string {
 /** 获取牌面 emoji / 简码(用于渲染) */
 export function getTileSuitIcon(suit: Suit): string {
   switch (suit) {
-    case Suit.Wan: return '万';
-    case Suit.Tong: return '筒';
-    case Suit.Tiao: return '条';
-    case Suit.Feng: return '字';
+    case Suit.Wan:
+      return '万';
+    case Suit.Tong:
+      return '筒';
+    case Suit.Tiao:
+      return '条';
+    case Suit.Feng:
+      return '字';
   }
 }
 
@@ -774,7 +804,7 @@ export const DEFAULT_DISCARD_RULES: DiscardValidationRule[] = [
       if (!lastMeld || lastMeld.type !== MeldType.Sequence) return true;
       // 如果刚吃过牌，检查是否要打出的牌与吃的那张相同
       if (lastMeld.claimedTileId !== undefined) {
-        const claimedTile = state.discardPool.find(t => t.id === lastMeld.claimedTileId);
+        const claimedTile = state.discardPool.find((t) => t.id === lastMeld.claimedTileId);
         if (claimedTile && tile.suit === claimedTile.suit && tile.value === claimedTile.value) {
           return false;
         }
@@ -790,7 +820,7 @@ export function validateDiscard(
   tile: Tile,
   player: Player,
   state: GameState,
-  rules: DiscardValidationRule[]
+  rules: DiscardValidationRule[],
 ): { valid: boolean; message?: string } {
   for (const rule of rules) {
     if (!rule.validate(tile, player, state)) {

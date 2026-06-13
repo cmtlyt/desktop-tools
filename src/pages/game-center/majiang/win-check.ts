@@ -1,7 +1,17 @@
-import {
-  Tile, Suit, HonorValue, Player, Meld, MeldType, WinDecomposition,
-} from './type';
+import { Tile, Suit, HonorValue, Player, Meld, MeldType, WinDecomposition } from './type';
 import { isJokerTile } from './util';
+
+interface TempMeld extends Omit<Meld, 'tiles'> {
+  tiles: number[];
+}
+
+/** 胡牌分解结果 */
+export interface TempWinDecomposition {
+  melds: TempMeld[];
+  pair: Tile[];
+  /** 全顺子(无刻/碰) */
+  isAllSequence: boolean;
+}
 
 // ============================================================
 // 牌映射工具函数
@@ -11,9 +21,12 @@ import { isJokerTile } from './util';
 function tileToIndex(tile: Tile): number {
   if (tile.suit === Suit.Feng) {
     const honorMap: Record<string, number> = {
-      [HonorValue.East]: 27, [HonorValue.South]: 28,
-      [HonorValue.West]: 29, [HonorValue.North]: 30,
-      [HonorValue.Zhong]: 31, [HonorValue.Fa]: 32,
+      [HonorValue.East]: 27,
+      [HonorValue.South]: 28,
+      [HonorValue.West]: 29,
+      [HonorValue.North]: 30,
+      [HonorValue.Zhong]: 31,
+      [HonorValue.Fa]: 32,
       [HonorValue.Bai]: 33,
     };
     return honorMap[tile.value as string] ?? -1;
@@ -24,13 +37,30 @@ function tileToIndex(tile: Tile): number {
 
 /** 将 0-33 索引还原为 Tile 对象 */
 function indexToTile(index: number, id: number): Tile {
+  let jokerMock = false;
+  if (index >= 10000) {
+    jokerMock = true;
+    index = index - 10000;
+  }
   if (index >= 27) {
-    const honors = [HonorValue.East, HonorValue.South, HonorValue.West, HonorValue.North, HonorValue.Zhong, HonorValue.Fa, HonorValue.Bai];
+    const honors = [
+      HonorValue.East,
+      HonorValue.South,
+      HonorValue.West,
+      HonorValue.North,
+      HonorValue.Zhong,
+      HonorValue.Fa,
+      HonorValue.Bai,
+    ];
     const honorValue = honors[index - 27];
     const labels: Record<string, string> = {
-      [HonorValue.East]: '东', [HonorValue.South]: '南',
-      [HonorValue.West]: '西', [HonorValue.North]: '北',
-      [HonorValue.Zhong]: '红中', [HonorValue.Fa]: '发财', [HonorValue.Bai]: '白板',
+      [HonorValue.East]: '东',
+      [HonorValue.South]: '南',
+      [HonorValue.West]: '西',
+      [HonorValue.North]: '北',
+      [HonorValue.Zhong]: '红中',
+      [HonorValue.Fa]: '发财',
+      [HonorValue.Bai]: '白板',
     };
     return { id, suit: Suit.Feng, value: honorValue, label: labels[honorValue] };
   }
@@ -42,7 +72,7 @@ function indexToTile(index: number, id: number): Tile {
     [Suit.Tong]: ['', '一筒', '二筒', '三筒', '四筒', '五筒', '六筒', '七筒', '八筒', '九筒'],
     [Suit.Feng]: [],
   };
-  return { id, suit, value, label: suitLabels[suit][value] };
+  return { id, suit, value, jokerMock, label: suitLabels[suit][value] };
 }
 
 /** 构建手牌计数数组，返回 { counts, wildCount } */
@@ -90,24 +120,37 @@ function checkWinBasic(counts: number[], minMelds: number, needPair = true): boo
   // 1. 尝试将牌
   if (needPair && counts[i] >= 2) {
     counts[i] -= 2;
-    if (checkWinBasic(counts, minMelds, false)) { counts[i] += 2; return true; }
+    if (checkWinBasic(counts, minMelds, false)) {
+      counts[i] += 2;
+      return true;
+    }
     counts[i] += 2;
   }
 
   // 2. 尝试刻子
   if (counts[i] >= 3) {
     counts[i] -= 3;
-    if (checkWinBasic(counts, minMelds - 1, needPair)) { counts[i] += 3; return true; }
+    if (checkWinBasic(counts, minMelds - 1, needPair)) {
+      counts[i] += 3;
+      return true;
+    }
     counts[i] += 3;
   }
 
   // 3. 尝试顺子（仅数牌 0-26，且 i 在花色内位置 <= 6）
-  if (i < 27 && (i % 9) <= 6 && counts[i + 1] >= 1 && counts[i + 2] >= 1) {
-    counts[i]--; counts[i + 1]--; counts[i + 2]--;
+  if (i < 27 && i % 9 <= 6 && counts[i + 1] >= 1 && counts[i + 2] >= 1) {
+    counts[i]--;
+    counts[i + 1]--;
+    counts[i + 2]--;
     if (checkWinBasic(counts, minMelds - 1, needPair)) {
-      counts[i]++; counts[i + 1]++; counts[i + 2]++; return true;
+      counts[i]++;
+      counts[i + 1]++;
+      counts[i + 2]++;
+      return true;
     }
-    counts[i]++; counts[i + 1]++; counts[i + 2]++;
+    counts[i]++;
+    counts[i + 1]++;
+    counts[i + 2]++;
   }
 
   return false;
@@ -119,7 +162,10 @@ function checkWinBasic(counts: number[], minMelds: number, needPair = true): boo
 
 /** 生成带重复的组合（惰性生成） */
 function* combinationsWithReplacement(arr: number[], k: number): Generator<number[]> {
-  if (k === 0) { yield []; return; }
+  if (k === 0) {
+    yield [];
+    return;
+  }
   for (let i = 0; i < arr.length; i++) {
     for (const tail of combinationsWithReplacement(arr.slice(i), k - 1)) {
       yield [arr[i], ...tail];
@@ -175,74 +221,88 @@ function checkWinWithWild(counts: number[], wildCount: number, minMelds: number)
 // 收集所有分解方案（用于台数计算）
 // ============================================================
 
+function buildTileIdxs(tidxs: number[], assignment: number[]) {
+  return tidxs.map((tidx) => {
+    const hasIdx = assignment.indexOf(tidx);
+    if (~hasIdx) {
+      assignment.splice(hasIdx, 1);
+      return 10000 + tidx;
+    }
+    return tidx;
+  });
+}
+
 /**
  * 基础判定 - 收集所有分解方案
  */
 function collectDecompositions(
   counts: number[],
-  meldsLeft: number,
   needPair: boolean,
-  melds: Meld[],
+  melds: TempMeld[],
   pair: number[] | null,
   results: WinDecomposition[],
+  assignment: number[],
 ): void {
   let i = 0;
   while (i < 34 && counts[i] === 0) i++;
 
   if (i === 34) {
-    if (meldsLeft === 0 && !needPair) {
+    if (!needPair) {
       const isAllSeq = melds.every((m) => m.type === MeldType.Sequence);
-      const pairTiles = pair ? pair.map((idx, pos) => indexToTile(idx, 9000 + pos)) : [];
-      results.push({ melds: [...melds], pair: pairTiles, isAllSequence: isAllSeq });
+      const pairTiles = pair ? buildTileIdxs(pair, assignment).map((idx, pos) => indexToTile(idx, 9000 + pos)) : [];
+      results.push({
+        melds: melds.map((m) => ({
+          ...m,
+          tiles: buildTileIdxs(m.tiles, assignment).map((idx, pos) => indexToTile(idx, 9000 + pos)),
+        })),
+        pair: pairTiles,
+        isAllSequence: isAllSeq,
+      });
     }
     return;
   }
 
-  let remaining = 0;
-  for (let j = i; j < 34; j++) remaining += counts[j];
-  if (remaining !== meldsLeft * 3 + (needPair ? 2 : 0)) return;
-
   // 尝试将牌
   if (needPair && counts[i] >= 2) {
     counts[i] -= 2;
-    collectDecompositions(counts, meldsLeft, false, melds, [i, i], results);
+    collectDecompositions(counts, false, melds, [i, i], results, assignment);
     counts[i] += 2;
   }
 
   // 尝试刻子
   if (counts[i] >= 3) {
     counts[i] -= 3;
-    melds.push({ type: MeldType.Triplet, tiles: [] });
-    collectDecompositions(counts, meldsLeft - 1, needPair, melds, pair, results);
+    melds.push({ type: MeldType.Triplet, tiles: [i, i, i] });
+    collectDecompositions(counts, needPair, melds, pair, results, assignment);
     melds.pop();
     counts[i] += 3;
   }
 
   // 尝试顺子
-  if (i < 27 && (i % 9) <= 6 && counts[i + 1] >= 1 && counts[i + 2] >= 1) {
-    counts[i]--; counts[i + 1]--; counts[i + 2]--;
-    melds.push({ type: MeldType.Sequence, tiles: [] });
-    collectDecompositions(counts, meldsLeft - 1, needPair, melds, pair, results);
+  if (i < 27 && i % 9 <= 6 && counts[i + 1] >= 1 && counts[i + 2] >= 1) {
+    counts[i]--;
+    counts[i + 1]--;
+    counts[i + 2]--;
+    melds.push({ type: MeldType.Sequence, tiles: [i, i + 1, i + 2] });
+    collectDecompositions(counts, needPair, melds, pair, results, assignment);
     melds.pop();
-    counts[i]++; counts[i + 1]++; counts[i + 2]++;
+    counts[i]++;
+    counts[i + 1]++;
+    counts[i + 2]++;
   }
 }
 
 /**
  * 获取所有可能的胡牌分解方案（含财神替换）
  */
-function getAllWinDecompositions(
-  counts: number[],
-  wildCount: number,
-  meldsNeeded: number,
-): WinDecomposition[] {
+function getAllWinDecompositions(counts: number[], wildCount: number): WinDecomposition[] {
   let total = wildCount;
   for (let i = 0; i < 34; i++) total += counts[i];
-  if (total !== meldsNeeded * 3 + 2) return [];
+  if ((total - 2) % 3 !== 0) return [];
 
   if (wildCount === 0) {
     const results: WinDecomposition[] = [];
-    collectDecompositions(counts.slice(), meldsNeeded, true, [], null, results);
+    collectDecompositions(counts.slice(), true, [], null, results, []);
     return results;
   }
 
@@ -252,7 +312,7 @@ function getAllWinDecompositions(
   for (const assignment of combinationsWithReplacement(relevant, wildCount)) {
     const temp = counts.slice();
     for (const tile of assignment) temp[tile]++;
-    collectDecompositions(temp, meldsNeeded, true, [], null, allResults);
+    collectDecompositions(temp, true, [], null, allResults, assignment);
   }
 
   return allResults;
@@ -263,8 +323,8 @@ function getAllWinDecompositions(
 // ============================================================
 
 /** 手牌(不含已亮面子)能否胡牌：判断手牌是否能组成 n组面子 + 1对子 */
-export function canWin(player: Player, jokerTile: Tile | null): boolean {
-  const { counts, wildCount } = buildCounts(player.hand, jokerTile);
+export function canWin(player: Player, jokerTile: Tile | null, effectiveHand?: Tile[]): boolean {
+  const { counts, wildCount } = buildCounts(effectiveHand || player.hand, jokerTile);
   return checkWinWithWild(counts, wildCount, 0);
 }
 
@@ -276,12 +336,8 @@ export function canWinWithTile(player: Player, tile: Tile, jokerTile: Tile | nul
 }
 
 /** 获取所有胡牌分解方案（用于台数计算） */
-export function getWinDecompositions(
-  hand: Tile[],
-  existingMelds: Meld[],
-  jokerTile: Tile | null,
-): WinDecomposition[] {
-  const meldsNeeded = 4 - existingMelds.length;
-  const { counts, wildCount } = buildCounts(hand, jokerTile);
-  return getAllWinDecompositions(counts, wildCount, meldsNeeded);
+export function getWinDecompositions(player: Player, tile: Tile, jokerTile: Tile | null): WinDecomposition[] {
+  const tempHand = [...player.hand, tile];
+  const { counts, wildCount } = buildCounts(tempHand, jokerTile);
+  return getAllWinDecompositions(counts, wildCount);
 }

@@ -2,20 +2,42 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Tile, GameState, ActionType, PendingAction, WinResult } from './type';
 import {
-  initGame, drawTile, drawFromEnd, discardTile,
-  performPong, performChow, performExposedKong, performConcealedKong,
-  performAddedKong, detectActions, detectSelfActions,
-  isFlowerTile, nextPlayerIndex, isDrawGame, getWinDecompositions, calculateScore,
-  settleScores, getTileShortLabel, validateDiscard, DEFAULT_DISCARD_RULES,
+  initGame,
+  drawTile,
+  drawFromEnd,
+  discardTile,
+  performPong,
+  performChow,
+  performExposedKong,
+  performConcealedKong,
+  performAddedKong,
+  detectActions,
+  detectSelfActions,
+  isFlowerTile,
+  nextPlayerIndex,
+  isDrawGame,
+  getWinDecompositions,
+  calculateScore,
+  settleScores,
+  getTileShortLabel,
+  validateDiscard,
+  DEFAULT_DISCARD_RULES,
 } from './util';
 import {
-  aiChooseDiscard, aiDecideAction, aiChooseChowOption,
-  aiChooseConcealedKongTile, aiChooseAddedKongTile,
+  aiChooseDiscard,
+  aiDecideAction,
+  aiChooseChowOption,
+  aiChooseConcealedKongTile,
+  aiChooseAddedKongTile,
 } from './ai';
 import {
-  TileView, PlayerHandView,
-  ActionBarView, MessageBox,
-  JokerBadge, SettlementPanel, DrawGamePanel,
+  TileView,
+  PlayerHandView,
+  ActionBarView,
+  MessageBox,
+  JokerBadge,
+  SettlementPanel,
+  DrawGamePanel,
 } from './components';
 
 const AI_DELAY = 2000;
@@ -59,14 +81,14 @@ const TableLayout = styled.div`
   grid-template-columns: minmax(6.4rem, 1fr) minmax(0, 2fr) minmax(6.4rem, 1fr);
   grid-template-rows: minmax(6.4rem, 1fr) minmax(0, 2fr) minmax(6.4rem, 1fr);
   grid-template-areas:
-    ". top ."
-    "left center right"
-    ". bottom .";
+    '. top .'
+    'left center right'
+    '. bottom .';
   gap: 0;
   min-height: 0;
   overflow: visible;
   position: relative;
-  transform: rotateX(40deg) scale(0.96);
+  transform: rotateX(40deg) translateY(-20%);
   transform-origin: center center;
 `;
 
@@ -112,7 +134,7 @@ const CenterArea = styled.div`
   justify-content: center;
   gap: 2px;
   padding: 8px;
-  background: rgba(0,0,0,0.15);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 12px;
   margin: 8px;
   overflow: auto;
@@ -123,7 +145,7 @@ const CenterArea = styled.div`
 
 const DiscardLabel = styled.span`
   font-size: 10px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
 `;
 
 const ChowOptionWrap = styled.div`
@@ -141,7 +163,7 @@ const ChowOptionGroup = styled.div`
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   &:hover {
     border-color: #1565c0;
     background: #e3f2fd;
@@ -156,8 +178,8 @@ const TopBar = styled.div`
   align-items: center;
   padding: 0.6rem 1.2rem;
   box-sizing: border-box;
-  background: rgba(0,0,0,0.2);
-  color: rgba(255,255,255,0.85);
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 1.2rem;
 `;
 
@@ -192,8 +214,16 @@ export function GameBoard({ onExit }: GameBoardProps) {
   gameStateRef.current = gameState;
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
+  // @ts-expect-error ignore
+  window.gameStateRef = gameStateRef;
+
   // 清理定时器
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    [],
+  );
 
   // ========== 开始游戏 ==========
   const startGame = useCallback(() => {
@@ -442,14 +472,22 @@ export function GameBoard({ onExit }: GameBoardProps) {
   // ========== 胡牌处理 ==========
   const handleWin = useCallback((state: GameState, winnerIdx: number, isSelfDraw: boolean) => {
     const player = state.players[winnerIdx];
-    const decompositions = getWinDecompositions(player.hand, player.melds, state.jokerTile);
+    const lastTile = isSelfDraw ? player.lastDrawnTile : state.lastDiscardedTile;
+    if (!lastTile) {
+      console.debug('ERROR: 无牌可胡！', player, state);
+      setMessage('ERROR: 无牌可胡！');
+      return;
+    }
+    const decompositions = getWinDecompositions(player, lastTile, state.jokerTile);
     if (decompositions.length === 0) return;
 
-    const decomposition = decompositions[0];
-    const scoreDetail = calculateScore(state, winnerIdx, decomposition, false, isSelfDraw);
-    const settlements = settleScores(
-      state, winnerIdx, state.lastDiscardPlayerIndex, scoreDetail,
-    );
+    const { decomposition, scoreDetail } = decompositions
+      .map((decomposition) => ({
+        decomposition,
+        scoreDetail: calculateScore(state, winnerIdx, decomposition, false, isSelfDraw),
+      }))
+      .sort((a, b) => b.scoreDetail.finalTotal - a.scoreDetail.finalTotal)[0];
+    const settlements = settleScores(state, winnerIdx, state.lastDiscardPlayerIndex, scoreDetail);
 
     state.phase = 'win';
     setGameState({ ...state });
@@ -460,6 +498,7 @@ export function GameBoard({ onExit }: GameBoardProps) {
       loserIndex: state.lastDiscardPlayerIndex,
       scoreDetail,
       settlements,
+      decomposition,
     });
 
     // 更新庄家
@@ -581,37 +620,40 @@ export function GameBoard({ onExit }: GameBoardProps) {
   }, []);
 
   // ========== 玩家出牌 ==========
-  const handleTileClick = useCallback((tile: Tile) => {
-    const state = gameStateRef.current;
-    if (!state || state.phase !== 'playing') return;
-    if (state.currentPlayerIndex !== 0) return;
+  const handleTileClick = useCallback(
+    (tile: Tile) => {
+      const state = gameStateRef.current;
+      if (!state || state.phase !== 'playing') return;
+      if (state.currentPlayerIndex !== 0) return;
 
-    if (selectedTile?.id === tile.id) {
-      // 出牌前校验
-      const validation = validateDiscard(tile, state.players[0], state, DEFAULT_DISCARD_RULES);
-      if (!validation.valid) {
-        setMessage(validation.message || '不能打出这张牌');
+      if (selectedTile?.id === tile.id) {
+        // 出牌前校验
+        const validation = validateDiscard(tile, state.players[0], state, DEFAULT_DISCARD_RULES);
+        if (!validation.valid) {
+          setMessage(validation.message || '不能打出这张牌');
+          setSelectedTile(null);
+          return;
+        }
+
+        // 双击确认出牌 - 即使有自摸操作也允许出牌
+        discardTile(state.players[0], tile);
+        recordDiscard(state, tile);
+        state.lastDiscardedTile = tile;
+        state.lastDiscardPlayerIndex = 0;
+        state.isKongBloom = false;
         setSelectedTile(null);
-        return;
+        setPlayerActions([]);
+        setChowOptions([]);
+        setMessage(`你打出 ${getTileShortLabel(tile)}`);
+        setGameState({ ...state });
+        // 延迟200ms后再检测吃碰杠，让玩家看到牌进入牌河
+        setTimeout(() => afterDiscard(state, tile, 0), 200);
+      } else {
+        setSelectedTile(tile);
       }
-      
-      // 双击确认出牌 - 即使有自摸操作也允许出牌
-      discardTile(state.players[0], tile);
-      recordDiscard(state, tile);
-      state.lastDiscardedTile = tile;
-      state.lastDiscardPlayerIndex = 0;
-      state.isKongBloom = false;
-      setSelectedTile(null);
-      setPlayerActions([]);
-      setChowOptions([]);
-      setMessage(`你打出 ${getTileShortLabel(tile)}`);
-      setGameState({ ...state });
-      // 延迟200ms后再检测吃碰杠，让玩家看到牌进入牌河
-      setTimeout(() => afterDiscard(state, tile, 0), 200);
-    } else {
-      setSelectedTile(tile);
-    }
-  }, [selectedTile]);
+    },
+    [selectedTile],
+  );
 
   if (!gameState) {
     return null;
@@ -628,10 +670,9 @@ export function GameBoard({ onExit }: GameBoardProps) {
             财神: <TileView tile={gameState.jokerTile} jokerTile={gameState.jokerTile} small disabled />
           </JokerBadge>
         )}
+        <MessageBox>{message}</MessageBox>
         <span>连庄: {gameState.dealerStreakCount}</span>
       </TopBar>
-
-      {message && <MessageBox>{message}</MessageBox>}
 
       <TableLayout>
         {/* 对面(玩家2) */}
@@ -661,13 +702,7 @@ export function GameBoard({ onExit }: GameBoardProps) {
         {/* 中央牌海: 所有玩家弃牌统一展示 */}
         <CenterArea>
           {gameState.discardPool.map((tile) => (
-            <TileView
-              key={tile.id}
-              tile={tile}
-              jokerTile={gameState.jokerTile}
-              small
-              disabled
-            />
+            <TileView key={tile.id} tile={tile} jokerTile={gameState.jokerTile} small disabled />
           ))}
         </CenterArea>
 
@@ -698,10 +733,7 @@ export function GameBoard({ onExit }: GameBoardProps) {
           {/* 操作按钮 */}
           <BottomActions>
             {playerActions.length > 0 && gameState.phase === 'playing' && (
-              <ActionBarView
-                actions={playerActions}
-                onAction={handlePlayerAction}
-              />
+              <ActionBarView actions={playerActions} onAction={handlePlayerAction} />
             )}
 
             {/* 吃牌选择 */}
@@ -712,13 +744,7 @@ export function GameBoard({ onExit }: GameBoardProps) {
                   {chowOptions.map((option, idx) => (
                     <ChowOptionGroup key={idx} onClick={() => handleChowSelect(option)}>
                       {option.map((tile) => (
-                        <TileView
-                          key={tile.id}
-                          tile={tile}
-                          jokerTile={gameState.jokerTile}
-                          small
-                          disabled
-                        />
+                        <TileView key={tile.id} tile={tile} jokerTile={gameState.jokerTile} small disabled />
                       ))}
                     </ChowOptionGroup>
                   ))}
@@ -730,24 +756,11 @@ export function GameBoard({ onExit }: GameBoardProps) {
       </TableLayout>
 
       {/* 结算面板 */}
-      {winResult && (
-        <SettlementPanel
-          state={gameState}
-          winResult={winResult}
-          onViewTable={() => setWinResult(null)}
-          onContinue={startGame}
-          onExit={onExit}
-        />
-      )}
+      {winResult && <SettlementPanel state={gameState} winResult={winResult} onContinue={startGame} onExit={onExit} />}
 
       {/* 流局面板 */}
       {gameState.phase === 'draw_game' && !winResult && (
-        <DrawGamePanel
-          state={gameState}
-          onViewTable={() => {}}
-          onContinue={startGame}
-          onExit={onExit}
-        />
+        <DrawGamePanel state={gameState} onContinue={startGame} onExit={onExit} />
       )}
     </PageWrapper>
   );

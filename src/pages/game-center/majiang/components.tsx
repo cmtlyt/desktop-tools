@@ -1,8 +1,10 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState, useMemo } from 'react';
 import styled, { css, keyframes } from 'styled-components';
-import { Tile, Player, ActionType, GameState, WinResult } from './type';
+import { Tile, Player, ActionType, GameState, WinResult, WinDecomposition, Meld, MeldType } from './type';
 import { isJokerTile, sortTiles } from './util';
 import { renderTileContent, TILE_W, TILE_H, TILE_W_SM, TILE_H_SM, JOKER_COLOR } from './tile-renderer';
+import { Switch } from '@/components/switch';
+import { FlexBox } from '@/components/base';
 
 const TILE_W_REM = '3.6rem';
 const TILE_H_REM = '5rem';
@@ -18,13 +20,19 @@ const fadeIn = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
-const TileWrapper = styled.div<{ $selected?: boolean; $disabled?: boolean; $small?: boolean; $highlight?: boolean }>`
+const TileWrapper = styled.div<{
+  $selected?: boolean;
+  $disabled?: boolean;
+  $small?: boolean;
+  $highlight?: boolean;
+  $jokerMock?: boolean;
+}>`
   display: inline-flex;
   cursor: ${(p) => (p.$disabled ? 'default' : 'pointer')};
   user-select: none;
   transition: all 0.15s;
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -32,37 +40,58 @@ const TileWrapper = styled.div<{ $selected?: boolean; $disabled?: boolean; $smal
     left: 2px;
     right: 2px;
     height: 4px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.15) 100%);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.15) 100%);
     border-radius: 0 0 4px 4px;
     z-index: -2;
   }
 
-  ${(p) => p.$selected && css`
-    transform: translateY(-0.8rem);
-    filter: drop-shadow(0 0.6rem 0.8rem rgba(251,192,45,0.5));
-  `}
+  &::before {
+    ${(p) => p.$jokerMock && 'content: "";'}
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: coral;
+    border-radius: 0.4rem;
+    opacity: 0.3;
+  }
 
-  ${(p) => p.$highlight && css`
-    filter: drop-shadow(0 0 0.6rem rgba(255, 143, 0, 0.75));
+  ${(p) =>
+    p.$selected &&
+    css`
+      transform: translateY(-0.8rem);
+      filter: drop-shadow(0 0.6rem 0.8rem rgba(251, 192, 45, 0.5));
+    `}
 
-    svg rect:first-of-type {
-      stroke: #ff8f00;
-      stroke-width: 2;
-    }
-  `}
+  ${(p) =>
+    p.$highlight &&
+    css`
+      filter: drop-shadow(0 0 0.6rem rgba(255, 143, 0, 0.75));
+
+      svg rect:first-of-type {
+        stroke: #ff8f00;
+        stroke-width: 2;
+      }
+    `}
 
   &:hover {
-    ${(p) => !p.$disabled && !p.$selected && css`
-      transform: translateY(-4px);
-      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-    `}
+    ${(p) =>
+      !p.$disabled &&
+      !p.$selected &&
+      css`
+        transform: translateY(-4px);
+        filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
+      `}
   }
 
   &:active {
-    ${(p) => !p.$disabled && css`
-      transform: translateY(-1px) scale(0.98);
-      transition: all 0.05s;
-    `}
+    ${(p) =>
+      !p.$disabled &&
+      css`
+        transform: translateY(-1px) scale(0.98);
+        transition: all 0.05s;
+      `}
   }
 `;
 
@@ -101,7 +130,7 @@ const MeldGroup = styled.div`
   display: flex;
   gap: 0.1rem;
   padding: 0.2rem 0.4rem;
-  background: rgba(0,0,0,0.04);
+  background: rgba(0, 0, 0, 0.04);
   border-radius: 0.4rem;
 `;
 
@@ -142,16 +171,18 @@ const PlayerName = styled.div<{ $isDealer?: boolean }>`
   align-items: center;
   gap: 4px;
 
-  ${(p) => p.$isDealer && css`
-    &::after {
-      content: '庄';
-      font-size: 10px;
-      background: #d32f2f;
-      color: #fff;
-      padding: 0 4px;
-      border-radius: 3px;
-    }
-  `}
+  ${(p) =>
+    p.$isDealer &&
+    css`
+      &::after {
+        content: '庄';
+        font-size: 10px;
+        background: #d32f2f;
+        color: #fff;
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+    `}
 `;
 
 const JokerBadge = styled.div`
@@ -196,19 +227,25 @@ const ActionButton = styled.button<{ $variant?: 'primary' | 'danger' | 'default'
         return css`
           background: #1565c0;
           color: #fff;
-          &:hover { background: #0d47a1; }
+          &:hover {
+            background: #0d47a1;
+          }
         `;
       case 'danger':
         return css`
           background: #d32f2f;
           color: #fff;
-          &:hover { background: #b71c1c; }
+          &:hover {
+            background: #b71c1c;
+          }
         `;
       default:
         return css`
           background: #eceff1;
           color: #37474f;
-          &:hover { background: #cfd8dc; }
+          &:hover {
+            background: #cfd8dc;
+          }
         `;
     }
   }}
@@ -287,7 +324,7 @@ const ScoreBoard = styled.div`
   }
 `;
 
-const SettlementOverlay = styled.div`
+const SettlementOverlay = styled.div<{ $viewTable: boolean }>`
   position: fixed;
   inset: 0;
   z-index: 20;
@@ -295,7 +332,7 @@ const SettlementOverlay = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2.4rem;
-  background: rgba(0, 0, 0, 0.45);
+  background: ${(p) => (p.$viewTable ? 'transparent' : 'rgba(0, 0, 0, 0.45)')};
 
   @media (max-width: 600px) {
     padding: 0;
@@ -382,7 +419,14 @@ interface TileViewProps {
 }
 
 export const TileView = memo(function TileView({
-  tile, jokerTile, selected, disabled, small, highlight, onClick, style,
+  tile,
+  jokerTile,
+  selected,
+  disabled,
+  small,
+  highlight,
+  onClick,
+  style,
 }: TileViewProps) {
   const isJoker = jokerTile ? isJokerTile(tile, jokerTile) : false;
   const width = small ? TILE_W_SM : TILE_W;
@@ -394,8 +438,20 @@ export const TileView = memo(function TileView({
   }, [tile, disabled, onClick]);
 
   return (
-    <TileWrapper $selected={selected} $disabled={disabled} $small={small} $highlight={highlight || isJoker} onClick={handleClick} style={style}>
-      <svg width={small ? TILE_W_SM_REM : TILE_W_REM} height={small ? TILE_H_SM_REM : TILE_H_REM} viewBox={`0 0 ${width} ${height}`}>
+    <TileWrapper
+      $jokerMock={tile.jokerMock}
+      $selected={selected}
+      $disabled={disabled}
+      $small={small}
+      $highlight={highlight || isJoker}
+      onClick={handleClick}
+      style={style}
+    >
+      <svg
+        width={small ? TILE_W_SM_REM : TILE_W_REM}
+        height={small ? TILE_H_SM_REM : TILE_H_REM}
+        viewBox={`0 0 ${width} ${height}`}
+      >
         {/* 渐变定义 */}
         <defs>
           <linearGradient id={`tileBg-${tile.id}`} x1="0" y1="0" x2="0" y2="1">
@@ -418,29 +474,65 @@ export const TileView = memo(function TileView({
             </feMerge>
           </filter>
         </defs>
-        
+
         {/* 牌体主背景（带渐变） */}
-        <rect x={1} y={1} width={width - 2} height={height - 2} rx={4} ry={4}
-          fill={`url(#tileBg-${tile.id})`} stroke={borderColor} strokeWidth={1} />
-        
+        <rect
+          x={1}
+          y={1}
+          width={width - 2}
+          height={height - 2}
+          rx={4}
+          ry={4}
+          fill={`url(#tileBg-${tile.id})`}
+          stroke={borderColor}
+          strokeWidth={1}
+        />
+
         {/* 顶部高光 */}
-        <rect x={2.5} y={2} width={width - 5} height={height * 0.4} rx={3} ry={3}
-          fill={`url(#tileHighlight-${tile.id})`} opacity={0.6} />
-        
+        <rect
+          x={2.5}
+          y={2}
+          width={width - 5}
+          height={height * 0.4}
+          rx={3}
+          ry={3}
+          fill={`url(#tileHighlight-${tile.id})`}
+          opacity={0.6}
+        />
+
         {/* 底部厚度阴影 */}
-        <rect x={1.5} y={height - 3} width={width - 3} height={2} rx={1} ry={1}
-          fill="#000" opacity={0.15} />
-        
+        <rect x={1.5} y={height - 3} width={width - 3} height={2} rx={1} ry={1} fill="#000" opacity={0.15} />
+
         {/* 内边框（增强立体感） */}
-        <rect x={2} y={2} width={width - 4} height={height - 4} rx={3} ry={3}
-          fill="none" stroke="#fff" strokeWidth={0.5} opacity={0.5} />
-        
+        <rect
+          x={2}
+          y={2}
+          width={width - 4}
+          height={height - 4}
+          rx={3}
+          ry={3}
+          fill="none"
+          stroke="#fff"
+          strokeWidth={0.5}
+          opacity={0.5}
+        />
+
         {/* 财神光晕 */}
         {isJoker && (
-          <rect x={1.5} y={1.5} width={width - 3} height={height - 3} rx={3.5} ry={3.5}
-            fill="none" stroke={JOKER_COLOR} strokeWidth={1.2} opacity={0.6} />
+          <rect
+            x={1.5}
+            y={1.5}
+            width={width - 3}
+            height={height - 3}
+            rx={3.5}
+            ry={3.5}
+            fill="none"
+            stroke={JOKER_COLOR}
+            strokeWidth={1.2}
+            opacity={0.6}
+          />
         )}
-        
+
         {/* 牌面内容 */}
         {renderTileContent(tile, jokerTile ?? null, width, height)}
       </svg>
@@ -449,14 +541,24 @@ export const TileView = memo(function TileView({
 });
 
 /** 牌背面 (SVG) */
-export const TileBackView = memo(function TileBackView({ small, style }: { small?: boolean; style?: React.CSSProperties }) {
+export const TileBackView = memo(function TileBackView({
+  small,
+  style,
+}: {
+  small?: boolean;
+  style?: React.CSSProperties;
+}) {
   const width = small ? TILE_W_SM : TILE_W;
   const height = small ? TILE_H_SM : TILE_H;
   const patternSize = 6;
 
   return (
     <div style={style}>
-      <svg width={small ? TILE_W_SM_REM : TILE_W_REM} height={small ? TILE_H_SM_REM : TILE_H_REM} viewBox={`0 0 ${width} ${height}`}>
+      <svg
+        width={small ? TILE_W_SM_REM : TILE_W_REM}
+        height={small ? TILE_H_SM_REM : TILE_H_REM}
+        viewBox={`0 0 ${width} ${height}`}
+      >
         <defs>
           <pattern id="backPattern" x={0} y={0} width={patternSize} height={patternSize} patternUnits="userSpaceOnUse">
             <rect width={patternSize} height={patternSize} fill="#0d47a1" />
@@ -467,12 +569,39 @@ export const TileBackView = memo(function TileBackView({ small, style }: { small
             <stop offset="100%" stopColor="#0d47a1" />
           </linearGradient>
         </defs>
-        <rect x={0.75} y={0.75} width={width - 1.5} height={height - 1.5} rx={3} ry={3}
-          fill="url(#backGrad)" stroke="#0d47a1" strokeWidth={1.5} />
-        <rect x={3} y={3} width={width - 6} height={height - 6} rx={1.5} ry={1.5}
-          fill="url(#backPattern)" opacity={0.4} />
-        <rect x={3} y={3} width={width - 6} height={height - 6} rx={1.5} ry={1.5}
-          fill="none" stroke="#64b5f6" strokeWidth={0.5} opacity={0.4} />
+        <rect
+          x={0.75}
+          y={0.75}
+          width={width - 1.5}
+          height={height - 1.5}
+          rx={3}
+          ry={3}
+          fill="url(#backGrad)"
+          stroke="#0d47a1"
+          strokeWidth={1.5}
+        />
+        <rect
+          x={3}
+          y={3}
+          width={width - 6}
+          height={height - 6}
+          rx={1.5}
+          ry={1.5}
+          fill="url(#backPattern)"
+          opacity={0.4}
+        />
+        <rect
+          x={3}
+          y={3}
+          width={width - 6}
+          height={height - 6}
+          rx={1.5}
+          ry={1.5}
+          fill="none"
+          stroke="#64b5f6"
+          strokeWidth={0.5}
+          opacity={0.4}
+        />
       </svg>
     </div>
   );
@@ -493,10 +622,19 @@ interface PlayerHandProps {
 }
 
 export const PlayerHandView = memo(function PlayerHandView({
-  player, jokerTile, isActive, selectedTile, onTileClick, showHand, position = 'bottom',
+  player,
+  jokerTile,
+  isActive,
+  selectedTile,
+  onTileClick,
+  showHand,
+  position = 'bottom',
 }: PlayerHandProps) {
   const windLabels: Record<string, string> = {
-    east: '东', south: '南', west: '西', north: '北',
+    east: '东',
+    south: '南',
+    west: '西',
+    north: '北',
   };
   const useSmallTiles = position !== 'bottom';
 
@@ -565,7 +703,9 @@ export const PlayerHandView = memo(function PlayerHandView({
             </>
           ) : (
             <>
-              {player.hand.map((_, idx) => <TileBackView key={idx} small={useSmallTiles} />)}
+              {player.hand.map((_, idx) => (
+                <TileBackView key={idx} small={useSmallTiles} />
+              ))}
               {player.lastDrawnTile && <TileBackView key="last" small={useSmallTiles} style={{ marginLeft: '1rem' }} />}
             </>
           )}
@@ -585,20 +725,12 @@ interface DiscardPoolProps {
   lastDiscarded?: Tile | null;
 }
 
-export const DiscardPoolView = memo(function DiscardPoolView({
-  player, jokerTile,
-}: DiscardPoolProps) {
+export const DiscardPoolView = memo(function DiscardPoolView({ player, jokerTile }: DiscardPoolProps) {
   if (player.discards.length === 0) return null;
   return (
     <DiscardArea>
       {player.discards.map((tile) => (
-        <TileView
-          key={tile.id}
-          tile={tile}
-          jokerTile={jokerTile}
-          small
-          disabled
-        />
+        <TileView key={tile.id} tile={tile} jokerTile={jokerTile} small disabled />
       ))}
     </DiscardArea>
   );
@@ -632,16 +764,51 @@ export const ActionBarView = memo(function ActionBarView({ actions, onAction }: 
         const config = ACTION_LABELS[action];
         if (!config) return null;
         return (
-          <ActionButton
-            key={action}
-            $variant={config.variant}
-            onClick={() => onAction(action)}
-          >
+          <ActionButton key={action} $variant={config.variant} onClick={() => onAction(action)}>
             {config.label}
           </ActionButton>
         );
       })}
     </ActionBar>
+  );
+});
+
+const MeldView = memo(function MeldView({ meld }: { meld: Meld }) {
+  return (
+    <FlexBox $gap="0.2rem">
+      {meld.tiles.map((tile) => (
+        <TileView tile={tile} small disabled />
+      ))}
+    </FlexBox>
+  );
+});
+
+interface DecompositionProps {
+  decomposition: WinDecomposition;
+  player: Player;
+}
+
+const DecompositionView = memo(function DecompositionView(props: DecompositionProps) {
+  const { decomposition, player } = props;
+  const playerMelds = useMemo(() => {
+    // 拼接花牌
+    return [{ type: MeldType.Triplet, tiles: player.flowers }, ...player.melds];
+  }, []);
+
+  return (
+    <FlexBox $gap="0.5rem" $direction="column">
+      <FlexBox $gap="1rem">
+        {playerMelds.map((meld, idx) => (
+          <MeldView key={idx} meld={meld} />
+        ))}
+      </FlexBox>
+      <FlexBox $gap="1rem">
+        {decomposition.melds.map((meld, idx) => (
+          <MeldView key={idx} meld={meld} />
+        ))}
+        <MeldView meld={{ type: MeldType.Triplet, tiles: decomposition.pair }} />
+      </FlexBox>
+    </FlexBox>
   );
 });
 
@@ -652,39 +819,53 @@ export const ActionBarView = memo(function ActionBarView({ actions, onAction }: 
 interface SettlementPanelProps {
   state: GameState;
   winResult: WinResult;
-  onViewTable: () => void;
   onContinue: () => void;
   onExit: () => void;
 }
 
 export const SettlementPanel = memo(function SettlementPanel({
-  state, winResult, onViewTable, onContinue, onExit,
+  state,
+  winResult,
+  onContinue,
+  onExit,
 }: SettlementPanelProps) {
+  const [viewTable, setViewTable] = useState(false);
   const winner = state.players[winResult.winnerIndex];
 
   return (
-    <SettlementOverlay>
-      <SettlementCard>
-        <SettlementTitle>{winner.name} 胡牌！</SettlementTitle>
-        {winResult.scoreDetail.details.map((detail, idx) => (
-          <SettlementDetail key={idx}>• {detail}</SettlementDetail>
-        ))}
-        <SettlementTotal>总计: {winResult.scoreDetail.finalTotal} 台</SettlementTotal>
-        <Divider />
-        {winResult.settlements.map((score, idx) => (
-          <SettlementItem key={idx}>
-            <span>{state.players[idx].name}</span>
-            <span style={{ color: score >= 0 ? '#2e7d32' : '#d32f2f', fontWeight: 700 }}>
-              {score >= 0 ? '+' : ''}{score} 台
-            </span>
-          </SettlementItem>
-        ))}
-        <SettlementActions>
-          <SettlementButton onClick={onViewTable}>查看牌桌</SettlementButton>
-          <SettlementButton $variant="primary" onClick={onContinue}>继续</SettlementButton>
-          <SettlementButton onClick={onExit}>退出</SettlementButton>
-        </SettlementActions>
-      </SettlementCard>
+    <SettlementOverlay $viewTable={viewTable}>
+      <Switch
+        when={viewTable}
+        fullback={
+          <SettlementCard>
+            <SettlementTitle>{winner.name} 胡牌！</SettlementTitle>
+            <DecompositionView decomposition={winResult.decomposition} player={winner} />
+            {winResult.scoreDetail.details.map((detail, idx) => (
+              <SettlementDetail key={idx}>• {detail}</SettlementDetail>
+            ))}
+            <SettlementTotal>总计: {winResult.scoreDetail.finalTotal} 台</SettlementTotal>
+            <Divider />
+            {winResult.settlements.map((score, idx) => (
+              <SettlementItem key={idx}>
+                <span>{state.players[idx].name}</span>
+                <span style={{ color: score >= 0 ? '#2e7d32' : '#d32f2f', fontWeight: 700 }}>
+                  {score >= 0 ? '+' : ''}
+                  {score} 台
+                </span>
+              </SettlementItem>
+            ))}
+            <SettlementActions>
+              <SettlementButton onClick={() => setViewTable(true)}>查看牌桌</SettlementButton>
+              <SettlementButton $variant="primary" onClick={onContinue}>
+                继续
+              </SettlementButton>
+              <SettlementButton onClick={onExit}>退出</SettlementButton>
+            </SettlementActions>
+          </SettlementCard>
+        }
+      >
+        {() => <SettlementButton onClick={() => setViewTable(false)}>查看结算面板</SettlementButton>}
+      </Switch>
     </SettlementOverlay>
   );
 });
@@ -695,32 +876,39 @@ export const SettlementPanel = memo(function SettlementPanel({
 
 interface DrawGamePanelProps {
   state: GameState;
-  onViewTable: () => void;
   onContinue: () => void;
   onExit: () => void;
 }
 
-export const DrawGamePanel = memo(function DrawGamePanel({
-  state, onViewTable, onContinue, onExit,
-}: DrawGamePanelProps) {
+export const DrawGamePanel = memo(function DrawGamePanel({ state, onContinue, onExit }: DrawGamePanelProps) {
+  const [viewTable, setViewTable] = useState(false);
   return (
-    <SettlementOverlay>
-      <SettlementCard>
-        <SettlementTitle>荒庄流局</SettlementTitle>
-        <SettlementDetail>牌山已空，本局无人胡牌</SettlementDetail>
-        <Divider />
-        {state.players.map((player, idx) => (
-          <SettlementItem key={idx}>
-            <span>{player.name}</span>
-            <span style={{ color: '#78909c', fontWeight: 700 }}>0 台</span>
-          </SettlementItem>
-        ))}
-        <SettlementActions>
-          <SettlementButton onClick={onViewTable}>查看牌桌</SettlementButton>
-          <SettlementButton $variant="primary" onClick={onContinue}>继续</SettlementButton>
-          <SettlementButton onClick={onExit}>退出</SettlementButton>
-        </SettlementActions>
-      </SettlementCard>
+    <SettlementOverlay $viewTable={viewTable}>
+      <Switch
+        when={viewTable}
+        fullback={
+          <SettlementCard>
+            <SettlementTitle>荒庄流局</SettlementTitle>
+            <SettlementDetail>牌山已空，本局无人胡牌</SettlementDetail>
+            <Divider />
+            {state.players.map((player, idx) => (
+              <SettlementItem key={idx}>
+                <span>{player.name}</span>
+                <span style={{ color: '#78909c', fontWeight: 700 }}>0 台</span>
+              </SettlementItem>
+            ))}
+            <SettlementActions>
+              <SettlementButton onClick={() => setViewTable(true)}>查看牌桌</SettlementButton>
+              <SettlementButton $variant="primary" onClick={onContinue}>
+                继续
+              </SettlementButton>
+              <SettlementButton onClick={onExit}>退出</SettlementButton>
+            </SettlementActions>
+          </SettlementCard>
+        }
+      >
+        {() => <SettlementButton onClick={() => setViewTable(false)}>查看结算面板</SettlementButton>}
+      </Switch>
     </SettlementOverlay>
   );
 });
@@ -729,7 +917,4 @@ export const DrawGamePanel = memo(function DrawGamePanel({
 // 导出样式组件
 // ============================================================
 
-export {
-  GameBoard, InfoBar, Divider, MessageBox, ScoreBoard,
-  JokerBadge, ActionBar as ActionBarContainer,
-};
+export { GameBoard, InfoBar, Divider, MessageBox, ScoreBoard, JokerBadge, ActionBar as ActionBarContainer };

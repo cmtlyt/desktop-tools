@@ -37,6 +37,8 @@ export interface Tile {
   value: number | HonorValue;
   /** 展示名 */
   label: string;
+  /** 是否为财神牌 */
+  jokerMock?: boolean;
 }
 
 /** 面子类型 */
@@ -119,13 +121,7 @@ export interface Player {
   isDealer: boolean;
 }
 
-export type GamePhase =
-  | 'idle'
-  | 'dealing'
-  | 'playing'
-  | 'waiting_action'
-  | 'win'
-  | 'draw_game';
+export type GamePhase = 'idle' | 'dealing' | 'playing' | 'waiting_action' | 'win' | 'draw_game';
 
 export interface PendingAction {
   playerIndex: number;
@@ -205,6 +201,7 @@ export interface WinResult {
   scoreDetail: ScoreDetail;
   /** 各玩家结算分数(正为赢,负为输) */
   settlements: number[];
+  decomposition: WinDecomposition;
 }
 
 /** 花牌判定用 */
